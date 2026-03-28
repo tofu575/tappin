@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import 'package:tappin/features/pin/presentation/providers/pin_provider.dart';
+import 'package:tappin/presentation/providers/pin_provider.dart';
 
 class PinListPage extends ConsumerWidget {
   const PinListPage({super.key});

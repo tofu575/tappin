@@ -1,5 +1,5 @@
 import 'package:tappin/core/usecase/usecase.dart';
-import 'package:tappin/features/pin/domain/repositories/pin_repository.dart';
+import 'package:tappin/domain/repositories/pin_repository.dart';
 
 class DeletePinUseCase implements UseCase<void, int> {
   final PinRepository repository;

@@ -1,8 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:tappin/core/usecase/usecase.dart';
-import 'package:tappin/features/pin/domain/models/pin/pin.dart';
-import 'package:tappin/features/pin/pin_di.dart';
+import 'package:tappin/domain/models/pin/pin.dart';
+import 'package:tappin/pin_di.dart';
 
 final pinsProvider = AsyncNotifierProvider<PinsNotifier, List<Pin>>(
   PinsNotifier.new,

@@ -1,7 +1,6 @@
-import 'package:tappin/features/pin/domain/entities/pin.dart';
-import 'package:tappin/features/pin/domain/repositories/pin_repository.dart';
-import 'package:tappin/features/pin/data/storages/pin_local_storage.dart';
-import 'package:tappin/features/pin/data/models/pin_model.dart';
+import 'package:tappin/domain/models/pin/pin.dart';
+import 'package:tappin/domain/repositories/pin_repository.dart';
+import 'package:tappin/gateway/storage/pin_local_storage.dart';
 
 class PinRepositoryImpl implements PinRepository {
   final PinLocalStorage storage;
@@ -15,7 +14,7 @@ class PinRepositoryImpl implements PinRepository {
 
   @override
   Future<int> savePin(Pin pin) {
-    return storage.savePin(PinModel.fromEntity(pin));
+    return storage.savePin(pin);
   }
 
   @override
