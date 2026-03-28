@@ -1,4 +1,7 @@
-import '../../domain/entities/pin.dart';
+import 'package:tappin/features/pin/domain/models/pin/pin.dart';
+import 'package:tappin/features/pin/domain/models/pin/latitude.dart';
+import 'package:tappin/features/pin/domain/models/pin/longitude.dart';
+import 'package:tappin/features/pin/domain/models/core/my_datetime.dart';
 
 class PinModel extends Pin {
   const PinModel({
@@ -11,18 +14,20 @@ class PinModel extends Pin {
   factory PinModel.fromMap(Map<String, dynamic> map) {
     return PinModel(
       id: map['id'] as int?,
-      latitude: map['latitude'] as double,
-      longitude: map['longitude'] as double,
-      createdAt: DateTime.fromMillisecondsSinceEpoch(map['created_at'] as int),
+      latitude: Latitude(map['latitude'] as double),
+      longitude: Longitude(map['longitude'] as double),
+      createdAt: MyDatetime(
+        DateTime.fromMillisecondsSinceEpoch(map['created_at'] as int),
+      ),
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
       if (id != null) 'id': id,
-      'latitude': latitude,
-      'longitude': longitude,
-      'created_at': createdAt.millisecondsSinceEpoch,
+      'latitude': latitude.value,
+      'longitude': longitude.value,
+      'created_at': createdAt.value.millisecondsSinceEpoch,
     };
   }
 

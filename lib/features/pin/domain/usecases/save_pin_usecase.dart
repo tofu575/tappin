@@ -1,6 +1,6 @@
-import '../../../../core/usecase/usecase.dart';
-import '../entities/pin.dart';
-import '../repositories/pin_repository.dart';
+import 'package:tappin/core/usecase/usecase.dart';
+import 'package:tappin/features/pin/domain/models/pin/pin.dart';
+import 'package:tappin/features/pin/domain/repositories/pin_repository.dart';
 
 class SavePinUseCase implements UseCase<int, Pin> {
   final PinRepository repository;

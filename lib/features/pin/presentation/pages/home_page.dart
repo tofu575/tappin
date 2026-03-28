@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 
-import '../../domain/entities/pin.dart';
-import '../providers/pin_provider.dart';
-import '../widgets/record_button.dart';
-import 'pin_list_page.dart';
+import 'package:tappin/features/pin/domain/models/pin/pin.dart';
+import 'package:tappin/features/pin/domain/models/pin/latitude.dart';
+import 'package:tappin/features/pin/domain/models/pin/longitude.dart';
+import 'package:tappin/features/pin/domain/models/core/my_datetime.dart';
+import 'package:tappin/features/pin/presentation/providers/pin_provider.dart';
+import 'package:tappin/features/pin/presentation/widgets/record_button.dart';
+import 'package:tappin/features/pin/presentation/pages/pin_list_page.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
@@ -41,9 +44,9 @@ class _HomePageState extends ConsumerState<HomePage> {
       );
 
       final pin = Pin(
-        latitude: position.latitude,
-        longitude: position.longitude,
-        createdAt: DateTime.now(),
+        latitude: Latitude(position.latitude),
+        longitude: Longitude(position.longitude),
+        createdAt: MyDatetime(DateTime.now()),
       );
 
       await ref.read(pinsProvider.notifier).savePin(pin);

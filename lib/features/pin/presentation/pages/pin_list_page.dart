@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../providers/pin_provider.dart';
+import 'package:tappin/features/pin/presentation/providers/pin_provider.dart';
 
 class PinListPage extends ConsumerWidget {
   const PinListPage({super.key});
@@ -42,11 +42,11 @@ class PinListPage extends ConsumerWidget {
             itemCount: pins.length,
             itemBuilder: (context, index) {
               final pin = pins[index];
-              final lat = pin.latitude;
-              final lng = pin.longitude;
+              final lat = pin.latitude.value;
+              final lng = pin.longitude.value;
               final dateStr =
-                  '${pin.createdAt.year}/${pin.createdAt.month.toString().padLeft(2, '0')}/${pin.createdAt.day.toString().padLeft(2, '0')} '
-                  '${pin.createdAt.hour.toString().padLeft(2, '0')}:${pin.createdAt.minute.toString().padLeft(2, '0')}';
+                  '${pin.createdAt.value.year}/${pin.createdAt.value.month.toString().padLeft(2, '0')}/${pin.createdAt.value.day.toString().padLeft(2, '0')} '
+                  '${pin.createdAt.value.hour.toString().padLeft(2, '0')}:${pin.createdAt.value.minute.toString().padLeft(2, '0')}';
               return ListTile(
                 leading: const Icon(Icons.location_on),
                 title: Text(dateStr),

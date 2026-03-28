@@ -1,25 +1,25 @@
-import '../../domain/entities/pin.dart';
-import '../../domain/repositories/pin_repository.dart';
-import '../datasources/pin_local_datasource.dart';
-import '../models/pin_model.dart';
+import 'package:tappin/features/pin/domain/entities/pin.dart';
+import 'package:tappin/features/pin/domain/repositories/pin_repository.dart';
+import 'package:tappin/features/pin/data/storages/pin_local_storage.dart';
+import 'package:tappin/features/pin/data/models/pin_model.dart';
 
 class PinRepositoryImpl implements PinRepository {
-  final PinLocalDatasource datasource;
+  final PinLocalStorage storage;
 
-  PinRepositoryImpl(this.datasource);
+  PinRepositoryImpl(this.storage);
 
   @override
   Future<List<Pin>> getPins() {
-    return datasource.getPins();
+    return storage.fetchPins();
   }
 
   @override
   Future<int> savePin(Pin pin) {
-    return datasource.savePin(PinModel.fromEntity(pin));
+    return storage.savePin(PinModel.fromEntity(pin));
   }
 
   @override
   Future<void> deletePin(int id) {
-    return datasource.deletePin(id);
+    return storage.deletePin(id);
   }
 }

@@ -2,14 +2,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
-import '../../data/datasources/pin_local_datasource.dart';
-import '../../data/repositories/pin_repository_impl.dart';
-import '../../domain/entities/pin.dart';
-import '../../domain/repositories/pin_repository.dart';
-import '../../domain/usecases/delete_pin_usecase.dart';
-import '../../domain/usecases/get_pins_usecase.dart';
-import '../../domain/usecases/save_pin_usecase.dart';
-import '../../../../core/usecase/usecase.dart';
+import 'package:tappin/features/pin/data/storages/pin_local_storage.dart';
+import 'package:tappin/features/pin/data/repositories/pin_repository_impl.dart';
+import 'package:tappin/features/pin/domain/models/pin/pin.dart';
+import 'package:tappin/features/pin/domain/repositories/pin_repository.dart';
+import 'package:tappin/features/pin/domain/usecases/delete_pin_usecase.dart';
+import 'package:tappin/features/pin/domain/usecases/get_pins_usecase.dart';
+import 'package:tappin/features/pin/domain/usecases/save_pin_usecase.dart';
+import 'package:tappin/core/usecase/usecase.dart';
 
 final databaseProvider = FutureProvider<Database>((ref) async {
   final dbPath = await getDatabasesPath();
@@ -18,19 +18,19 @@ final databaseProvider = FutureProvider<Database>((ref) async {
     path,
     version: 1,
     onCreate: (db, version) async {
-      await PinLocalDatasourceImpl.createTable(db);
+      await PinSQLiteStorage.createTable(db);
     },
   );
 });
 
-final pinLocalDatasourceProvider = Provider<PinLocalDatasource>((ref) {
+final pinLocalStorageProvider = Provider<PinLocalStorage>((ref) {
   final db = ref.watch(databaseProvider).requireValue;
-  return PinLocalDatasourceImpl(db);
+  return PinSQLiteStorage(db);
 });
 
 final pinRepositoryProvider = Provider<PinRepository>((ref) {
-  final datasource = ref.watch(pinLocalDatasourceProvider);
-  return PinRepositoryImpl(datasource);
+  final storage = ref.watch(pinLocalStorageProvider);
+  return PinRepositoryImpl(storage);
 });
 
 final savePinUseCaseProvider = Provider<SavePinUseCase>((ref) {

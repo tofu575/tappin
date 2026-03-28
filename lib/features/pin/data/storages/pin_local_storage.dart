@@ -1,16 +1,16 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:tappin/features/pin/data/models/pin_model.dart';
 
-abstract class PinLocalDatasource {
-  Future<List<PinModel>> getPins();
+abstract class PinLocalStorage {
+  Future<List<PinModel>> fetchPins();
   Future<int> savePin(PinModel pin);
   Future<void> deletePin(int id);
 }
 
-class PinLocalDatasourceImpl implements PinLocalDatasource {
+class PinSQLiteStorage implements PinLocalStorage {
   final Database db;
 
-  PinLocalDatasourceImpl(this.db);
+  PinSQLiteStorage(this.db);
 
   static const _tableName = 'pins';
 
@@ -26,7 +26,7 @@ class PinLocalDatasourceImpl implements PinLocalDatasource {
   }
 
   @override
-  Future<List<PinModel>> getPins() async {
+  Future<List<PinModel>> fetchPins() async {
     final maps = await db.query(_tableName, orderBy: 'created_at DESC');
     return maps.map((m) => PinModel.fromMap(m)).toList();
   }
