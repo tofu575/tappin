@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tappin/domain/models/core/my_datetime.dart';
 import 'package:tappin/domain/models/pin/pin.dart';
 import 'package:tappin/domain/services/location_service.dart';
-import 'package:tappin/pin_di.dart';
 import 'package:tappin/presentation/pages/pin_list_page.dart';
 import 'package:tappin/presentation/providers/pin_provider.dart';
 import 'package:tappin/presentation/widgets/record_button.dart';
