@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'features/pin/presentation/pages/home_page.dart';
+import 'package:tappin/presentation/pages/home_page.dart';
 
 class App extends StatelessWidget {
   const App({super.key});

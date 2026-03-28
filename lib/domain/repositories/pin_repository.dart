@@ -1,4 +1,4 @@
-import '../entities/pin.dart';
+import 'package:tappin/domain/models/pin/pin.dart';
 
 abstract class PinRepository {
   Future<List<Pin>> getPins();
