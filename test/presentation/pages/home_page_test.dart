@@ -42,11 +42,14 @@ void main() {
     await tester.pumpWidget(_buildPage(repo: repo));
     await tester.pump();
 
+    expect(find.byType(Card), findsNothing);
+
     await tester.tap(find.text('記録'));
     await tester.pumpAndSettle();
 
     expect(find.text('現在地を記録しました'), findsOneWidget);
     expect(repo.savedPins, hasLength(1));
+    expect(find.byType(Card), findsOneWidget);
   });
 
   testWidgets('位置情報の権限が拒否された場合、許可を求めるメッセージが表示される', (tester) async {
