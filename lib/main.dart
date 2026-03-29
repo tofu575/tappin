@@ -6,6 +6,7 @@ import 'package:tappin/domain/usecases/use_case.dart';
 import 'package:tappin/gateway/location/geolocator_location_service.dart';
 import 'package:tappin/gateway/geocoding/native_geocoding_service.dart';
 import 'package:tappin/gateway/storage/local_storage.dart';
+import 'package:tappin/gateway/widget/app_home_widget_service.dart';
 import 'package:tappin/gateway/storage/repository_impl.dart';
 import 'package:tappin/presentation/providers/provider.dart';
 
@@ -21,6 +22,7 @@ void main() async {
         useCaseProvider.overrideWithValue(UseCase(repository)),
         locationServiceProvider.overrideWithValue(GeolocatorLocationService()),
         geocodingServiceProvider.overrideWithValue(NativeGeocodingService()),
+        homeWidgetServiceProvider.overrideWithValue(AppHomeWidgetService()),
       ],
       child: const App(),
     ),
