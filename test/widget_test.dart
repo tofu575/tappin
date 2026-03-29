@@ -1,11 +1,3 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_test/flutter_test.dart';
-
-import 'package:tappin/app.dart';
-
-void main() {
-  testWidgets('App smoke test', (WidgetTester tester) async {
-    await tester.pumpWidget(const ProviderScope(child: App()));
-    expect(find.text('Mappin'), findsOneWidget);
-  });
-}
+// WidgetTest は各ページのテストファイルに分割しています。
+// test/presentation/pages/home_page_test.dart
+// test/presentation/pages/pin_list_page_test.dart

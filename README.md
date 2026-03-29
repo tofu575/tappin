@@ -33,3 +33,5 @@ lib/
   - fvm flutter emulators --launch Pixel_5_API_33
 - 実行
   - fvm flutter run
+- test
+  - fvm flutter test
