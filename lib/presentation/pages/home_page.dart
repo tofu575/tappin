@@ -20,9 +20,28 @@ class HomePage extends ConsumerStatefulWidget {
   ConsumerState<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends ConsumerState<HomePage> {
+class _HomePageState extends ConsumerState<HomePage> with WidgetsBindingObserver {
   bool _isRecording = false;
   Pin? _latestPin;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      ref.invalidate(pinsProvider);
+    }
+  }
 
   Future<void> _recordCurrentLocation() async {
     setState(() => _isRecording = true);
@@ -38,6 +57,7 @@ class _HomePageState extends ConsumerState<HomePage> {
       );
 
       await ref.read(pinsProvider.notifier).savePin(pin);
+      await _updateHomeWidget(pin);
 
       if (mounted) {
         setState(() => _latestPin = pin);
@@ -59,6 +79,25 @@ class _HomePageState extends ConsumerState<HomePage> {
       }
     } finally {
       if (mounted) setState(() => _isRecording = false);
+    }
+  }
+
+  Future<void> _updateHomeWidget(Pin pin) async {
+    try {
+      final coordinate = Coordinate(
+        latitude: pin.latitude,
+        longitude: pin.longitude,
+      );
+      final address = await ref.read(geocodingServiceProvider).fetchAddress(coordinate);
+      final dateStr =
+          '${pin.createdAt.value.year}/${pin.createdAt.value.month.toString().padLeft(2, '0')}/${pin.createdAt.value.day.toString().padLeft(2, '0')} '
+          '${pin.createdAt.value.hour.toString().padLeft(2, '0')}:${pin.createdAt.value.minute.toString().padLeft(2, '0')}';
+      await ref.read(homeWidgetServiceProvider).update(
+        address: address,
+        timestamp: dateStr,
+      );
+    } catch (_) {
+      // ウィジェット更新の失敗は非致命的
     }
   }
 
