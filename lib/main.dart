@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tappin/app.dart';
 import 'package:tappin/domain/usecases/use_case.dart';
 import 'package:tappin/gateway/location/geolocator_location_service.dart';
+import 'package:tappin/gateway/geocoding/native_geocoding_service.dart';
 import 'package:tappin/gateway/storage/local_storage.dart';
 import 'package:tappin/gateway/storage/repository_impl.dart';
 import 'package:tappin/presentation/providers/provider.dart';
@@ -19,6 +20,7 @@ void main() async {
       overrides: [
         useCaseProvider.overrideWithValue(UseCase(repository)),
         locationServiceProvider.overrideWithValue(GeolocatorLocationService()),
+        geocodingServiceProvider.overrideWithValue(NativeGeocodingService()),
       ],
       child: const App(),
     ),

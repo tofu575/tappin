@@ -1,6 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:tappin/domain/models/location/coordinate.dart';
 import 'package:tappin/domain/models/pin/pin.dart';
+import 'package:tappin/domain/services/geocoding_service.dart';
 import 'package:tappin/domain/services/location_service.dart';
 import 'package:tappin/domain/usecases/use_case.dart';
 
@@ -10,6 +12,16 @@ final useCaseProvider = Provider<UseCase>(
 
 final locationServiceProvider = Provider<LocationService>(
   (ref) => throw UnimplementedError('locationServiceProvider must be overridden'),
+);
+
+final geocodingServiceProvider = Provider<GeocodingService>(
+  (ref) => throw UnimplementedError('geocodingServiceProvider must be overridden'),
+);
+
+final addressProvider = FutureProvider.autoDispose.family<String, Coordinate>(
+  (ref, coordinate) {
+    return ref.watch(geocodingServiceProvider).fetchAddress(coordinate);
+  },
 );
 
 final pinsProvider = AsyncNotifierProvider<PinsNotifier, List<Pin>>(

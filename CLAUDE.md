@@ -6,6 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 - クリーンアーキテクチャを採用している
 - 依存の向きは必ずクリーンアーキテクチャに従い、違反しないこと
+- README.md に書いてあるフォルダ構成に従うこと
 
 ## 命名規則
 
@@ -20,3 +21,5 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - 内部のやり取りは必ずドメインモデルを作成して受け渡す。スカラー型は原則禁止とする
 - 固定文字列は原則、ファイル冒頭でconstで定義すること
   - 秘匿情報や、接続先URIなどは環境変数から読み取ること
+- NULL や Emptyなど、続行してエラーになりうるものは必ず事前チェックと適切なハンドリングをすること
+  - `!`で読み飛ばすことは絶対にしてはいけない

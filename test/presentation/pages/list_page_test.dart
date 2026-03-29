@@ -7,16 +7,23 @@ import 'package:tappin/domain/usecases/use_case.dart';
 import 'package:tappin/presentation/pages/list_page.dart';
 import 'package:tappin/presentation/providers/provider.dart';
 
+import '../../helpers/mock_geocoding_service.dart';
 import '../../helpers/mock_repository.dart';
 
-Widget _buildPage({List<Pin> pins = const []}) {
+Widget _buildPage({
+  List<Pin> pins = const [],
+  MockGeocodingService? geocodingService,
+}) {
   return ProviderScope(
     overrides: [
       useCaseProvider.overrideWithValue(
         UseCase(MockPinRepository(stubbedPins: pins)),
       ),
+      geocodingServiceProvider.overrideWithValue(
+        geocodingService ?? MockGeocodingService(),
+      ),
     ],
-    child: const MaterialApp(home:ListPage()),
+    child: const MaterialApp(home: ListPage()),
   );
 }
 
@@ -28,12 +35,12 @@ void main() {
     expect(find.text('記録がありません'), findsOneWidget);
   });
 
-  testWidgets('Pinがある場合、日付と座標が表示される', (tester) async {
+  testWidgets('Pinがある場合、日付と住所が表示される', (tester) async {
     await tester.pumpWidget(_buildPage(pins: [buildTestPin()]));
     await tester.pumpAndSettle();
 
     expect(find.text('2024/01/15 10:30'), findsOneWidget);
-    expect(find.text('35.681200, 139.767100'), findsOneWidget);
+    expect(find.text('東京都渋谷区道玄坂'), findsOneWidget);
   });
 
   testWidgets('複数のPinがある場合、件数分だけリストアイテムが表示される', (tester) async {
@@ -49,6 +56,7 @@ void main() {
     await tester.pumpWidget(ProviderScope(
       overrides: [
         useCaseProvider.overrideWithValue(UseCase(repo)),
+        geocodingServiceProvider.overrideWithValue(MockGeocodingService()),
       ],
       child: const MaterialApp(home: ListPage()),
     ));

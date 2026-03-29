@@ -7,6 +7,7 @@ import 'package:tappin/domain/usecases/use_case.dart';
 import 'package:tappin/presentation/pages/home_page.dart';
 import 'package:tappin/presentation/providers/provider.dart';
 
+import '../../helpers/mock_geocoding_service.dart';
 import '../../helpers/mock_location_service.dart';
 import '../../helpers/mock_repository.dart';
 
@@ -21,6 +22,7 @@ Widget _buildPage({
       locationServiceProvider.overrideWithValue(
         locationService ?? MockLocationService.success(testCoordinate),
       ),
+      geocodingServiceProvider.overrideWithValue(MockGeocodingService()),
     ],
     child: const MaterialApp(home: HomePage()),
   );
