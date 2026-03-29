@@ -4,10 +4,11 @@ import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.Context
-import android.content.Intent
 import android.graphics.Color
+import android.net.Uri
 import android.view.View
 import android.widget.RemoteViews
+import es.antonborri.home_widget.HomeWidgetBackgroundIntent
 import es.antonborri.home_widget.HomeWidgetPlugin
 
 class TappinWidgetProvider : AppWidgetProvider() {
@@ -34,21 +35,33 @@ class TappinWidgetProvider : AppWidgetProvider() {
 
         val views = RemoteViews(context.packageName, R.layout.home_widget_layout)
 
-        when (state) {
-            "loading" -> {
+        when {
+            state.startsWith("record_") || state == "loading" -> {
+                val dotCount = when (state) {
+                    "record_1" -> " ·"
+                    "record_2" -> " ··"
+                    "record_3" -> " ···"
+                    else -> ""
+                }
                 views.setInt(R.id.widget_container, "setBackgroundResource", R.drawable.widget_background_loading)
+                views.setTextColor(R.id.widget_dot, Color.WHITE)
+                views.setTextViewText(R.id.widget_dot, "●")
                 views.setTextColor(R.id.widget_address, Color.WHITE)
-                views.setTextViewText(R.id.widget_address, "記録中...")
+                views.setTextViewText(R.id.widget_address, "記録中$dotCount")
                 views.setViewVisibility(R.id.widget_timestamp, View.INVISIBLE)
             }
-            "error" -> {
-                views.setInt(R.id.widget_container, "setBackgroundResource", R.drawable.widget_background)
+            state == "error" -> {
+                views.setInt(R.id.widget_container, "setBackgroundResource", R.drawable.widget_background_error)
+                views.setTextColor(R.id.widget_dot, Color.parseColor("#D32F2F"))
+                views.setTextViewText(R.id.widget_dot, "⚠")
                 views.setTextColor(R.id.widget_address, Color.parseColor("#D32F2F"))
                 views.setTextViewText(R.id.widget_address, address)
                 views.setViewVisibility(R.id.widget_timestamp, View.INVISIBLE)
             }
             else -> {
                 views.setInt(R.id.widget_container, "setBackgroundResource", R.drawable.widget_background)
+                views.setTextColor(R.id.widget_dot, Color.parseColor("#4CAF50"))
+                views.setTextViewText(R.id.widget_dot, "●")
                 views.setTextColor(R.id.widget_address, Color.parseColor("#212121"))
                 views.setTextViewText(R.id.widget_address, address)
                 views.setTextViewText(R.id.widget_timestamp, timestamp)
@@ -59,11 +72,9 @@ class TappinWidgetProvider : AppWidgetProvider() {
             }
         }
 
-        val recordIntent = PendingIntent.getBroadcast(
+        val recordIntent = HomeWidgetBackgroundIntent.getBroadcast(
             context,
-            0,
-            Intent(context, RecordLocationReceiver::class.java),
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            Uri.parse("homeWidget://record")
         )
         views.setOnClickPendingIntent(R.id.widget_container, recordIntent)
 

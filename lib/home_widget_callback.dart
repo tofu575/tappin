@@ -83,4 +83,3 @@ Future<void> homeWidgetBackgroundCallback(Uri? uri) async {
     await HomeWidget.updateWidget(androidName: _widgetAndroidName);
   }
 }
-// ...existing code...
