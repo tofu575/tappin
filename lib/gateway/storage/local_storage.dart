@@ -3,22 +3,22 @@ import 'package:sqflite/sqflite.dart';
 
 import 'package:tappin/domain/models/pin/pin.dart';
 
+const _dbName = 'tappin.db';
 
-abstract class PinLocalStorage {
+abstract class LocalStorage {
   Future<List<Pin>> fetchPins();
   Future<int> savePin(Pin pin);
   Future<void> deletePin(int id);
 }
 
-class PinSQLiteStorage implements PinLocalStorage {
+class SQLiteStorage implements LocalStorage {
   final Database _db;
 
-  PinSQLiteStorage._(this._db);
+  SQLiteStorage._(this._db);
 
-  static const _dbName = 'tappin.db';
   static const _tableName = 'pins';
 
-  static Future<PinSQLiteStorage> open() async {
+  static Future<SQLiteStorage> open() async {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, _dbName);
     final db = await openDatabase(
@@ -26,7 +26,7 @@ class PinSQLiteStorage implements PinLocalStorage {
       version: 1,
       onCreate: (db, version) => _createTable(db),
     );
-    return PinSQLiteStorage._(db);
+    return SQLiteStorage._(db);
   }
 
   static Future<void> _createTable(Database db) async {
