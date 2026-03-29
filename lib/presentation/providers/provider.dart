@@ -2,10 +2,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:tappin/domain/models/pin/pin.dart';
 import 'package:tappin/domain/services/location_service.dart';
-import 'package:tappin/domain/usecases/pin_usecase.dart';
+import 'package:tappin/domain/usecases/use_case.dart';
 
-final pinUseCaseProvider = Provider<PinUseCase>(
-  (ref) => throw UnimplementedError('pinUseCaseProvider must be overridden'),
+final useCaseProvider = Provider<UseCase>(
+  (ref) => throw UnimplementedError('useCaseProvider must be overridden'),
 );
 
 final locationServiceProvider = Provider<LocationService>(
@@ -19,16 +19,16 @@ final pinsProvider = AsyncNotifierProvider<PinsNotifier, List<Pin>>(
 class PinsNotifier extends AsyncNotifier<List<Pin>> {
   @override
   Future<List<Pin>> build() {
-    return ref.watch(pinUseCaseProvider).fetchPins();
+    return ref.watch(useCaseProvider).fetchPins();
   }
 
   Future<void> savePin(Pin pin) async {
-    await ref.read(pinUseCaseProvider).savePin(pin);
+    await ref.read(useCaseProvider).savePin(pin);
     ref.invalidateSelf();
   }
 
   Future<void> deletePin(int id) async {
-    await ref.read(pinUseCaseProvider).deletePin(id);
+    await ref.read(useCaseProvider).deletePin(id);
     ref.invalidateSelf();
   }
 }

@@ -1,11 +1,11 @@
 import 'package:tappin/domain/models/pin/pin.dart';
-import 'package:tappin/domain/repositories/pin_repository.dart';
-import 'package:tappin/gateway/storage/pin_local_storage.dart';
+import 'package:tappin/domain/repositories/repository.dart';
+import 'package:tappin/gateway/storage/local_storage.dart';
 
-class PinRepositoryImpl implements PinRepository {
-  final PinLocalStorage storage;
+class RepositoryImpl implements Repository {
+  final LocalStorage storage;
 
-  PinRepositoryImpl(this.storage);
+  RepositoryImpl(this.storage);
 
   @override
   Future<List<Pin>> getPins() {

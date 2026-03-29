@@ -1,10 +1,10 @@
 import 'package:tappin/domain/models/pin/pin.dart';
-import 'package:tappin/domain/repositories/pin_repository.dart';
+import 'package:tappin/domain/repositories/repository.dart';
 
-class PinUseCase {
-  final PinRepository _repository;
+class UseCase {
+  final Repository _repository;
 
-  PinUseCase(this._repository);
+  UseCase(this._repository);
 
   Future<List<Pin>> fetchPins() => _repository.getPins();
   Future<int> savePin(Pin pin) => _repository.savePin(pin);

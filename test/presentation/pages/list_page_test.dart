@@ -3,20 +3,20 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:tappin/domain/models/pin/pin.dart';
-import 'package:tappin/domain/usecases/pin_usecase.dart';
-import 'package:tappin/presentation/pages/pin_list_page.dart';
-import 'package:tappin/presentation/providers/pin_provider.dart';
+import 'package:tappin/domain/usecases/use_case.dart';
+import 'package:tappin/presentation/pages/list_page.dart';
+import 'package:tappin/presentation/providers/provider.dart';
 
-import '../../helpers/mock_pin_repository.dart';
+import '../../helpers/mock_repository.dart';
 
 Widget _buildPage({List<Pin> pins = const []}) {
   return ProviderScope(
     overrides: [
-      pinUseCaseProvider.overrideWithValue(
-        PinUseCase(MockPinRepository(stubbedPins: pins)),
+      useCaseProvider.overrideWithValue(
+        UseCase(MockPinRepository(stubbedPins: pins)),
       ),
     ],
-    child: const MaterialApp(home: PinListPage()),
+    child: const MaterialApp(home:ListPage()),
   );
 }
 
@@ -48,9 +48,9 @@ void main() {
     final repo = MockPinRepository(stubbedPins: [buildTestPin(id: 42)]);
     await tester.pumpWidget(ProviderScope(
       overrides: [
-        pinUseCaseProvider.overrideWithValue(PinUseCase(repo)),
+        useCaseProvider.overrideWithValue(UseCase(repo)),
       ],
-      child: const MaterialApp(home: PinListPage()),
+      child: const MaterialApp(home: ListPage()),
     ));
     await tester.pumpAndSettle();
 

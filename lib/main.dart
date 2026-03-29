@@ -2,22 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:tappin/app.dart';
-import 'package:tappin/domain/usecases/pin_usecase.dart';
+import 'package:tappin/domain/usecases/use_case.dart';
 import 'package:tappin/gateway/location/geolocator_location_service.dart';
-import 'package:tappin/gateway/storage/pin_local_storage.dart';
-import 'package:tappin/gateway/storage/pin_repository_impl.dart';
-import 'package:tappin/presentation/providers/pin_provider.dart';
+import 'package:tappin/gateway/storage/local_storage.dart';
+import 'package:tappin/gateway/storage/repository_impl.dart';
+import 'package:tappin/presentation/providers/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  final storage = await PinSQLiteStorage.open();
-  final repository = PinRepositoryImpl(storage);
+  final storage = await SQLiteStorage.open();
+  final repository = RepositoryImpl(storage);
 
   runApp(
     ProviderScope(
       overrides: [
-        pinUseCaseProvider.overrideWithValue(PinUseCase(repository)),
+        useCaseProvider.overrideWithValue(UseCase(repository)),
         locationServiceProvider.overrideWithValue(GeolocatorLocationService()),
       ],
       child: const App(),

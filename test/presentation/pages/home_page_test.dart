@@ -3,12 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:tappin/domain/services/location_service.dart';
-import 'package:tappin/domain/usecases/pin_usecase.dart';
+import 'package:tappin/domain/usecases/use_case.dart';
 import 'package:tappin/presentation/pages/home_page.dart';
-import 'package:tappin/presentation/providers/pin_provider.dart';
+import 'package:tappin/presentation/providers/provider.dart';
 
 import '../../helpers/mock_location_service.dart';
-import '../../helpers/mock_pin_repository.dart';
+import '../../helpers/mock_repository.dart';
 
 Widget _buildPage({
   MockPinRepository? repo,
@@ -17,7 +17,7 @@ Widget _buildPage({
   final repository = repo ?? MockPinRepository();
   return ProviderScope(
     overrides: [
-      pinUseCaseProvider.overrideWithValue(PinUseCase(repository)),
+      useCaseProvider.overrideWithValue(UseCase(repository)),
       locationServiceProvider.overrideWithValue(
         locationService ?? MockLocationService.success(testCoordinate),
       ),

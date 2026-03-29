@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import 'package:tappin/presentation/providers/pin_provider.dart';
+import 'package:tappin/presentation/providers/provider.dart';
 
-class PinListPage extends ConsumerWidget {
-  const PinListPage({super.key});
+class ListPage extends ConsumerWidget {
+  const ListPage({super.key});
 
   Future<void> _openGoogleMaps(double lat, double lng) async {
     final uri = Uri.parse(
