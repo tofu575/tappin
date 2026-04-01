@@ -7,19 +7,15 @@ import 'package:tappin/gateway/location/method_channel_location_service.dart';
 import 'package:tappin/gateway/geocoding/native_geocoding_service.dart';
 import 'package:tappin/gateway/storage/method_channel_storage.dart';
 import 'package:tappin/gateway/widget/app_home_widget_service.dart';
-import 'package:tappin/gateway/storage/repository_impl.dart';
 import 'package:tappin/presentation/providers/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  final storage = MethodChannelStorage();
-  final repository = RepositoryImpl(storage);
-
   runApp(
     ProviderScope(
       overrides: [
-        useCaseProvider.overrideWithValue(UseCase(repository)),
+        useCaseProvider.overrideWithValue(UseCase(MethodChannelStorage())),
         locationServiceProvider.overrideWithValue(MethodChannelLocationService()),
         geocodingServiceProvider.overrideWithValue(NativeGeocodingService()),
         homeWidgetServiceProvider.overrideWithValue(AppHomeWidgetService()),

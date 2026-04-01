@@ -1,13 +1,13 @@
 import 'package:flutter/services.dart';
 
 import 'package:tappin/domain/models/pin/pin.dart';
-import 'package:tappin/gateway/storage/local_storage.dart';
+import 'package:tappin/domain/repositories/repository.dart';
 
-class MethodChannelStorage implements LocalStorage {
+class MethodChannelStorage implements Repository {
   static const _channel = MethodChannel('com.example.tappin/native');
 
   @override
-  Future<List<Pin>> fetchPins() async {
+  Future<List<Pin>> getPins() async {
     final result = await _channel.invokeListMethod<Map<Object?, Object?>>('storage/getPins');
     if (result == null) return [];
     return result.map((raw) {
