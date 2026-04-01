@@ -3,17 +3,22 @@ package com.example.tappin
 import android.appwidget.AppWidgetManager
 import android.content.BroadcastReceiver
 import android.content.ComponentName
-import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
-import android.database.sqlite.SQLiteDatabase
 import android.location.Geocoder
 import android.location.Location
-import android.location.LocationManager
+import android.os.SystemClock
+import es.antonborri.home_widget.HomeWidgetPlugin
 import java.util.Calendar
 import java.util.Locale
+import java.util.concurrent.atomic.AtomicBoolean
 
 class RecordLocationReceiver : BroadcastReceiver() {
+
+    companion object {
+        private const val RESET_DELAY_MS = 3_000L
+        private const val ANIM_FRAME_MS = 300L
+    }
 
     override fun onReceive(context: Context, intent: Intent) {
         val pendingResult = goAsync()
@@ -25,20 +30,19 @@ class RecordLocationReceiver : BroadcastReceiver() {
             refreshWidget(context)
 
             try {
-                val location = getBestLastLocation(context)
-                    ?: error("位置情報を取得できませんでした。GPSをONにしてください。")
+                val location = LocationHelper.fetchLocation(context)
 
                 saveToDatabase(context, location)
 
-                val address = resolveAddress(context, location)
-                val timestamp = formatTimestamp(System.currentTimeMillis())
-
-                prefs.edit()
-                    .putString("state", "idle")
-                    .putString("address", address)
-                    .putString("timestamp", timestamp)
-                    .apply()
-                refreshWidget(context)
+                if (location == null) {
+                    setError(context, "位置情報を取得できませんでした")
+                } else {
+                    StorageHelper.savePin(context, location.latitude, location.longitude, System.currentTimeMillis())
+                    val address = resolveAddress(context, location)
+                    val timestamp = formatTimestamp(System.currentTimeMillis())
+                    setComplete(context, address, timestamp)
+                }
+                scheduleReset(context)
 
             } catch (e: SecurityException) {
                 prefs.edit()
@@ -58,29 +62,16 @@ class RecordLocationReceiver : BroadcastReceiver() {
         }.start()
     }
 
-    @Throws(SecurityException::class)
-    private fun getBestLastLocation(context: Context): Location? {
-        val lm = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        return listOf(LocationManager.GPS_PROVIDER, LocationManager.NETWORK_PROVIDER)
-            .mapNotNull { provider ->
-                try { lm.getLastKnownLocation(provider) } catch (_: Exception) { null }
+    private fun startAnimationThread(context: Context, done: AtomicBoolean): Thread {
+        return Thread {
+            while (!done.get()) {
+                try {
+                    Thread.sleep(ANIM_FRAME_MS)
+                } catch (_: InterruptedException) {
+                    return@Thread
+                }
             }
-            .maxByOrNull { it.time }
-    }
-
-    private fun saveToDatabase(context: Context, location: Location) {
-        val dbFile = context.getDatabasePath("tappin.db")
-        check(dbFile.exists()) { "アプリを一度起動してからお試しください" }
-
-        SQLiteDatabase.openDatabase(
-            dbFile.absolutePath, null, SQLiteDatabase.OPEN_READWRITE
-        ).use { db ->
-            db.insert("pins", null, ContentValues().apply {
-                put("latitude", location.latitude)
-                put("longitude", location.longitude)
-                put("created_at", System.currentTimeMillis())
-            })
-        }
+        }.also { it.start() }
     }
 
     @Suppress("DEPRECATION")

@@ -1,0 +1,103 @@
+package com.example.tappin
+
+import android.content.Context
+import io.flutter.plugin.common.MethodCall
+import io.flutter.plugin.common.MethodChannel
+import java.util.concurrent.Executors
+
+private const val METHOD_LOCATION_FETCH = "location/fetch"
+private const val METHOD_STORAGE_GET_PINS = "storage/getPins"
+private const val METHOD_STORAGE_SAVE_PIN = "storage/savePin"
+private const val METHOD_STORAGE_DELETE_PIN = "storage/deletePin"
+
+private const val ERROR_PERMISSION_DENIED = "PERMISSION_DENIED"
+private const val ERROR_LOCATION_UNAVAILABLE = "LOCATION_UNAVAILABLE"
+private const val ERROR_INVALID_ARGUMENTS = "INVALID_ARGUMENTS"
+private const val ERROR_STORAGE_ERROR = "STORAGE_ERROR"
+
+class NativeBridge(private val context: Context) : MethodChannel.MethodCallHandler {
+
+    private val executor = Executors.newSingleThreadExecutor()
+
+    fun register(channel: MethodChannel) {
+        channel.setMethodCallHandler(this)
+    }
+
+    override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
+        executor.execute {
+            when (call.method) {
+                METHOD_LOCATION_FETCH -> handleLocationFetch(result)
+                METHOD_STORAGE_GET_PINS -> handleGetPins(result)
+                METHOD_STORAGE_SAVE_PIN -> handleSavePin(call, result)
+                METHOD_STORAGE_DELETE_PIN -> handleDeletePin(call, result)
+                else -> result.notImplemented()
+            }
+        }
+    }
+
+    private fun handleLocationFetch(result: MethodChannel.Result) {
+        try {
+            val location = LocationHelper.fetchLocation(context)
+            if (location == null) {
+                result.error(ERROR_LOCATION_UNAVAILABLE, "位置情報を取得できませんでした", null)
+            } else {
+                result.success(
+                    mapOf(
+                        "latitude" to location.latitude,
+                        "longitude" to location.longitude,
+                    )
+                )
+            }
+        } catch (e: SecurityException) {
+            result.error(ERROR_PERMISSION_DENIED, "位置情報の許可が必要です", null)
+        }
+    }
+
+    private fun handleGetPins(result: MethodChannel.Result) {
+        try {
+            val pins = StorageHelper.fetchPins(context)
+            result.success(pins)
+        } catch (e: Exception) {
+            result.error(ERROR_STORAGE_ERROR, e.message, null)
+        }
+    }
+
+    private fun handleSavePin(call: MethodCall, result: MethodChannel.Result) {
+        val latitude = call.argument<Any>("latitude")
+        val longitude = call.argument<Any>("longitude")
+        val createdAt = call.argument<Any>("createdAt")
+
+        if (latitude == null || longitude == null || createdAt == null) {
+            result.error(ERROR_INVALID_ARGUMENTS, "latitude, longitude, createdAt が必要です", null)
+            return
+        }
+
+        try {
+            val id = StorageHelper.savePin(
+                context,
+                (latitude as Number).toDouble(),
+                (longitude as Number).toDouble(),
+                (createdAt as Number).toLong(),
+            )
+            result.success(id)
+        } catch (e: Exception) {
+            result.error(ERROR_STORAGE_ERROR, e.message, null)
+        }
+    }
+
+    private fun handleDeletePin(call: MethodCall, result: MethodChannel.Result) {
+        val id = call.argument<Any>("id")
+
+        if (id == null) {
+            result.error(ERROR_INVALID_ARGUMENTS, "id が必要です", null)
+            return
+        }
+
+        try {
+            StorageHelper.deletePin(context, (id as Number).toLong())
+            result.success(null)
+        } catch (e: Exception) {
+            result.error(ERROR_STORAGE_ERROR, e.message, null)
+        }
+    }
+}
