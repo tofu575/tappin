@@ -14,7 +14,7 @@ class NativeGeocodingService implements GeocodingService {
       return '${coordinate.latitude.value}, ${coordinate.longitude.value}';
     }
     final p = placemarks.first;
-    final parts = [p.administrativeArea, p.subAdministrativeArea, p.thoroughfare]
+    final parts = [p.administrativeArea, p.locality]
         .where((s) => s != null && s.isNotEmpty)
         .toList();
     return parts.isNotEmpty
