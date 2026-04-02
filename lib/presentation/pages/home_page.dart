@@ -9,6 +9,8 @@ import 'package:tappin/presentation/pages/list_page.dart';
 import 'package:tappin/presentation/providers/provider.dart';
 import 'package:tappin/presentation/widgets/record_button.dart';
 
+const _overlayActivateErrorPrefix = 'オーバーレイエラー: ';
+
 const _permissionDeniedMessage = '位置情報の許可が必要です';
 const _recordSuccessMessage = '現在地を記録しました';
 const _recordErrorPrefix = 'エラーが発生しました: ';
@@ -22,6 +24,8 @@ class HomePage extends ConsumerStatefulWidget {
 
 class _HomePageState extends ConsumerState<HomePage> with WidgetsBindingObserver {
   bool _isRecording = false;
+  bool _isOverlayActive = false;
+  DateTime? _lastRecordTime;
   Pin? _latestPin;
 
   @override
@@ -40,10 +44,40 @@ class _HomePageState extends ConsumerState<HomePage> with WidgetsBindingObserver
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
       ref.invalidate(pinsProvider);
+      if (_isOverlayActive) {
+        _showOverlay();
+      }
+    }
+  }
+
+  Future<void> _toggleOverlay() async {
+    if (_isOverlayActive) {
+      await ref.read(overlayServiceProvider).hideOverlay();
+      setState(() => _isOverlayActive = false);
+    } else {
+      await _showOverlay();
+    }
+  }
+
+  Future<void> _showOverlay() async {
+    try {
+      await ref.read(overlayServiceProvider).showOverlay();
+      if (mounted) setState(() => _isOverlayActive = true);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('$_overlayActivateErrorPrefix$e')),
+        );
+      }
     }
   }
 
   Future<void> _recordCurrentLocation() async {
+    if (_isRecording) return;
+    final now = DateTime.now();
+    if (_lastRecordTime != null &&
+        now.difference(_lastRecordTime!) < const Duration(milliseconds: 500)) return;
+    _lastRecordTime = now;
     setState(() => _isRecording = true);
     try {
       final coordinate = await ref
@@ -57,7 +91,6 @@ class _HomePageState extends ConsumerState<HomePage> with WidgetsBindingObserver
       );
 
       await ref.read(pinsProvider.notifier).savePin(pin);
-      await _updateHomeWidget(pin);
 
       if (mounted) {
         setState(() => _latestPin = pin);
@@ -82,31 +115,19 @@ class _HomePageState extends ConsumerState<HomePage> with WidgetsBindingObserver
     }
   }
 
-  Future<void> _updateHomeWidget(Pin pin) async {
-    try {
-      final coordinate = Coordinate(
-        latitude: pin.latitude,
-        longitude: pin.longitude,
-      );
-      final address = await ref.read(geocodingServiceProvider).fetchAddress(coordinate);
-      final dateStr =
-          '${pin.createdAt.value.year}/${pin.createdAt.value.month.toString().padLeft(2, '0')}/${pin.createdAt.value.day.toString().padLeft(2, '0')} '
-          '${pin.createdAt.value.hour.toString().padLeft(2, '0')}:${pin.createdAt.value.minute.toString().padLeft(2, '0')}';
-      await ref.read(homeWidgetServiceProvider).update(
-        address: address,
-        timestamp: dateStr,
-      );
-    } catch (_) {
-      // ウィジェット更新の失敗は非致命的
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('TapPin'),
         actions: [
+          IconButton(
+            icon: Icon(
+              Icons.picture_in_picture,
+              color: _isOverlayActive ? Theme.of(context).colorScheme.primary : null,
+            ),
+            onPressed: _toggleOverlay,
+          ),
           IconButton(
             icon: const Icon(Icons.list),
             onPressed: () {

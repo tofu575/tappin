@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tappin/domain/models/location/coordinate.dart';
 import 'package:tappin/domain/models/pin/pin.dart';
 import 'package:tappin/domain/services/geocoding_service.dart';
-import 'package:tappin/domain/services/home_widget_service.dart';
 import 'package:tappin/domain/services/location_service.dart';
+import 'package:tappin/domain/services/overlay_service.dart';
 import 'package:tappin/domain/usecases/use_case.dart';
 
 final useCaseProvider = Provider<UseCase>(
@@ -19,8 +19,8 @@ final geocodingServiceProvider = Provider<GeocodingService>(
   (ref) => throw UnimplementedError('geocodingServiceProvider must be overridden'),
 );
 
-final homeWidgetServiceProvider = Provider<HomeWidgetService>(
-  (ref) => throw UnimplementedError('homeWidgetServiceProvider must be overridden'),
+final overlayServiceProvider = Provider<OverlayService>(
+  (ref) => throw UnimplementedError('overlayServiceProvider must be overridden'),
 );
 
 final addressProvider = FutureProvider.autoDispose.family<String, Coordinate>(

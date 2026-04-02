@@ -6,7 +6,7 @@ import 'package:tappin/domain/usecases/use_case.dart';
 import 'package:tappin/gateway/location/method_channel_location_service.dart';
 import 'package:tappin/gateway/geocoding/native_geocoding_service.dart';
 import 'package:tappin/gateway/storage/method_channel_storage.dart';
-import 'package:tappin/gateway/widget/app_home_widget_service.dart';
+import 'package:tappin/gateway/overlay/native_overlay_service.dart';
 import 'package:tappin/presentation/providers/provider.dart';
 
 void main() async {
@@ -18,7 +18,7 @@ void main() async {
         useCaseProvider.overrideWithValue(UseCase(MethodChannelStorage())),
         locationServiceProvider.overrideWithValue(MethodChannelLocationService()),
         geocodingServiceProvider.overrideWithValue(NativeGeocodingService()),
-        homeWidgetServiceProvider.overrideWithValue(AppHomeWidgetService()),
+        overlayServiceProvider.overrideWithValue(NativeOverlayService()),
       ],
       child: const App(),
     ),
