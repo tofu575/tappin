@@ -6,6 +6,7 @@ import 'package:tappin/domain/models/location/coordinate.dart';
 import 'package:tappin/domain/models/pin/pin.dart';
 import 'package:tappin/domain/services/location_service.dart';
 import 'package:tappin/presentation/pages/list_page.dart';
+import 'package:tappin/presentation/pages/map_page.dart';
 import 'package:tappin/presentation/providers/provider.dart';
 import 'package:tappin/presentation/widgets/record_button.dart';
 
@@ -127,6 +128,13 @@ class _HomePageState extends ConsumerState<HomePage> with WidgetsBindingObserver
               color: _isOverlayActive ? Theme.of(context).colorScheme.primary : null,
             ),
             onPressed: _toggleOverlay,
+          ),
+          IconButton(
+            icon: const Icon(Icons.map),
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const MapPage()),
+            ),
           ),
           IconButton(
             icon: const Icon(Icons.list),

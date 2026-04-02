@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import 'package:tappin/domain/models/location/coordinate.dart';
 import 'package:tappin/domain/models/pin/pin.dart';
 import 'package:tappin/presentation/providers/provider.dart';
+import 'package:tappin/presentation/widgets/map_launch_buttons.dart';
 
 class ListPage extends ConsumerWidget {
   const ListPage({super.key});
@@ -37,24 +37,6 @@ class _PinListItem extends ConsumerWidget {
 
   final Pin pin;
 
-  Future<void> _openGoogleMaps(Coordinate coordinate) async {
-    final uri = Uri.parse(
-      'https://www.google.com/maps/search/?api=1&query=${coordinate.latitude.value},${coordinate.longitude.value}',
-    );
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
-    }
-  }
-
-  Future<void> _openStreetView(Coordinate coordinate) async {
-    final uri = Uri.parse(
-      'https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${coordinate.latitude.value},${coordinate.longitude.value}',
-    );
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
-    }
-  }
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final coordinate = Coordinate(
@@ -79,16 +61,7 @@ class _PinListItem extends ConsumerWidget {
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          IconButton(
-            icon: const Icon(Icons.map),
-            tooltip: 'Google Maps',
-            onPressed: () => _openGoogleMaps(coordinate),
-          ),
-          IconButton(
-            icon: const Icon(Icons.streetview),
-            tooltip: 'ストリートビュー',
-            onPressed: () => _openStreetView(coordinate),
-          ),
+          MapLaunchButtons(coordinate: coordinate),
           IconButton(
             icon: const Icon(Icons.delete),
             tooltip: '削除',
