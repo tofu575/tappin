@@ -14,6 +14,7 @@ class NativeGeocodingService implements GeocodingService {
       return '${coordinate.latitude.value}, ${coordinate.longitude.value}';
     }
     final p = placemarks.first;
+    // 都道府県と市区町村を結合して大まかな住所とする
     final parts = [p.administrativeArea, p.locality]
         .where((s) => s != null && s.isNotEmpty)
         .toList();
