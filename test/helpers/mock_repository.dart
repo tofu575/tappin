@@ -5,19 +5,21 @@ import 'package:tappin/domain/models/pin/memo.dart';
 import 'package:tappin/domain/models/pin/pin.dart';
 import 'package:tappin/domain/repositories/repository.dart';
 
-Pin buildTestPin({int id = 1}) => Pin(
+Pin buildTestPin({int id = 1, Memo? memo}) => Pin(
       id: id,
       latitude: Latitude(35.6812),
       longitude: Longitude(139.7671),
       createdAt: MyDatetime(DateTime(2024, 1, 15, 10, 30)),
+      memo: memo,
     );
 
-class MockPinRepository implements Repository {
+class MockRipository implements Repository {
   List<Pin> stubbedPins;
   final List<Pin> savedPins = [];
   final List<int> deletedIds = [];
+  final Map<int, Memo> updatedMemos = {};
 
-  MockPinRepository({this.stubbedPins = const []});
+  MockRipository({this.stubbedPins = const []});
 
   @override
   Future<List<Pin>> getPins() async => List.from(stubbedPins);
@@ -34,5 +36,7 @@ class MockPinRepository implements Repository {
   }
 
   @override
-  Future<void> updateMemo(int id, Memo memo) async {}
+  Future<void> updateMemo(int id, Memo memo) async {
+    updatedMemos[id] = memo;
+  }
 }

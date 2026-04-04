@@ -20,6 +20,10 @@ class MockLocationService implements LocationService {
       : _coordinate = null,
         _exception = const LocationPermissionDeniedException();
 
+  MockLocationService.permanentlyDenied()
+      : _coordinate = null,
+        _exception = const LocationPermissionPermanentlyDeniedException();
+
   MockLocationService.error(String message)
       : _coordinate = null,
         _exception = Exception(message);

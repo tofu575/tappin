@@ -8,23 +8,23 @@ import 'package:tappin/presentation/pages/home_page.dart';
 import 'package:tappin/presentation/providers/provider.dart';
 
 import '../../helpers/mock_geocoding_service.dart';
-import '../../helpers/mock_home_widget_service.dart';
 import '../../helpers/mock_location_service.dart';
+import '../../helpers/mock_overlay_service.dart';
 import '../../helpers/mock_repository.dart';
 
 Widget _buildPage({
-  MockPinRepository? repo,
+  MockRipository? repo,
   LocationService? locationService,
+  MockOverlayService? overlayService,
 }) {
-  final repository = repo ?? MockPinRepository();
   return ProviderScope(
     overrides: [
-      useCaseProvider.overrideWithValue(UseCase(repository)),
+      useCaseProvider.overrideWithValue(UseCase(repo ?? MockRipository())),
       locationServiceProvider.overrideWithValue(
         locationService ?? MockLocationService.success(testCoordinate),
       ),
       geocodingServiceProvider.overrideWithValue(MockGeocodingService()),
-      homeWidgetServiceProvider.overrideWithValue(MockHomeWidgetService()),
+      overlayServiceProvider.overrideWithValue(overlayService ?? MockOverlayService()),
     ],
     child: const MaterialApp(home: HomePage()),
   );
@@ -38,23 +38,37 @@ void main() {
     expect(find.text('記録'), findsOneWidget);
   });
 
-  testWidgets('記録ボタンをタップすると現在地が保存され成功メッセージが表示される', (tester) async {
-    final repo = MockPinRepository();
-
-    await tester.pumpWidget(_buildPage(repo: repo));
+  testWidgets('初期状態では最新ピンカードが表示されない', (tester) async {
+    await tester.pumpWidget(_buildPage());
     await tester.pump();
 
     expect(find.byType(Card), findsNothing);
+  });
+
+  testWidgets('記録ボタンをタップすると現在地が保存され成功メッセージが表示される', (tester) async {
+    final repo = MockRipository();
+
+    await tester.pumpWidget(_buildPage(repo: repo));
+    await tester.pump();
 
     await tester.tap(find.text('記録'));
     await tester.pumpAndSettle();
 
     expect(find.text('現在地を記録しました'), findsOneWidget);
     expect(repo.savedPins, hasLength(1));
+  });
+
+  testWidgets('記録成功後に最新ピンカードが表示される', (tester) async {
+    await tester.pumpWidget(_buildPage());
+    await tester.pump();
+
+    await tester.tap(find.text('記録'));
+    await tester.pumpAndSettle();
+
     expect(find.byType(Card), findsOneWidget);
   });
 
-  testWidgets('位置情報の権限が拒否された場合、許可を求めるメッセージが表示される', (tester) async {
+  testWidgets('位置情報の権限が一時的に拒否された場合、スナックバーが表示される', (tester) async {
     await tester.pumpWidget(_buildPage(
       locationService: MockLocationService.denied(),
     ));
@@ -63,7 +77,20 @@ void main() {
     await tester.tap(find.text('記録'));
     await tester.pumpAndSettle();
 
+    expect(find.text('位置情報が許可されませんでした'), findsOneWidget);
+  });
+
+  testWidgets('位置情報の権限が永久に拒否された場合、設定ダイアログが表示される', (tester) async {
+    await tester.pumpWidget(_buildPage(
+      locationService: MockLocationService.permanentlyDenied(),
+    ));
+    await tester.pump();
+
+    await tester.tap(find.text('記録'));
+    await tester.pumpAndSettle();
+
     expect(find.text('位置情報の許可が必要です'), findsOneWidget);
+    expect(find.text('設定から位置情報へのアクセスを許可してください'), findsOneWidget);
   });
 
   testWidgets('予期しないエラーが発生した場合、エラーメッセージが表示される', (tester) async {
@@ -76,5 +103,13 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.textContaining('エラーが発生しました'), findsOneWidget);
+  });
+
+  testWidgets('AppBarに地図・一覧ボタンが表示される', (tester) async {
+    await tester.pumpWidget(_buildPage());
+    await tester.pump();
+
+    expect(find.byIcon(Icons.map), findsOneWidget);
+    expect(find.byIcon(Icons.list), findsOneWidget);
   });
 }
