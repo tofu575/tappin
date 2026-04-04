@@ -1,5 +1,6 @@
 import 'package:flutter/services.dart';
 
+import 'package:tappin/domain/models/pin/memo.dart';
 import 'package:tappin/domain/models/pin/pin.dart';
 import 'package:tappin/domain/repositories/repository.dart';
 
@@ -29,5 +30,13 @@ class MethodChannelStorage implements Repository {
   @override
   Future<void> deletePin(int id) async {
     await _channel.invokeMethod<void>('storage/deletePin', {'id': id});
+  }
+
+  @override
+  Future<void> updateMemo(int id, Memo memo) async {
+    await _channel.invokeMethod<void>('storage/updateMemo', {
+      'id': id,
+      'memo': memo.value,
+    });
   }
 }

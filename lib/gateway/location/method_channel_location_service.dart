@@ -1,4 +1,5 @@
 import 'package:flutter/services.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import 'package:tappin/domain/models/location/coordinate.dart';
 import 'package:tappin/domain/models/location/latitude.dart';
@@ -10,6 +11,14 @@ class MethodChannelLocationService implements LocationService {
 
   @override
   Future<Coordinate> fetchCurrentLocation() async {
+    final status = await Permission.locationWhenInUse.request();
+    if (status.isPermanentlyDenied) {
+      throw const LocationPermissionPermanentlyDeniedException();
+    }
+    if (!status.isGranted) {
+      throw const LocationPermissionDeniedException();
+    }
+
     try {
       final result = await _channel.invokeMapMethod<String, dynamic>('location/fetch');
       if (result == null) {
@@ -23,5 +32,10 @@ class MethodChannelLocationService implements LocationService {
       if (e.code == 'PERMISSION_DENIED') throw const LocationPermissionDeniedException();
       rethrow;
     }
+  }
+
+  @override
+  Future<void> openSettings() async {
+    await openAppSettings();
   }
 }

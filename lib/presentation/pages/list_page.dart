@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:tappin/domain/models/location/coordinate.dart';
+import 'package:tappin/domain/models/pin/memo.dart';
 import 'package:tappin/domain/models/pin/pin.dart';
 import 'package:tappin/presentation/providers/provider.dart';
 import 'package:tappin/presentation/widgets/map_launch_buttons.dart';
+import 'package:tappin/presentation/widgets/memo_edit_dialog.dart';
 
 class ListPage extends ConsumerWidget {
   const ListPage({super.key});
@@ -48,7 +50,7 @@ class _PinListItem extends ConsumerWidget {
         '${pin.createdAt.value.hour.toString().padLeft(2, '0')}:${pin.createdAt.value.minute.toString().padLeft(2, '0')}';
 
     final addressAsync = ref.watch(addressProvider(coordinate));
-    final subtitleText = addressAsync.when(
+    final addressText = addressAsync.when(
       loading: () => '${coordinate.latitude.value.toStringAsFixed(6)}, ${coordinate.longitude.value.toStringAsFixed(6)}',
       error: (e, _) => '${coordinate.latitude.value.toStringAsFixed(6)}, ${coordinate.longitude.value.toStringAsFixed(6)}',
       data: (address) => address,
@@ -57,11 +59,39 @@ class _PinListItem extends ConsumerWidget {
     return ListTile(
       leading: const Icon(Icons.location_on),
       title: Text(dateStr),
-      subtitle: Text(subtitleText),
+      subtitle: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(addressText),
+          if (pin.memo != null)
+            Text(
+              pin.memo!.value,
+              style: TextStyle(color: Colors.grey[600], fontSize: 12),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+        ],
+      ),
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           MapLaunchButtons(coordinate: coordinate),
+          IconButton(
+            icon: const Icon(Icons.edit_note),
+            tooltip: 'メモを編集',
+            onPressed: () async {
+              final result = await showDialog<String>(
+                context: context,
+                builder: (_) => MemoEditDialog(
+                  initialText: pin.memo?.value ?? '$dateStr $addressText',
+                ),
+              );
+              if (result != null && pin.id != null) {
+                ref.read(pinsProvider.notifier).updateMemo(pin.id!, Memo(result));
+              }
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.delete),
             tooltip: '削除',

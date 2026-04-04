@@ -1,6 +1,7 @@
 import 'package:tappin/domain/models/core/my_datetime.dart';
 import 'package:tappin/domain/models/location/latitude.dart';
 import 'package:tappin/domain/models/location/longitude.dart';
+import 'package:tappin/domain/models/pin/memo.dart';
 import 'package:tappin/domain/models/pin/pin.dart';
 import 'package:tappin/domain/repositories/repository.dart';
 
@@ -31,4 +32,7 @@ class MockPinRepository implements Repository {
   Future<void> deletePin(int id) async {
     deletedIds.add(id);
   }
+
+  @override
+  Future<void> updateMemo(int id, Memo memo) async {}
 }

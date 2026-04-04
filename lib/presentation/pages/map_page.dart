@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
 import 'package:flutter_map_tile_caching/flutter_map_tile_caching.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:latlong2/latlong.dart';
+
 import 'package:tappin/domain/models/location/coordinate.dart';
+import 'package:tappin/domain/models/pin/memo.dart';
 import 'package:tappin/domain/models/pin/pin.dart';
+import 'package:tappin/domain/services/location_service.dart';
 import 'package:tappin/presentation/providers/provider.dart';
 import 'package:tappin/presentation/widgets/map_launch_buttons.dart';
+import 'package:tappin/presentation/widgets/memo_edit_dialog.dart';
 
-// 日本の中心付近
 const _defaultCenter = LatLng(35.6, 139.7);
 const _defaultZoom = 15.0;
 const _minZoom = 3.0;
@@ -37,74 +41,91 @@ class MapPage extends ConsumerWidget {
   }
 }
 
-class _MapView extends ConsumerStatefulWidget {
+class _MapView extends HookConsumerWidget {
   const _MapView({required this.pins});
 
   final List<Pin> pins;
 
   @override
-  ConsumerState<_MapView> createState() => _MapViewState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final mapController = useMemoized(MapController.new);
+    final currentLocation = useState<LatLng?>(null);
+    final isFetchingLocation = useState(false);
 
-class _MapViewState extends ConsumerState<_MapView> {
-  final _mapController = MapController();
-  LatLng? _currentLocation;
-  bool _isFetchingLocation = false;
+    final initialCenter = pins.isEmpty
+        ? _defaultCenter
+        : LatLng(pins.first.latitude.value, pins.first.longitude.value);
+    final initialZoom = pins.isEmpty ? _defaultZoom : _pinZoom;
 
-  LatLng get _initialCenter {
-    if (widget.pins.isEmpty) return _defaultCenter;
-    final latest = widget.pins.first;
-    return LatLng(latest.latitude.value, latest.longitude.value);
-  }
-
-  double get _initialZoom => widget.pins.isEmpty ? _defaultZoom : _pinZoom;
-
-  Future<void> _moveToCurrentLocation() async {
-    if (_isFetchingLocation) return;
-    setState(() => _isFetchingLocation = true);
-    try {
-      final coordinate =
-          await ref.read(locationServiceProvider).fetchCurrentLocation();
-      final location =
-          LatLng(coordinate.latitude.value, coordinate.longitude.value);
-      if (mounted) setState(() => _currentLocation = location);
-      _mapController.moveAndRotate(location, _pinZoom, 0);
-    } catch (_) {
-      // 位置情報取得失敗時はそのまま継続
-    } finally {
-      if (mounted) setState(() => _isFetchingLocation = false);
+    Future<void> moveToCurrentLocation() async {
+      if (isFetchingLocation.value) return;
+      isFetchingLocation.value = true;
+      try {
+        final coordinate =
+            await ref.read(locationServiceProvider).fetchCurrentLocation();
+        final location =
+            LatLng(coordinate.latitude.value, coordinate.longitude.value);
+        if (context.mounted) currentLocation.value = location;
+        mapController.moveAndRotate(location, _pinZoom, 0);
+      } on LocationPermissionPermanentlyDeniedException {
+        if (context.mounted) {
+          showDialog<void>(
+            context: context,
+            builder: (_) => AlertDialog(
+              title: const Text('位置情報の許可が必要です'),
+              content: const Text('設定から位置情報へのアクセスを許可してください'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('キャンセル'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    ref.read(locationServiceProvider).openSettings();
+                  },
+                  child: const Text('設定を開く'),
+                ),
+              ],
+            ),
+          );
+        }
+      } on LocationPermissionDeniedException {
+        // OS ダイアログで既に拒否済み
+      } catch (_) {
+        // 位置情報取得失敗時はそのまま継続
+      } finally {
+        if (context.mounted) isFetchingLocation.value = false;
+      }
     }
-  }
 
-  void _showPinDetail(BuildContext context, Pin pin) {
-    showModalBottomSheet(
-      context: context,
-      builder: (_) => _PinDetailSheet(pin: pin),
-    );
-  }
+    void showPinDetail(Pin pin) {
+      showModalBottomSheet(
+        context: context,
+        builder: (_) => _PinDetailSheet(pin: pin),
+      );
+    }
 
-  @override
-  Widget build(BuildContext context) {
-    final pinMarkers = widget.pins
+    final pinMarkers = pins
         .map(
           (pin) => Marker(
             point: LatLng(pin.latitude.value, pin.longitude.value),
             width: 40,
             height: 40,
             child: GestureDetector(
-              onTap: () => _showPinDetail(context, pin),
+              onTap: () => showPinDetail(pin),
               child: const Icon(Icons.location_on, color: Colors.red, size: 40),
             ),
           ),
         )
         .toList();
 
-    final currentLocation = _currentLocation;
-    final currentLocationMarkers = currentLocation == null
+    final currentLoc = currentLocation.value;
+    final currentLocationMarkers = currentLoc == null
         ? <Marker>[]
         : [
             Marker(
-              point: currentLocation,
+              point: currentLoc,
               width: 20,
               height: 20,
               child: Container(
@@ -123,10 +144,10 @@ class _MapViewState extends ConsumerState<_MapView> {
     return Stack(
       children: [
         FlutterMap(
-          mapController: _mapController,
+          mapController: mapController,
           options: MapOptions(
-            initialCenter: _initialCenter,
-            initialZoom: _initialZoom,
+            initialCenter: initialCenter,
+            initialZoom: initialZoom,
             minZoom: _minZoom,
           ),
           children: [
@@ -168,8 +189,8 @@ class _MapViewState extends ConsumerState<_MapView> {
           bottom: 16,
           child: FloatingActionButton(
             heroTag: 'myLocation',
-            onPressed: _moveToCurrentLocation,
-            child: _isFetchingLocation
+            onPressed: moveToCurrentLocation,
+            child: isFetchingLocation.value
                 ? const SizedBox(
                     width: 24,
                     height: 24,
@@ -186,13 +207,15 @@ class _MapViewState extends ConsumerState<_MapView> {
   }
 }
 
-class _PinDetailSheet extends ConsumerWidget {
+class _PinDetailSheet extends HookConsumerWidget {
   const _PinDetailSheet({required this.pin});
 
   final Pin pin;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final memo = useState<Memo?>(pin.memo);
+
     final coordinate = Coordinate(
       latitude: pin.latitude,
       longitude: pin.longitude,
@@ -209,6 +232,19 @@ class _PinDetailSheet extends ConsumerWidget {
       data: (address) => address,
     );
 
+    Future<void> openMemoEditor() async {
+      final result = await showDialog<String>(
+        context: context,
+        builder: (_) => MemoEditDialog(
+          initialText: memo.value?.value ?? '$dateStr $addressText',
+        ),
+      );
+      if (result != null && pin.id != null && context.mounted) {
+        memo.value = Memo(result);
+        ref.read(pinsProvider.notifier).updateMemo(pin.id!, Memo(result));
+      }
+    }
+
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -222,6 +258,17 @@ class _PinDetailSheet extends ConsumerWidget {
           ListTile(
             leading: const Icon(Icons.location_on),
             title: Text(addressText),
+          ),
+          ListTile(
+            leading: const Icon(Icons.notes),
+            title: memo.value != null
+                ? Text(memo.value!.value)
+                : const Text('(メモなし)', style: TextStyle(color: Colors.grey)),
+            trailing: IconButton(
+              icon: const Icon(Icons.edit),
+              tooltip: 'メモを編集',
+              onPressed: openMemoEditor,
+            ),
           ),
           Align(
             alignment: Alignment.centerRight,

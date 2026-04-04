@@ -9,9 +9,11 @@ import io.flutter.plugin.common.MethodChannel
 import java.util.concurrent.Executors
 
 private const val METHOD_LOCATION_FETCH = "location/fetch"
+private const val METHOD_LOCATION_OPEN_SETTINGS = "location/openSettings"
 private const val METHOD_STORAGE_GET_PINS = "storage/getPins"
 private const val METHOD_STORAGE_SAVE_PIN = "storage/savePin"
 private const val METHOD_STORAGE_DELETE_PIN = "storage/deletePin"
+private const val METHOD_STORAGE_UPDATE_MEMO = "storage/updateMemo"
 private const val METHOD_OVERLAY_SHOW = "overlay/show"
 private const val METHOD_OVERLAY_HIDE = "overlay/hide"
 
@@ -33,14 +35,27 @@ class NativeBridge(private val context: Context) : MethodChannel.MethodCallHandl
         executor.execute {
             when (call.method) {
                 METHOD_LOCATION_FETCH -> handleLocationFetch(result)
+                METHOD_LOCATION_OPEN_SETTINGS -> handleOpenLocationSettings(result)
                 METHOD_STORAGE_GET_PINS -> handleGetPins(result)
                 METHOD_STORAGE_SAVE_PIN -> handleSavePin(call, result)
                 METHOD_STORAGE_DELETE_PIN -> handleDeletePin(call, result)
+                METHOD_STORAGE_UPDATE_MEMO -> handleUpdateMemo(call, result)
                 METHOD_OVERLAY_SHOW -> handleOverlayShow(result)
                 METHOD_OVERLAY_HIDE -> handleOverlayHide(result)
                 else -> result.notImplemented()
             }
         }
+    }
+
+    private fun handleOpenLocationSettings(result: MethodChannel.Result) {
+        val intent = Intent(
+            Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+            android.net.Uri.fromParts("package", context.packageName, null),
+        ).apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+        context.startActivity(intent)
+        result.success(null)
     }
 
     private fun handleLocationFetch(result: MethodChannel.Result) {
@@ -88,6 +103,23 @@ class NativeBridge(private val context: Context) : MethodChannel.MethodCallHandl
                 (createdAt as Number).toLong(),
             )
             result.success(id)
+        } catch (e: Exception) {
+            result.error(ERROR_STORAGE_ERROR, e.message, null)
+        }
+    }
+
+    private fun handleUpdateMemo(call: MethodCall, result: MethodChannel.Result) {
+        val id = call.argument<Any>("id")
+        val memo = call.argument<String>("memo")
+
+        if (id == null || memo == null) {
+            result.error(ERROR_INVALID_ARGUMENTS, "id と memo が必要です", null)
+            return
+        }
+
+        try {
+            StorageHelper.updateMemo(context, (id as Number).toLong(), memo)
+            result.success(null)
         } catch (e: Exception) {
             result.error(ERROR_STORAGE_ERROR, e.message, null)
         }

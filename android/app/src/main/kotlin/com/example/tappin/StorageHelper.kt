@@ -17,7 +17,8 @@ class TappinDbHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME, null
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 latitude REAL NOT NULL,
                 longitude REAL NOT NULL,
-                created_at INTEGER NOT NULL
+                created_at INTEGER NOT NULL,
+                memo TEXT DEFAULT NULL
             )
         """.trimIndent())
     }
@@ -29,24 +30,36 @@ class TappinDbHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME, null
 
 object StorageHelper {
 
-    fun fetchPins(context: Context): List<Map<String, Any>> {
+    fun fetchPins(context: Context): List<Map<String, Any?>> {
         val helper = TappinDbHelper(context)
         return helper.readableDatabase.use { db ->
             val cursor = db.query(TABLE_NAME, null, null, null, null, null, "created_at DESC")
             cursor.use {
-                val pins = mutableListOf<Map<String, Any>>()
+                val pins = mutableListOf<Map<String, Any?>>()
                 while (cursor.moveToNext()) {
+                    val memoIndex = cursor.getColumnIndexOrThrow("memo")
+                    val memo = if (cursor.isNull(memoIndex)) null else cursor.getString(memoIndex)
                     pins.add(
                         mapOf(
                             "id" to cursor.getLong(cursor.getColumnIndexOrThrow("id")),
                             "latitude" to cursor.getDouble(cursor.getColumnIndexOrThrow("latitude")),
                             "longitude" to cursor.getDouble(cursor.getColumnIndexOrThrow("longitude")),
                             "created_at" to cursor.getLong(cursor.getColumnIndexOrThrow("created_at")),
+                            "memo" to memo,
                         )
                     )
                 }
                 pins
             }
+        }
+    }
+
+    fun updateMemo(context: Context, id: Long, memo: String) {
+        val helper = TappinDbHelper(context)
+        helper.writableDatabase.use { db ->
+            db.update(TABLE_NAME, ContentValues().apply {
+                put("memo", memo)
+            }, "id = ?", arrayOf(id.toString()))
         }
     }
 

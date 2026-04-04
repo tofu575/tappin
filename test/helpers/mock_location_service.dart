@@ -29,4 +29,7 @@ class MockLocationService implements LocationService {
     if (_exception != null) throw _exception;
     return _coordinate!;
   }
+
+  @override
+  Future<void> openSettings() async {}
 }
