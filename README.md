@@ -1,5 +1,14 @@
 # claude-example
 
+## 動かし方
+
+- エミュレータ起動
+  - fvm flutter emulators --launch Pixel_5_API_33
+- 実行
+  - fvm flutter run
+- test
+  - fvm flutter test
+
 ## アーキテクチャ
 
 クリーンアーキテクチャを採用。依存の向きは `presentation → domain ← gateway` で、`gateway` と `presentation` はどちらも `domain` に依存するが、互いには依存しない。
@@ -22,12 +31,3 @@ lib/
 ```
 
 依存注入は `main.dart` でアプリ起動時に1度だけ行い、`ProviderScope.overrides` 経由で渡す。
-
-## 動かし方
-
-- エミュレータ起動
-  - fvm flutter emulators --launch Pixel_5_API_33
-- 実行
-  - fvm flutter run
-- test
-  - fvm flutter test

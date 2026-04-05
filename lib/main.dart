@@ -1,32 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_map_tile_caching/flutter_map_tile_caching.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:home_widget/home_widget.dart';
 
 import 'package:tappin/app.dart';
 import 'package:tappin/domain/usecases/use_case.dart';
-import 'package:tappin/gateway/location/geolocator_location_service.dart';
+import 'package:tappin/gateway/location/method_channel_location_service.dart';
 import 'package:tappin/gateway/geocoding/native_geocoding_service.dart';
-import 'package:tappin/gateway/storage/local_storage.dart';
-import 'package:tappin/gateway/widget/app_home_widget_service.dart';
-import 'package:tappin/gateway/storage/repository_impl.dart';
-import 'package:tappin/home_widget_callback.dart';
+import 'package:tappin/gateway/storage/method_channel_storage.dart';
+import 'package:tappin/gateway/overlay/native_overlay_service.dart';
 import 'package:tappin/presentation/providers/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  HomeWidget.registerInteractivityCallback(homeWidgetBackgroundCallback);
-
-  final storage = await SQLiteStorage.open();
-  final repository = RepositoryImpl(storage);
+  await FMTCObjectBoxBackend().initialise();
+  await FMTCStore('mapTiles').manage.create();
 
   runApp(
     ProviderScope(
       overrides: [
-        useCaseProvider.overrideWithValue(UseCase(repository)),
-        locationServiceProvider.overrideWithValue(GeolocatorLocationService()),
+        useCaseProvider.overrideWithValue(UseCase(MethodChannelStorage())),
+        locationServiceProvider.overrideWithValue(MethodChannelLocationService()),
         geocodingServiceProvider.overrideWithValue(NativeGeocodingService()),
-        homeWidgetServiceProvider.overrideWithValue(AppHomeWidgetService()),
+        overlayServiceProvider.overrideWithValue(NativeOverlayService()),
       ],
       child: const App(),
     ),

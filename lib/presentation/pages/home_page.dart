@@ -1,120 +1,149 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:tappin/domain/models/core/my_datetime.dart';
 import 'package:tappin/domain/models/location/coordinate.dart';
 import 'package:tappin/domain/models/pin/pin.dart';
 import 'package:tappin/domain/services/location_service.dart';
 import 'package:tappin/presentation/pages/list_page.dart';
+import 'package:tappin/presentation/pages/map_page.dart';
 import 'package:tappin/presentation/providers/provider.dart';
 import 'package:tappin/presentation/widgets/record_button.dart';
 
-const _permissionDeniedMessage = '位置情報の許可が必要です';
+const _overlayActivateErrorPrefix = 'オーバーレイエラー: ';
+const _permissionDeniedMessage = '位置情報が許可されませんでした';
+const _permissionPermanentlyDeniedTitle = '位置情報の許可が必要です';
+const _permissionPermanentlyDeniedBody = '設定から位置情報へのアクセスを許可してください';
+const _permissionOpenSettings = '設定を開く';
 const _recordSuccessMessage = '現在地を記録しました';
 const _recordErrorPrefix = 'エラーが発生しました: ';
 
-class HomePage extends ConsumerStatefulWidget {
+class HomePage extends HookConsumerWidget {
   const HomePage({super.key});
 
   @override
-  ConsumerState<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends ConsumerState<HomePage> with WidgetsBindingObserver {
-  bool _isRecording = false;
-  Pin? _latestPin;
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addObserver(this);
-  }
-
-  @override
-  void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
-    super.dispose();
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
-      ref.invalidate(pinsProvider);
-    }
-  }
-
-  Future<void> _recordCurrentLocation() async {
-    setState(() => _isRecording = true);
-    try {
-      final coordinate = await ref
-          .read(locationServiceProvider)
-          .fetchCurrentLocation();
-
-      final pin = Pin(
-        latitude: coordinate.latitude,
-        longitude: coordinate.longitude,
-        createdAt: MyDatetime(DateTime.now()),
-      );
-
-      await ref.read(pinsProvider.notifier).savePin(pin);
-      await _updateHomeWidget(pin);
-
-      if (mounted) {
-        setState(() => _latestPin = pin);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text(_recordSuccessMessage)),
-        );
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isRecording = useState(false);
+    final isOverlayActive = useState(false);
+    final lastRecordTime = useRef<DateTime?>(null);
+    final latestPin = useState<Pin?>(null);
+    Future<void> showOverlay() async {
+      try {
+        await ref.read(overlayServiceProvider).showOverlay();
+        if (context.mounted) isOverlayActive.value = true;
+      } catch (e) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('$_overlayActivateErrorPrefix$e')),
+          );
+        }
       }
-    } on LocationPermissionDeniedException {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text(_permissionDeniedMessage)),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('$_recordErrorPrefix$e')),
-        );
-      }
-    } finally {
-      if (mounted) setState(() => _isRecording = false);
     }
-  }
 
-  Future<void> _updateHomeWidget(Pin pin) async {
-    try {
-      final coordinate = Coordinate(
-        latitude: pin.latitude,
-        longitude: pin.longitude,
-      );
-      final address = await ref.read(geocodingServiceProvider).fetchAddress(coordinate);
-      final dateStr =
-          '${pin.createdAt.value.year}/${pin.createdAt.value.month.toString().padLeft(2, '0')}/${pin.createdAt.value.day.toString().padLeft(2, '0')} '
-          '${pin.createdAt.value.hour.toString().padLeft(2, '0')}:${pin.createdAt.value.minute.toString().padLeft(2, '0')}';
-      await ref.read(homeWidgetServiceProvider).update(
-        address: address,
-        timestamp: dateStr,
-      );
-    } catch (_) {
-      // ウィジェット更新の失敗は非致命的
+    useOnAppLifecycleStateChange((_, current) {
+      if (current == AppLifecycleState.resumed) {
+        ref.invalidate(pinsProvider);
+        if (isOverlayActive.value) showOverlay();
+      }
+    });
+
+    Future<void> toggleOverlay() async {
+      if (isOverlayActive.value) {
+        await ref.read(overlayServiceProvider).hideOverlay();
+        isOverlayActive.value = false;
+      } else {
+        await showOverlay();
+      }
     }
-  }
 
-  @override
-  Widget build(BuildContext context) {
+    void showPermanentlyDeniedDialog() {
+      showDialog<void>(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: const Text(_permissionPermanentlyDeniedTitle),
+          content: const Text(_permissionPermanentlyDeniedBody),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('キャンセル'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                ref.read(locationServiceProvider).openSettings();
+              },
+              child: const Text(_permissionOpenSettings),
+            ),
+          ],
+        ),
+      );
+    }
+
+    Future<void> recordCurrentLocation() async {
+      if (isRecording.value) return;
+      final now = DateTime.now();
+      if (lastRecordTime.value != null &&
+          now.difference(lastRecordTime.value!) < const Duration(milliseconds: 500)) return;
+      lastRecordTime.value = now;
+      isRecording.value = true;
+      try {
+        final coordinate = await ref.read(locationServiceProvider).fetchCurrentLocation();
+        final pin = Pin(
+          latitude: coordinate.latitude,
+          longitude: coordinate.longitude,
+          createdAt: MyDatetime(DateTime.now()),
+        );
+        await ref.read(pinsProvider.notifier).savePin(pin);
+        if (context.mounted) {
+          latestPin.value = pin;
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text(_recordSuccessMessage)),
+          );
+        }
+      } on LocationPermissionPermanentlyDeniedException {
+        if (context.mounted) showPermanentlyDeniedDialog();
+      } on LocationPermissionDeniedException {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text(_permissionDeniedMessage)),
+          );
+        }
+      } catch (e) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('$_recordErrorPrefix$e')),
+          );
+        }
+      } finally {
+        isRecording.value = false;
+      }
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('TapPin'),
         actions: [
           IconButton(
+            icon: Icon(
+              Icons.picture_in_picture,
+              color: isOverlayActive.value ? Theme.of(context).colorScheme.primary : null,
+            ),
+            onPressed: toggleOverlay,
+          ),
+          IconButton(
+            icon: const Icon(Icons.map),
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const MapPage()),
+            ),
+          ),
+          IconButton(
             icon: const Icon(Icons.list),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const ListPage()),
-              );
-            },
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const ListPage()),
+            ),
           ),
         ],
       ),
@@ -123,12 +152,12 @@ class _HomePageState extends ConsumerState<HomePage> with WidgetsBindingObserver
           Expanded(
             child: Center(
               child: RecordButton(
-                onPressed: _recordCurrentLocation,
-                isLoading: _isRecording,
+                onPressed: recordCurrentLocation,
+                isLoading: isRecording.value,
               ),
             ),
           ),
-          if (_latestPin != null) _LatestPinCard(pin: _latestPin!),
+          if (latestPin.value != null) _LatestPinCard(pin: latestPin.value!),
         ],
       ),
     );

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import 'package:tappin/domain/models/location/coordinate.dart';
+import 'package:tappin/domain/models/pin/memo.dart';
 import 'package:tappin/domain/models/pin/pin.dart';
 import 'package:tappin/presentation/providers/provider.dart';
+import 'package:tappin/presentation/widgets/map_launch_buttons.dart';
+import 'package:tappin/presentation/widgets/memo_edit_dialog.dart';
 
 class ListPage extends ConsumerWidget {
   const ListPage({super.key});
@@ -37,24 +39,6 @@ class _PinListItem extends ConsumerWidget {
 
   final Pin pin;
 
-  Future<void> _openGoogleMaps(Coordinate coordinate) async {
-    final uri = Uri.parse(
-      'https://www.google.com/maps/search/?api=1&query=${coordinate.latitude.value},${coordinate.longitude.value}',
-    );
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
-    }
-  }
-
-  Future<void> _openStreetView(Coordinate coordinate) async {
-    final uri = Uri.parse(
-      'https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${coordinate.latitude.value},${coordinate.longitude.value}',
-    );
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
-    }
-  }
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final coordinate = Coordinate(
@@ -66,7 +50,7 @@ class _PinListItem extends ConsumerWidget {
         '${pin.createdAt.value.hour.toString().padLeft(2, '0')}:${pin.createdAt.value.minute.toString().padLeft(2, '0')}';
 
     final addressAsync = ref.watch(addressProvider(coordinate));
-    final subtitleText = addressAsync.when(
+    final addressText = addressAsync.when(
       loading: () => '${coordinate.latitude.value.toStringAsFixed(6)}, ${coordinate.longitude.value.toStringAsFixed(6)}',
       error: (e, _) => '${coordinate.latitude.value.toStringAsFixed(6)}, ${coordinate.longitude.value.toStringAsFixed(6)}',
       data: (address) => address,
@@ -75,19 +59,38 @@ class _PinListItem extends ConsumerWidget {
     return ListTile(
       leading: const Icon(Icons.location_on),
       title: Text(dateStr),
-      subtitle: Text(subtitleText),
+      subtitle: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(addressText),
+          if (pin.memo != null)
+            Text(
+              pin.memo!.value,
+              style: TextStyle(color: Colors.grey[600], fontSize: 12),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+        ],
+      ),
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
+          MapLaunchButtons(coordinate: coordinate),
           IconButton(
-            icon: const Icon(Icons.map),
-            tooltip: 'Google Maps',
-            onPressed: () => _openGoogleMaps(coordinate),
-          ),
-          IconButton(
-            icon: const Icon(Icons.streetview),
-            tooltip: 'ストリートビュー',
-            onPressed: () => _openStreetView(coordinate),
+            icon: const Icon(Icons.edit_note),
+            tooltip: 'メモを編集',
+            onPressed: () async {
+              final result = await showDialog<String>(
+                context: context,
+                builder: (_) => MemoEditDialog(
+                  initialText: pin.memo?.value ?? '',
+                ),
+              );
+              if (result != null && pin.id != null) {
+                ref.read(pinsProvider.notifier).updateMemo(pin.id!, Memo(result));
+              }
+            },
           ),
           IconButton(
             icon: const Icon(Icons.delete),
