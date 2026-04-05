@@ -84,7 +84,7 @@ class _PinListItem extends ConsumerWidget {
               final result = await showDialog<String>(
                 context: context,
                 builder: (_) => MemoEditDialog(
-                  initialText: pin.memo?.value ?? '$dateStr $addressText',
+                  initialText: pin.memo?.value ?? '',
                 ),
               );
               if (result != null && pin.id != null) {

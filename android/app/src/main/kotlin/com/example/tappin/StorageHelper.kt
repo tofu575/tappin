@@ -18,7 +18,7 @@ class TappinDbHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME, null
                 latitude REAL NOT NULL,
                 longitude REAL NOT NULL,
                 created_at INTEGER NOT NULL,
-                memo TEXT DEFAULT NULL
+                memo TEXT NOT NULL
             )
         """.trimIndent())
     }

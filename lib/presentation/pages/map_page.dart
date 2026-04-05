@@ -236,7 +236,7 @@ class _PinDetailSheet extends HookConsumerWidget {
       final result = await showDialog<String>(
         context: context,
         builder: (_) => MemoEditDialog(
-          initialText: memo.value?.value ?? '$dateStr $addressText',
+          initialText: memo.value?.value ?? '',
         ),
       );
       if (result != null && pin.id != null && context.mounted) {
