@@ -8,6 +8,11 @@ import 'package:tappin/presentation/providers/provider.dart';
 import 'package:tappin/presentation/widgets/map_launch_buttons.dart';
 import 'package:tappin/presentation/widgets/memo_edit_dialog.dart';
 
+const _deleteDialogTitle = '削除しますか？';
+const _deleteDialogContent = 'この記録を削除します。元に戻せません。';
+const _deleteDialogCancel = 'キャンセル';
+const _deleteDialogConfirm = '削除';
+
 class ListPage extends ConsumerWidget {
   const ListPage({super.key});
 
@@ -22,13 +27,58 @@ class ListPage extends ConsumerWidget {
         error: (e, _) => Center(child: Text('エラー: $e')),
         data: (pins) {
           if (pins.isEmpty) {
-            return const Center(child: Text('記録がありません'));
+            return const _EmptyState();
           }
           return ListView.builder(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             itemCount: pins.length,
             itemBuilder: (context, index) => _PinListItem(pin: pins[index]),
           );
         },
+      ),
+    );
+  }
+}
+
+class _EmptyState extends StatelessWidget {
+  const _EmptyState();
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            width: 96,
+            height: 96,
+            decoration: BoxDecoration(
+              color: colorScheme.primaryContainer,
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.location_off,
+              size: 48,
+              color: colorScheme.onPrimaryContainer,
+            ),
+          ),
+          const SizedBox(height: 24),
+          Text(
+            'まだ記録がありません',
+            style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'ホーム画面の記録ボタンを押して\n現在地を保存しましょう',
+            style: textTheme.bodyMedium?.copyWith(
+              color: colorScheme.onSurfaceVariant,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
       ),
     );
   }
@@ -41,6 +91,9 @@ class _PinListItem extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     final coordinate = Coordinate(
       latitude: pin.latitude,
       longitude: pin.longitude,
@@ -56,52 +109,130 @@ class _PinListItem extends ConsumerWidget {
       data: (address) => address,
     );
 
-    return ListTile(
-      leading: const Icon(Icons.location_on),
-      title: Text(dateStr),
-      subtitle: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(addressText),
-          if (pin.memo != null)
-            Text(
-              pin.memo!.value,
-              style: TextStyle(color: Colors.grey[600], fontSize: 12),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-        ],
-      ),
-      trailing: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          MapLaunchButtons(coordinate: coordinate),
-          IconButton(
-            icon: const Icon(Icons.edit_note),
-            tooltip: 'メモを編集',
-            onPressed: () async {
-              final result = await showDialog<String>(
-                context: context,
-                builder: (_) => MemoEditDialog(
-                  initialText: pin.memo?.value ?? '',
+    final memoValue = pin.memo?.value ?? '';
+
+    return Dismissible(
+      key: ValueKey('pin_${pin.id ?? pin.createdAt.value.millisecondsSinceEpoch}'),
+      direction: DismissDirection.endToStart,
+      confirmDismiss: (direction) async {
+        final confirmed = await showDialog<bool>(
+          context: context,
+          builder: (_) => AlertDialog(
+            title: const Text(_deleteDialogTitle),
+            content: const Text(_deleteDialogContent),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text(_deleteDialogCancel),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: Text(
+                  _deleteDialogConfirm,
+                  style: TextStyle(color: colorScheme.error),
                 ),
-              );
-              if (result != null && pin.id != null) {
-                ref.read(pinsProvider.notifier).updateMemo(pin.id!, Memo(result));
-              }
-            },
+              ),
+            ],
           ),
-          IconButton(
-            icon: const Icon(Icons.delete),
-            tooltip: '削除',
-            onPressed: () async {
-              if (pin.id != null) {
-                await ref.read(pinsProvider.notifier).deletePin(pin.id!);
-              }
-            },
+        );
+        return confirmed ?? false;
+      },
+      onDismissed: (_) {
+        final id = pin.id;
+        if (id != null) {
+          ref.read(pinsProvider.notifier).deletePin(id);
+        }
+      },
+      background: Container(
+        margin: const EdgeInsets.symmetric(vertical: 6),
+        decoration: BoxDecoration(
+          color: colorScheme.errorContainer,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        alignment: Alignment.centerRight,
+        padding: const EdgeInsets.only(right: 20),
+        child: Icon(Icons.delete, color: colorScheme.onErrorContainer),
+      ),
+      child: Card(
+        margin: const EdgeInsets.symmetric(vertical: 6),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(12, 8, 4, 8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // 上段: 日付 + 住所（小さく）+ 地図ボタン（右端）
+              Row(
+                children: [
+                  Icon(
+                    Icons.location_on,
+                    size: 14,
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    dateStr,
+                    style: textTheme.labelSmall?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: Text(
+                      addressText,
+                      style: textTheme.labelSmall?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  MapLaunchButtons(coordinate: coordinate),
+                ],
+              ),
+              const SizedBox(height: 2),
+              // 中段: メモボタン（左端）+ メモテキスト（右横）
+              Row(
+                children: [
+                  SizedBox(
+                    width: 36,
+                    height: 36,
+                    child: IconButton(
+                      icon: const Icon(Icons.edit_note, size: 18),
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                      tooltip: 'メモを編集',
+                      onPressed: () async {
+                        final result = await showDialog<String>(
+                          context: context,
+                          builder: (_) => MemoEditDialog(initialText: memoValue),
+                        );
+                        if (result != null) {
+                          final id = pin.id;
+                          if (id != null) {
+                            ref.read(pinsProvider.notifier).updateMemo(id, Memo(result));
+                          }
+                        }
+                      },
+                    ),
+                  ),
+                  if (memoValue.isNotEmpty) ...[
+                    const SizedBox(width: 4),
+                    Expanded(
+                      child: Text(
+                        memoValue,
+                        style: textTheme.bodySmall?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
