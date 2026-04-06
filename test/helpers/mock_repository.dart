@@ -33,6 +33,7 @@ class MockRipository implements Repository {
   @override
   Future<void> deletePin(int id) async {
     deletedIds.add(id);
+    stubbedPins = stubbedPins.where((p) => p.id != id).toList();
   }
 
   @override

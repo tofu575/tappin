@@ -33,7 +33,7 @@ void main() {
     await tester.pumpWidget(_buildPage());
     await tester.pumpAndSettle();
 
-    expect(find.text('記録がありません'), findsOneWidget);
+    expect(find.text('まだ記録がありません'), findsOneWidget);
   });
 
   testWidgets('Pinがある場合、日付と住所が表示される', (tester) async {
@@ -57,14 +57,17 @@ void main() {
     await tester.pumpWidget(_buildPage(repo: repo));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byIcon(Icons.delete));
+    await tester.drag(find.byType(Dismissible), const Offset(-500, 0));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('削除'));
     await tester.pumpAndSettle();
 
     expect(repo.deletedIds, contains(42));
   });
 
   testWidgets('メモがある場合、メモのテキストが表示される', (tester) async {
-    final pin = buildTestPin(id: 1, memo: const Memo('ドライブメモ'));
+    final pin = buildTestPin(id: 1, memo: Memo('ドライブメモ'));
     await tester.pumpWidget(_buildPage(pins: [pin]));
     await tester.pumpAndSettle();
 
@@ -77,7 +80,7 @@ void main() {
 
     // 住所は表示されるがメモは無い
     expect(find.text('東京都渋谷区道玄坂'), findsOneWidget);
-    expect(find.byType(ListTile), findsOneWidget);
+    expect(find.byType(Card), findsOneWidget);
   });
 
   testWidgets('メモ編集ボタンをタップするとダイアログが表示される', (tester) async {
