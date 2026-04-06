@@ -70,6 +70,7 @@ object StorageHelper {
                 put("latitude", latitude)
                 put("longitude", longitude)
                 put("created_at", createdAt)
+                put("memo", "")
             })
         }
     }

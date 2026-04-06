@@ -46,8 +46,10 @@ class PinsNotifier extends AsyncNotifier<List<Pin>> {
   }
 
   Future<void> deletePin(int id) async {
+    final pins = state.value;
+    if (pins == null) return;
+    state = AsyncData(pins.where((p) => p.id != id).toList());
     await ref.read(useCaseProvider).deletePin(id);
-    ref.invalidateSelf();
   }
 
   Future<void> updateMemo(int id, Memo memo) async {

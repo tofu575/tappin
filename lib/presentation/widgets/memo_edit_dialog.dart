@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+
+import 'package:tappin/domain/models/pin/memo.dart';
 
 const _title = 'メモを編集';
 const _hint = 'メモを入力...';
@@ -19,8 +22,13 @@ class MemoEditDialog extends HookWidget {
       title: const Text(_title),
       content: TextField(
         controller: controller,
-        maxLines: null,
-        keyboardType: TextInputType.multiline,
+        maxLines: 1,
+        maxLength: Memo.maxLength,
+        keyboardType: TextInputType.text,
+        inputFormatters: [
+          FilteringTextInputFormatter.deny(RegExp(r'\n')),
+          LengthLimitingTextInputFormatter(Memo.maxLength),
+        ],
         decoration: const InputDecoration(hintText: _hint),
         autofocus: true,
       ),

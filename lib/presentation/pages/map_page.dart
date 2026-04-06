@@ -6,6 +6,7 @@ import 'package:flutter_map_tile_caching/flutter_map_tile_caching.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:latlong2/latlong.dart';
 
+import 'package:tappin/config/app_env.dart';
 import 'package:tappin/domain/models/location/coordinate.dart';
 import 'package:tappin/domain/models/pin/memo.dart';
 import 'package:tappin/domain/models/pin/pin.dart';
@@ -18,8 +19,6 @@ const _defaultCenter = LatLng(35.6, 139.7);
 const _defaultZoom = 15.0;
 const _minZoom = 3.0;
 const _pinZoom = 17.5;
-const _tileUrlTemplate =
-    'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
 const _tileSubdomains = ['a', 'b', 'c', 'd'];
 const _userAgentPackageName = 'com.example.tappin';
 
@@ -152,7 +151,7 @@ class _MapView extends HookConsumerWidget {
           ),
           children: [
             TileLayer(
-              urlTemplate: _tileUrlTemplate,
+              urlTemplate: AppEnv.tileUrlTemplate.value,
               subdomains: _tileSubdomains,
               userAgentPackageName: _userAgentPackageName,
               retinaMode: RetinaMode.isHighDensity(context),
