@@ -12,6 +12,7 @@ const _deleteDialogTitle = '削除しますか？';
 const _deleteDialogContent = 'この記録を削除します。元に戻せません。';
 const _deleteDialogCancel = 'キャンセル';
 const _deleteDialogConfirm = '削除';
+const _deleteGuide = '記録を左にスワイプすると削除できます';
 
 class ListPage extends ConsumerWidget {
   const ListPage({super.key});
@@ -29,12 +30,50 @@ class ListPage extends ConsumerWidget {
           if (pins.isEmpty) {
             return const _EmptyState();
           }
-          return ListView.builder(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            itemCount: pins.length,
-            itemBuilder: (context, index) => _PinListItem(pin: pins[index]),
+          return Column(
+            children: [
+              const _DeleteGuide(),
+              Expanded(
+                child: ListView.builder(
+                  padding: const EdgeInsets.fromLTRB(12, 0, 12, 8),
+                  itemCount: pins.length,
+                  itemBuilder: (context, index) =>
+                      _PinListItem(pin: pins[index]),
+                ),
+              ),
+            ],
           );
         },
+      ),
+    );
+  }
+}
+
+class _DeleteGuide extends StatelessWidget {
+  const _DeleteGuide();
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 6),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.swipe_left, size: 18, color: colorScheme.onSurfaceVariant),
+          const SizedBox(width: 8),
+          Flexible(
+            child: Text(
+              _deleteGuide,
+              style: textTheme.bodySmall?.copyWith(
+                color: colorScheme.onSurfaceVariant,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -104,15 +143,19 @@ class _PinListItem extends ConsumerWidget {
 
     final addressAsync = ref.watch(addressProvider(coordinate));
     final addressText = addressAsync.when(
-      loading: () => '${coordinate.latitude.value.toStringAsFixed(6)}, ${coordinate.longitude.value.toStringAsFixed(6)}',
-      error: (e, _) => '${coordinate.latitude.value.toStringAsFixed(6)}, ${coordinate.longitude.value.toStringAsFixed(6)}',
+      loading: () =>
+          '${coordinate.latitude.value.toStringAsFixed(6)}, ${coordinate.longitude.value.toStringAsFixed(6)}',
+      error: (e, _) =>
+          '${coordinate.latitude.value.toStringAsFixed(6)}, ${coordinate.longitude.value.toStringAsFixed(6)}',
       data: (address) => address,
     );
 
     final memoValue = pin.memo?.value ?? '';
 
     return Dismissible(
-      key: ValueKey('pin_${pin.id ?? pin.createdAt.value.millisecondsSinceEpoch}'),
+      key: ValueKey(
+        'pin_${pin.id ?? pin.createdAt.value.millisecondsSinceEpoch}',
+      ),
       direction: DismissDirection.endToStart,
       confirmDismiss: (direction) async {
         final confirmed = await showDialog<bool>(
@@ -204,12 +247,15 @@ class _PinListItem extends ConsumerWidget {
                       onPressed: () async {
                         final result = await showDialog<String>(
                           context: context,
-                          builder: (_) => MemoEditDialog(initialText: memoValue),
+                          builder: (_) =>
+                              MemoEditDialog(initialText: memoValue),
                         );
                         if (result != null) {
                           final id = pin.id;
                           if (id != null) {
-                            ref.read(pinsProvider.notifier).updateMemo(id, Memo(result));
+                            ref
+                                .read(pinsProvider.notifier)
+                                .updateMemo(id, Memo(result));
                           }
                         }
                       },
