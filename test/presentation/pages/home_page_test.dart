@@ -24,13 +24,24 @@ Widget _buildPage({
         locationService ?? MockLocationService.success(testCoordinate),
       ),
       geocodingServiceProvider.overrideWithValue(MockGeocodingService()),
-      overlayServiceProvider.overrideWithValue(overlayService ?? MockOverlayService()),
+      overlayServiceProvider.overrideWithValue(
+        overlayService ?? MockOverlayService(),
+      ),
     ],
     child: const MaterialApp(home: HomePage()),
   );
 }
 
 void main() {
+  testWidgets('画面表示時に位置情報を先行取得する', (tester) async {
+    final locationService = MockLocationService.success(testCoordinate);
+
+    await tester.pumpWidget(_buildPage(locationService: locationService));
+    await tester.pump();
+
+    expect(locationService.warmUpCount, 1);
+  });
+
   testWidgets('記録ボタンが表示される', (tester) async {
     await tester.pumpWidget(_buildPage());
     await tester.pump();
@@ -69,9 +80,9 @@ void main() {
   });
 
   testWidgets('位置情報の権限が一時的に拒否された場合、スナックバーが表示される', (tester) async {
-    await tester.pumpWidget(_buildPage(
-      locationService: MockLocationService.denied(),
-    ));
+    await tester.pumpWidget(
+      _buildPage(locationService: MockLocationService.denied()),
+    );
     await tester.pump();
 
     await tester.tap(find.text('記録'));
@@ -81,9 +92,9 @@ void main() {
   });
 
   testWidgets('位置情報の権限が永久に拒否された場合、設定ダイアログが表示される', (tester) async {
-    await tester.pumpWidget(_buildPage(
-      locationService: MockLocationService.permanentlyDenied(),
-    ));
+    await tester.pumpWidget(
+      _buildPage(locationService: MockLocationService.permanentlyDenied()),
+    );
     await tester.pump();
 
     await tester.tap(find.text('記録'));
@@ -94,9 +105,9 @@ void main() {
   });
 
   testWidgets('予期しないエラーが発生した場合、エラーメッセージが表示される', (tester) async {
-    await tester.pumpWidget(_buildPage(
-      locationService: MockLocationService.error('GPS unavailable'),
-    ));
+    await tester.pumpWidget(
+      _buildPage(locationService: MockLocationService.error('GPS unavailable')),
+    );
     await tester.pump();
 
     await tester.tap(find.text('記録'));

@@ -11,22 +11,23 @@ final testCoordinate = Coordinate(
 class MockLocationService implements LocationService {
   final Coordinate? _coordinate;
   final Exception? _exception;
+  int warmUpCount = 0;
 
   MockLocationService.success(Coordinate coordinate)
-      : _coordinate = coordinate,
-        _exception = null;
+    : _coordinate = coordinate,
+      _exception = null;
 
   MockLocationService.denied()
-      : _coordinate = null,
-        _exception = const LocationPermissionDeniedException();
+    : _coordinate = null,
+      _exception = const LocationPermissionDeniedException();
 
   MockLocationService.permanentlyDenied()
-      : _coordinate = null,
-        _exception = const LocationPermissionPermanentlyDeniedException();
+    : _coordinate = null,
+      _exception = const LocationPermissionPermanentlyDeniedException();
 
   MockLocationService.error(String message)
-      : _coordinate = null,
-        _exception = Exception(message);
+    : _coordinate = null,
+      _exception = Exception(message);
 
   @override
   Future<Coordinate> fetchCurrentLocation() async {
@@ -36,4 +37,9 @@ class MockLocationService implements LocationService {
 
   @override
   Future<void> openSettings() async {}
+
+  @override
+  Future<void> warmUp() async {
+    warmUpCount++;
+  }
 }

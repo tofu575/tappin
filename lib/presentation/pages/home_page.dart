@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -28,6 +30,12 @@ class HomePage extends HookConsumerWidget {
     final isOverlayActive = useState(false);
     final lastRecordTime = useRef<DateTime?>(null);
     final latestPin = useState<Pin?>(null);
+
+    useEffect(() {
+      unawaited(ref.read(locationServiceProvider).warmUp());
+      return null;
+    }, const []);
+
     Future<void> showOverlay() async {
       try {
         await ref.read(overlayServiceProvider).showOverlay();
@@ -84,11 +92,16 @@ class HomePage extends HookConsumerWidget {
       if (isRecording.value) return;
       final now = DateTime.now();
       if (lastRecordTime.value != null &&
-          now.difference(lastRecordTime.value!) < const Duration(milliseconds: 500)) return;
+          now.difference(lastRecordTime.value!) <
+              const Duration(milliseconds: 500)) {
+        return;
+      }
       lastRecordTime.value = now;
       isRecording.value = true;
       try {
-        final coordinate = await ref.read(locationServiceProvider).fetchCurrentLocation();
+        final coordinate = await ref
+            .read(locationServiceProvider)
+            .fetchCurrentLocation();
         final pin = Pin(
           latitude: coordinate.latitude,
           longitude: coordinate.longitude,
@@ -97,9 +110,9 @@ class HomePage extends HookConsumerWidget {
         await ref.read(pinsProvider.notifier).savePin(pin);
         if (context.mounted) {
           latestPin.value = pin;
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text(_recordSuccessMessage)),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text(_recordSuccessMessage)));
         }
       } on LocationPermissionPermanentlyDeniedException {
         if (context.mounted) showPermanentlyDeniedDialog();
@@ -111,9 +124,9 @@ class HomePage extends HookConsumerWidget {
         }
       } catch (e) {
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('$_recordErrorPrefix$e')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('$_recordErrorPrefix$e')));
         }
       } finally {
         isRecording.value = false;
@@ -127,7 +140,9 @@ class HomePage extends HookConsumerWidget {
           IconButton(
             icon: Icon(
               Icons.picture_in_picture,
-              color: isOverlayActive.value ? Theme.of(context).colorScheme.primary : null,
+              color: isOverlayActive.value
+                  ? Theme.of(context).colorScheme.primary
+                  : null,
             ),
             onPressed: toggleOverlay,
           ),
@@ -216,7 +231,9 @@ class _LatestPinCard extends ConsumerWidget {
                 children: [
                   Text(
                     addressText,
-                    style: textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500),
+                    style: textTheme.bodyLarge?.copyWith(
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                   const SizedBox(height: 4),
                   Text(

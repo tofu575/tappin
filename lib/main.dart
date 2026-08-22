@@ -7,7 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tappin/app.dart';
 import 'package:tappin/config/app_env.dart';
 import 'package:tappin/domain/usecases/use_case.dart';
-import 'package:tappin/gateway/location/method_channel_location_service.dart';
+import 'package:tappin/gateway/location/geolocator_location_service.dart';
 import 'package:tappin/gateway/geocoding/native_geocoding_service.dart';
 import 'package:tappin/gateway/storage/method_channel_storage.dart';
 import 'package:tappin/gateway/overlay/native_overlay_service.dart';
@@ -30,7 +30,7 @@ void main() async {
     ProviderScope(
       overrides: [
         useCaseProvider.overrideWithValue(UseCase(MethodChannelStorage())),
-        locationServiceProvider.overrideWithValue(MethodChannelLocationService()),
+        locationServiceProvider.overrideWithValue(GeolocatorLocationService()),
         geocodingServiceProvider.overrideWithValue(NativeGeocodingService()),
         overlayServiceProvider.overrideWithValue(NativeOverlayService()),
       ],
