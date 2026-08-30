@@ -1,0 +1,81 @@
+import 'dart:async';
+
+import 'package:flutter/material.dart';
+
+import 'package:tappin/presentation/widgets/record_feedback_controller.dart';
+
+/// [child]全体を覆う成功色フラッシュを[controller]から再生するWidget。
+class RecordFeedback extends StatefulWidget {
+  const RecordFeedback({
+    super.key,
+    required this.controller,
+    required this.child,
+  });
+
+  final RecordFeedbackController controller;
+  final Widget child;
+
+  @override
+  State<RecordFeedback> createState() => _RecordFeedbackState();
+}
+
+class _RecordFeedbackState extends State<RecordFeedback>
+    with SingleTickerProviderStateMixin {
+  static const _feedbackDuration = Duration(milliseconds: 400);
+
+  late final AnimationController _animationController;
+  late final Animation<double> _opacity;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: _feedbackDuration,
+    );
+    _opacity = TweenSequence<double>([
+      TweenSequenceItem(tween: ConstantTween<double>(0.3), weight: 37.5),
+      TweenSequenceItem(tween: Tween<double>(begin: 0.3, end: 0), weight: 62.5),
+    ]).animate(_animationController);
+    widget.controller.attach(_showFlash);
+  }
+
+  @override
+  void didUpdateWidget(covariant RecordFeedback oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.controller != widget.controller) {
+      oldWidget.controller.detach(_showFlash);
+      widget.controller.attach(_showFlash);
+    }
+  }
+
+  void _showFlash() {
+    unawaited(_animationController.forward(from: 0));
+  }
+
+  @override
+  void dispose() {
+    widget.controller.detach(_showFlash);
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        widget.child,
+        IgnorePointer(
+          child: FadeTransition(
+            opacity: _opacity,
+            child: ColoredBox(
+              key: const Key('record-feedback-flash'),
+              color: Theme.of(context).colorScheme.primary,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}

@@ -4,41 +4,44 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'package:tappin/domain/models/core/my_datetime.dart';
 import 'package:tappin/domain/models/location/coordinate.dart';
 import 'package:tappin/domain/models/pin/pin.dart';
-import 'package:tappin/domain/services/location_service.dart';
+import 'package:tappin/presentation/pages/drive_mode/drive_mode_page.dart';
+import 'package:tappin/presentation/pages/drive_mode/drive_mode_transition_page.dart';
+import 'package:tappin/presentation/pages/drive_mode/drive_transition_direction.dart';
+import 'package:tappin/presentation/pages/home/components/drive_mode_entry.dart';
 import 'package:tappin/presentation/pages/list_page.dart';
 import 'package:tappin/presentation/pages/map_page.dart';
+import 'package:tappin/presentation/providers/interactor_provider.dart';
 import 'package:tappin/presentation/providers/provider.dart';
+import 'package:tappin/presentation/providers/recording_provider.dart';
+import 'package:tappin/presentation/widgets/record_action.dart';
 import 'package:tappin/presentation/widgets/record_button.dart';
+import 'package:tappin/presentation/widgets/record_feedback.dart';
+import 'package:tappin/presentation/widgets/record_feedback_controller.dart';
 
 const _overlayActivateErrorPrefix = 'オーバーレイエラー: ';
-const _permissionDeniedMessage = '位置情報が許可されませんでした';
-const _permissionPermanentlyDeniedTitle = '位置情報の許可が必要です';
-const _permissionPermanentlyDeniedBody = '設定から位置情報へのアクセスを許可してください';
-const _permissionOpenSettings = '設定を開く';
-const _recordSuccessMessage = '現在地を記録しました';
-const _recordErrorPrefix = 'エラーが発生しました: ';
+const _driveModeTitle = 'Drive mode';
+const _driveModeDescription = 'Drive modeでは、画面全体が記録ボタンになります。';
 
+/// 通常の記録操作とDrive modeへの入口を表示するHome画面。
 class HomePage extends HookConsumerWidget {
   const HomePage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isRecording = useState(false);
     final isOverlayActive = useState(false);
-    final lastRecordTime = useRef<DateTime?>(null);
     final latestPin = useState<Pin?>(null);
+    final feedbackController = useMemoized(RecordFeedbackController.new);
 
     useEffect(() {
-      unawaited(ref.read(locationServiceProvider).warmUp());
+      unawaited(ref.read(interactorProvider).warmUpLocation());
       return null;
     }, const []);
 
     Future<void> showOverlay() async {
       try {
-        await ref.read(overlayServiceProvider).showOverlay();
+        await ref.read(interactorProvider).showOverlay();
         if (context.mounted) isOverlayActive.value = true;
       } catch (e) {
         if (context.mounted) {
@@ -58,127 +61,138 @@ class HomePage extends HookConsumerWidget {
 
     Future<void> toggleOverlay() async {
       if (isOverlayActive.value) {
-        await ref.read(overlayServiceProvider).hideOverlay();
+        await ref.read(interactorProvider).hideOverlay();
         isOverlayActive.value = false;
       } else {
         await showOverlay();
       }
     }
 
-    void showPermanentlyDeniedDialog() {
-      showDialog<void>(
+    Future<void> openDriveMode() async {
+      final shouldStart = await showModalBottomSheet<bool>(
         context: context,
-        builder: (_) => AlertDialog(
-          title: const Text(_permissionPermanentlyDeniedTitle),
-          content: const Text(_permissionPermanentlyDeniedBody),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('キャンセル'),
+        showDragHandle: true,
+        builder: (sheetContext) => SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Icon(
+                  Icons.directions_car_rounded,
+                  size: 48,
+                  color: Theme.of(sheetContext).colorScheme.primary,
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  _driveModeTitle,
+                  textAlign: TextAlign.center,
+                  style: Theme.of(sheetContext).textTheme.headlineSmall
+                      ?.copyWith(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 12),
+                const Text(_driveModeDescription, textAlign: TextAlign.center),
+                const SizedBox(height: 24),
+                FilledButton(
+                  key: const Key('start-drive-mode'),
+                  onPressed: () => Navigator.pop(sheetContext, true),
+                  child: const Text('開始する'),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.pop(sheetContext, false),
+                  child: const Text('キャンセル'),
+                ),
+              ],
             ),
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-                ref.read(locationServiceProvider).openSettings();
-              },
-              child: const Text(_permissionOpenSettings),
-            ),
-          ],
+          ),
+        ),
+      );
+      if (shouldStart != true || !context.mounted) return;
+
+      await Navigator.of(context).push(
+        MaterialPageRoute<void>(
+          builder: (_) => DriveModeTransitionPage(
+            direction: DriveTransitionDirection.entering,
+            onCompleted: (transitionContext) {
+              Navigator.of(transitionContext).pushReplacement(
+                MaterialPageRoute<void>(builder: (_) => const DriveModePage()),
+              );
+            },
+          ),
         ),
       );
     }
 
     Future<void> recordCurrentLocation() async {
-      if (isRecording.value) return;
-      final now = DateTime.now();
-      if (lastRecordTime.value != null &&
-          now.difference(lastRecordTime.value!) <
-              const Duration(milliseconds: 500)) {
-        return;
-      }
-      lastRecordTime.value = now;
-      isRecording.value = true;
-      try {
-        final coordinate = await ref
-            .read(locationServiceProvider)
-            .fetchCurrentLocation();
-        final pin = Pin(
-          latitude: coordinate.latitude,
-          longitude: coordinate.longitude,
-          createdAt: MyDatetime(DateTime.now()),
-        );
-        await ref.read(pinsProvider.notifier).savePin(pin);
-        if (context.mounted) {
-          latestPin.value = pin;
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(const SnackBar(content: Text(_recordSuccessMessage)));
-        }
-      } on LocationPermissionPermanentlyDeniedException {
-        if (context.mounted) showPermanentlyDeniedDialog();
-      } on LocationPermissionDeniedException {
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text(_permissionDeniedMessage)),
-          );
-        }
-      } catch (e) {
-        if (context.mounted) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text('$_recordErrorPrefix$e')));
-        }
-      } finally {
-        isRecording.value = false;
-      }
+      await performRecordAction(
+        context: context,
+        ref: ref,
+        feedbackController: feedbackController,
+        onSuccess: (pin) => latestPin.value = pin,
+      );
     }
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('TapPin'),
-        actions: [
-          IconButton(
-            icon: Icon(
-              Icons.picture_in_picture,
-              color: isOverlayActive.value
-                  ? Theme.of(context).colorScheme.primary
-                  : null,
+    final isRecording = ref.watch(recordingProvider).isLoading;
+    final Pin? currentLatestPin = latestPin.value;
+    final Widget? latestPinCard;
+    if (currentLatestPin == null) {
+      latestPinCard = null;
+    } else {
+      latestPinCard = _LatestPinCard(pin: currentLatestPin);
+    }
+
+    return RecordFeedback(
+      controller: feedbackController,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('TapPin'),
+          actions: [
+            IconButton(
+              icon: Icon(
+                Icons.picture_in_picture,
+                color: isOverlayActive.value
+                    ? Theme.of(context).colorScheme.primary
+                    : null,
+              ),
+              onPressed: toggleOverlay,
             ),
-            onPressed: toggleOverlay,
-          ),
-          IconButton(
-            icon: const Icon(Icons.map),
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const MapPage()),
-            ),
-          ),
-          IconButton(
-            icon: const Icon(Icons.list),
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const ListPage()),
-            ),
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: Center(
-              child: RecordButton(
-                onPressed: recordCurrentLocation,
-                isLoading: isRecording.value,
+            IconButton(
+              icon: const Icon(Icons.map),
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const MapPage()),
               ),
             ),
-          ),
-          if (latestPin.value != null) _LatestPinCard(pin: latestPin.value!),
-        ],
+            IconButton(
+              icon: const Icon(Icons.list),
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const ListPage()),
+              ),
+            ),
+          ],
+        ),
+        body: Column(
+          children: [
+            Expanded(
+              child: Center(
+                child: RecordButton(
+                  onPressed: recordCurrentLocation,
+                  isLoading: isRecording,
+                ),
+              ),
+            ),
+            ?latestPinCard,
+            DriveModeEntry(onTap: openDriveMode),
+          ],
+        ),
       ),
     );
   }
 }
 
+/// 直近に記録した位置と時刻を表示するカード。
 class _LatestPinCard extends ConsumerWidget {
   const _LatestPinCard({required this.pin});
 

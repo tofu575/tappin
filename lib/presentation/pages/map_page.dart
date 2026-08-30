@@ -11,6 +11,7 @@ import 'package:tappin/domain/models/location/coordinate.dart';
 import 'package:tappin/domain/models/pin/memo.dart';
 import 'package:tappin/domain/models/pin/pin.dart';
 import 'package:tappin/domain/services/location_service.dart';
+import 'package:tappin/presentation/providers/interactor_provider.dart';
 import 'package:tappin/presentation/providers/provider.dart';
 import 'package:tappin/presentation/widgets/map_launch_buttons.dart';
 import 'package:tappin/presentation/widgets/memo_edit_dialog.dart';
@@ -60,10 +61,13 @@ class _MapView extends HookConsumerWidget {
       if (isFetchingLocation.value) return;
       isFetchingLocation.value = true;
       try {
-        final coordinate =
-            await ref.read(locationServiceProvider).fetchCurrentLocation();
-        final location =
-            LatLng(coordinate.latitude.value, coordinate.longitude.value);
+        final coordinate = await ref
+            .read(interactorProvider)
+            .fetchCurrentLocation();
+        final location = LatLng(
+          coordinate.latitude.value,
+          coordinate.longitude.value,
+        );
         if (context.mounted) currentLocation.value = location;
         mapController.moveAndRotate(location, _pinZoom, 0);
       } on LocationPermissionPermanentlyDeniedException {
@@ -81,7 +85,7 @@ class _MapView extends HookConsumerWidget {
                 TextButton(
                   onPressed: () {
                     Navigator.pop(context);
-                    ref.read(locationServiceProvider).openSettings();
+                    ref.read(interactorProvider).openLocationSettings();
                   },
                   child: const Text('設定を開く'),
                 ),
@@ -234,9 +238,7 @@ class _PinDetailSheet extends HookConsumerWidget {
     Future<void> openMemoEditor() async {
       final result = await showDialog<String>(
         context: context,
-        builder: (_) => MemoEditDialog(
-          initialText: memo.value?.value ?? '',
-        ),
+        builder: (_) => MemoEditDialog(initialText: memo.value?.value ?? ''),
       );
       if (result != null && pin.id != null && context.mounted) {
         memo.value = Memo(result);

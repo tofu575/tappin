@@ -6,12 +6,16 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:tappin/app.dart';
 import 'package:tappin/config/app_env.dart';
-import 'package:tappin/domain/usecases/use_case.dart';
-import 'package:tappin/gateway/location/geolocator_location_service.dart';
+import 'package:tappin/domain/interactor/interactor.dart';
+import 'package:tappin/gateway/device/flutter_haptic_gateway.dart';
+import 'package:tappin/gateway/device/system_clock_gateway.dart';
+import 'package:tappin/gateway/external_map/url_launcher_external_map_gateway.dart';
 import 'package:tappin/gateway/geocoding/native_geocoding_service.dart';
-import 'package:tappin/gateway/storage/method_channel_storage.dart';
+import 'package:tappin/gateway/location/geolocator_location_service.dart';
+import 'package:tappin/gateway/onboarding/shared_preferences_onboarding_gateway.dart';
 import 'package:tappin/gateway/overlay/native_overlay_service.dart';
-import 'package:tappin/presentation/providers/provider.dart';
+import 'package:tappin/gateway/storage/method_channel_storage.dart';
+import 'package:tappin/presentation/providers/interactor_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,19 +26,22 @@ void main() async {
   await FMTCObjectBoxBackend().initialise();
   await FMTCStore('mapTiles').manage.create();
 
-  // 初回起動時の説明表示フラグ
-  final prefs = await SharedPreferences.getInstance();
-  final hasSeenOnboarding = prefs.getBool('onboarding_v1') ?? false;
+  final preferences = await SharedPreferences.getInstance();
+  final interactor = Interactor(
+    repository: MethodChannelStorage(),
+    locationGateway: GeolocatorLocationService(),
+    geocodingGateway: NativeGeocodingService(),
+    overlayGateway: NativeOverlayService(),
+    clockGateway: const SystemClockGateway(),
+    hapticGateway: const FlutterHapticGateway(),
+    externalMapGateway: const UrlLauncherExternalMapGateway(),
+    onboardingGateway: SharedPreferencesOnboardingGateway(preferences),
+  );
 
   runApp(
     ProviderScope(
-      overrides: [
-        useCaseProvider.overrideWithValue(UseCase(MethodChannelStorage())),
-        locationServiceProvider.overrideWithValue(GeolocatorLocationService()),
-        geocodingServiceProvider.overrideWithValue(NativeGeocodingService()),
-        overlayServiceProvider.overrideWithValue(NativeOverlayService()),
-      ],
-      child: App(showOnboarding: !hasSeenOnboarding),
+      overrides: [interactorProvider.overrideWithValue(interactor)],
+      child: App(showOnboarding: !interactor.hasCompletedOnboarding()),
     ),
   );
 }

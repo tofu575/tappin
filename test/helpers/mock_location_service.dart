@@ -12,6 +12,7 @@ class MockLocationService implements LocationService {
   final Coordinate? _coordinate;
   final Exception? _exception;
   int warmUpCount = 0;
+  int fetchCurrentLocationCount = 0;
 
   MockLocationService.success(Coordinate coordinate)
     : _coordinate = coordinate,
@@ -31,6 +32,7 @@ class MockLocationService implements LocationService {
 
   @override
   Future<Coordinate> fetchCurrentLocation() async {
+    fetchCurrentLocationCount++;
     if (_exception != null) throw _exception;
     return _coordinate!;
   }

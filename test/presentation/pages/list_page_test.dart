@@ -4,10 +4,10 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:tappin/domain/models/pin/memo.dart';
 import 'package:tappin/domain/models/pin/pin.dart';
-import 'package:tappin/domain/usecases/use_case.dart';
 import 'package:tappin/presentation/pages/list_page.dart';
-import 'package:tappin/presentation/providers/provider.dart';
+import 'package:tappin/presentation/providers/interactor_provider.dart';
 
+import '../../helpers/build_test_interactor.dart';
 import '../../helpers/mock_geocoding_service.dart';
 import '../../helpers/mock_repository.dart';
 
@@ -19,9 +19,11 @@ Widget _buildPage({
   final repository = repo ?? MockRipository(stubbedPins: pins);
   return ProviderScope(
     overrides: [
-      useCaseProvider.overrideWithValue(UseCase(repository)),
-      geocodingServiceProvider.overrideWithValue(
-        geocodingService ?? MockGeocodingService(),
+      interactorProvider.overrideWithValue(
+        buildTestInteractor(
+          repository: repository,
+          geocodingGateway: geocodingService,
+        ),
       ),
     ],
     child: const MaterialApp(home: ListPage()),

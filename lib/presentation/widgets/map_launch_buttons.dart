@@ -1,49 +1,45 @@
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:tappin/domain/models/location/coordinate.dart';
+import 'package:tappin/domain/services/external_map_destination.dart';
+import 'package:tappin/presentation/providers/interactor_provider.dart';
 
-const _googleMapsBaseUrl =
-    'https://www.google.com/maps/search/?api=1&query=';
-const _streetViewBaseUrl =
-    'https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=';
+const _externalMapErrorMessage = '地図アプリを開けませんでした';
 
-class MapLaunchButtons extends StatelessWidget {
+/// [coordinate]を外部地図またはStreet Viewで開く操作を表示する。
+class MapLaunchButtons extends ConsumerWidget {
   const MapLaunchButtons({super.key, required this.coordinate});
 
   final Coordinate coordinate;
 
-  String get _coordQuery =>
-      '${coordinate.latitude.value},${coordinate.longitude.value}';
-
-  Future<void> _openGoogleMaps() async {
-    final uri = Uri.parse('$_googleMapsBaseUrl$_coordQuery');
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
-    }
-  }
-
-  Future<void> _openStreetView() async {
-    final uri = Uri.parse('$_streetViewBaseUrl$_coordQuery');
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
-    }
-  }
-
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    Future<void> open(ExternalMapDestination destination) async {
+      try {
+        await ref
+            .read(interactorProvider)
+            .openExternalMap(coordinate, destination);
+      } catch (_) {
+        if (!context.mounted) return;
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text(_externalMapErrorMessage)));
+      }
+    }
+
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         IconButton(
           icon: const Icon(Icons.map),
           tooltip: 'Google Maps',
-          onPressed: _openGoogleMaps,
+          onPressed: () => open(ExternalMapDestination.map),
         ),
         IconButton(
           icon: const Icon(Icons.streetview),
           tooltip: 'ストリートビュー',
-          onPressed: _openStreetView,
+          onPressed: () => open(ExternalMapDestination.streetView),
         ),
       ],
     );

@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:tappin/presentation/pages/home_page.dart';
-
-const _onboardingKey = 'onboarding_v1';
+import 'package:tappin/presentation/providers/interactor_provider.dart';
 
 class _OnboardingStep {
   const _OnboardingStep({
@@ -35,14 +34,14 @@ const _steps = [
   ),
 ];
 
-class OnboardingPage extends StatefulWidget {
+class OnboardingPage extends ConsumerStatefulWidget {
   const OnboardingPage({super.key});
 
   @override
-  State<OnboardingPage> createState() => _OnboardingPageState();
+  ConsumerState<OnboardingPage> createState() => _OnboardingPageState();
 }
 
-class _OnboardingPageState extends State<OnboardingPage> {
+class _OnboardingPageState extends ConsumerState<OnboardingPage> {
   final _pageController = PageController();
   int _currentPage = 0;
 
@@ -53,8 +52,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
   }
 
   Future<void> _completeOnboarding() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(_onboardingKey, true);
+    await ref.read(interactorProvider).completeOnboarding();
     if (mounted) {
       Navigator.pushReplacement(
         context,
@@ -84,7 +82,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 controller: _pageController,
                 itemCount: _steps.length,
                 onPageChanged: (index) => setState(() => _currentPage = index),
-                itemBuilder: (context, index) => _OnboardingStepView(step: _steps[index]),
+                itemBuilder: (context, index) =>
+                    _OnboardingStepView(step: _steps[index]),
               ),
             ),
             Padding(
@@ -113,7 +112,9 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   SizedBox(
                     width: double.infinity,
                     child: FilledButton(
-                      onPressed: isLastPage ? _completeOnboarding : _goToNextPage,
+                      onPressed: isLastPage
+                          ? _completeOnboarding
+                          : _goToNextPage,
                       style: FilledButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
@@ -122,7 +123,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       ),
                       child: Text(
                         isLastPage ? 'はじめる' : '次へ',
-                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ),

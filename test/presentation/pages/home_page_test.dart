@@ -3,11 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:tappin/domain/services/location_service.dart';
-import 'package:tappin/domain/usecases/use_case.dart';
+import 'package:tappin/presentation/pages/drive_mode/drive_mode_page.dart';
 import 'package:tappin/presentation/pages/home_page.dart';
-import 'package:tappin/presentation/providers/provider.dart';
+import 'package:tappin/presentation/providers/interactor_provider.dart';
 
+import '../../helpers/build_test_interactor.dart';
 import '../../helpers/mock_geocoding_service.dart';
+import '../../helpers/mock_haptic_gateway.dart';
 import '../../helpers/mock_location_service.dart';
 import '../../helpers/mock_overlay_service.dart';
 import '../../helpers/mock_repository.dart';
@@ -16,16 +18,18 @@ Widget _buildPage({
   MockRipository? repo,
   LocationService? locationService,
   MockOverlayService? overlayService,
+  MockHapticGateway? hapticGateway,
 }) {
   return ProviderScope(
     overrides: [
-      useCaseProvider.overrideWithValue(UseCase(repo ?? MockRipository())),
-      locationServiceProvider.overrideWithValue(
-        locationService ?? MockLocationService.success(testCoordinate),
-      ),
-      geocodingServiceProvider.overrideWithValue(MockGeocodingService()),
-      overlayServiceProvider.overrideWithValue(
-        overlayService ?? MockOverlayService(),
+      interactorProvider.overrideWithValue(
+        buildTestInteractor(
+          repository: repo,
+          locationGateway: locationService,
+          geocodingGateway: MockGeocodingService(),
+          overlayGateway: overlayService,
+          hapticGateway: hapticGateway,
+        ),
       ),
     ],
     child: const MaterialApp(home: HomePage()),
@@ -49,6 +53,44 @@ void main() {
     expect(find.text('記録'), findsOneWidget);
   });
 
+  testWidgets('Drive modeの入口から開始確認を開ける', (tester) async {
+    await tester.pumpWidget(_buildPage());
+    await tester.pump();
+
+    await tester.tap(find.byKey(const Key('drive-mode-entry')));
+    await tester.pumpAndSettle();
+
+    expect(find.textContaining('画面全体が記録ボタンになります。'), findsOneWidget);
+    expect(find.text('開始する'), findsOneWidget);
+    expect(find.text('キャンセル'), findsOneWidget);
+  });
+
+  testWidgets('Drive mode開始確認をキャンセルするとHomeに留まる', (tester) async {
+    await tester.pumpWidget(_buildPage());
+    await tester.pump();
+
+    await tester.tap(find.byKey(const Key('drive-mode-entry')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('キャンセル'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(HomePage), findsOneWidget);
+    expect(find.byType(DriveModePage), findsNothing);
+  });
+
+  testWidgets('Drive modeを開始すると車の演出後に専用画面へ遷移する', (tester) async {
+    await tester.pumpWidget(_buildPage());
+    await tester.pump();
+
+    await tester.tap(find.byKey(const Key('drive-mode-entry')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('start-drive-mode')));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(DriveModePage), findsOneWidget);
+    expect(find.text('画面のどこでもタップで記録'), findsOneWidget);
+  });
+
   testWidgets('初期状態では最新ピンカードが表示されない', (tester) async {
     await tester.pumpWidget(_buildPage());
     await tester.pump();
@@ -67,6 +109,25 @@ void main() {
 
     expect(find.text('現在地を記録しました'), findsOneWidget);
     expect(repo.savedPins, hasLength(1));
+  });
+
+  testWidgets('通常記録でも共通のハプティクスと画面フラッシュを使用する', (tester) async {
+    final hapticGateway = MockHapticGateway();
+
+    await tester.pumpWidget(_buildPage(hapticGateway: hapticGateway));
+    await tester.pump();
+    await tester.tap(find.text('記録'));
+    await tester.pump(const Duration(milliseconds: 100));
+
+    expect(hapticGateway.recordSuccessCount, 1);
+    final flash = tester.widget<FadeTransition>(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is FadeTransition &&
+            widget.child?.key == const Key('record-feedback-flash'),
+      ),
+    );
+    expect(flash.opacity.value, greaterThan(0));
   });
 
   testWidgets('記録成功後に最新ピンカードが表示される', (tester) async {

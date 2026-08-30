@@ -13,13 +13,19 @@
 
 クリーンアーキテクチャを採用。依存の向きは `presentation → domain ← gateway` で、`gateway` と `presentation` はどちらも `domain` に依存するが、互いには依存しない。
 
+Presentationは構築済みの`Interactor`だけを`interactorProvider`から取得する。Interactorはアプリケーションの操作順序を担当し、永続化、位置情報、ハプティクス、外部アプリ起動などの外部機能は注入されたGateway interfaceを通じて利用する。
+
+```text
+Presentation → interactorProvider → Interactor → Gateway interface ← Gateway実装
+```
+
 ```
 lib/
 ├── domain/                     # ビジネスロジック層（外部への依存なし）
 │   ├── models/                 # 値オブジェクト・エンティティ
-│   ├── repositories/           # リポジトリインターフェース定義
-│   ├── services/               # 外部サービスのインターフェース定義（LocationService など）
-│   └── usecases/               # ユースケース（PinUseCase）
+│   ├── repositories/           # 永続化Gatewayのインターフェース定義
+│   ├── services/               # 端末・外部機能のGatewayインターフェース定義
+│   └── interactor/             # アプリケーションの操作単位
 │
 ├── gateway/                    # インフラ層（domainインターフェースの実装）
 │                               # gateway配下は責務分離のため、概念上近くても分けること
@@ -30,4 +36,4 @@ lib/
     └── widgets/                # 再利用可能なUIコンポーネント
 ```
 
-依存注入は `main.dart` でアプリ起動時に1度だけ行い、`ProviderScope.overrides` 経由で渡す。
+依存注入は `main.dart` でアプリ起動時に1度だけ行い、構築済みInteractorを`interactorProvider.overrideWithValue()`で渡す。
