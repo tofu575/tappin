@@ -5,22 +5,30 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:tappin/presentation/pages/drive_mode/drive_mode_page.dart';
 import 'package:tappin/presentation/pages/drive_mode/drive_mode_transition_page.dart';
 import 'package:tappin/presentation/pages/drive_mode/drive_transition_direction.dart';
+import 'package:tappin/presentation/pages/drive_mode/components/drive_mode_car.dart';
+import 'package:tappin/presentation/pages/drive_mode/components/recording_pin_indicator.dart';
 import 'package:tappin/presentation/pages/home_page.dart';
 import 'package:tappin/presentation/providers/interactor_provider.dart';
+import 'package:tappin/presentation/providers/screen_awake_provider.dart';
 
 import '../../helpers/build_test_interactor.dart';
 import '../../helpers/mock_haptic_gateway.dart';
 import '../../helpers/mock_repository.dart';
+import '../../helpers/mock_screen_awake_gateway.dart';
 
 /// [repo]へ保存するDrive mode画面を本番と同じProvider境界で構築する。
 Widget _buildDrivePage(
   MockRipository repo, {
   MockHapticGateway? hapticGateway,
+  MockScreenAwakeGateway? screenAwakeGateway,
 }) {
   return ProviderScope(
     overrides: [
       interactorProvider.overrideWithValue(
         buildTestInteractor(repository: repo, hapticGateway: hapticGateway),
+      ),
+      screenAwakeProvider.overrideWithValue(
+        screenAwakeGateway ?? MockScreenAwakeGateway(),
       ),
     ],
     child: const MaterialApp(home: DriveModePage()),
@@ -28,11 +36,17 @@ Widget _buildDrivePage(
 }
 
 /// [repo]へ保存するHome画面を、終了遷移の戻り先として構築する。
-Widget _buildHomePage(MockRipository repo) {
+Widget _buildHomePage(
+  MockRipository repo, {
+  MockScreenAwakeGateway? screenAwakeGateway,
+}) {
   return ProviderScope(
     overrides: [
       interactorProvider.overrideWithValue(
         buildTestInteractor(repository: repo),
+      ),
+      screenAwakeProvider.overrideWithValue(
+        screenAwakeGateway ?? MockScreenAwakeGateway(),
       ),
     ],
     child: const MaterialApp(home: HomePage()),
@@ -64,8 +78,59 @@ void main() {
       );
       expect(flash.opacity.value, greaterThan(0));
 
+      await tester.pump(const Duration(milliseconds: 400));
+
       await tester.pumpWidget(const SizedBox.shrink());
     }
+  });
+
+  testWidgets('記録中はピンが下から満たされ、車の常時アニメーションが存在する', (tester) async {
+    final repo = MockRipository();
+    await tester.pumpWidget(_buildDrivePage(repo));
+    await tester.pump();
+
+    expect(find.byType(RecordingPinIndicator), findsOneWidget);
+    expect(find.byType(DriveModeCar), findsOneWidget);
+
+    await tester.tapAt(const Offset(400, 300));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
+
+    final indicator = tester.widget<RecordingPinIndicator>(
+      find.byType(RecordingPinIndicator),
+    );
+    expect(indicator.progress.value, inExclusiveRange(0, 1));
+
+    await tester.pump(const Duration(milliseconds: 200));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 80));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
+    await tester.pump();
+    expect(indicator.progress.value, 0);
+  });
+
+  testWidgets('表示中だけScreen Awakeを有効にし、バックグラウンドと破棄時に解除する', (tester) async {
+    final screenAwakeGateway = MockScreenAwakeGateway();
+    await tester.pumpWidget(
+      _buildDrivePage(MockRipository(), screenAwakeGateway: screenAwakeGateway),
+    );
+    await tester.pump();
+
+    expect(screenAwakeGateway.enableCount, 1);
+
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+    await tester.pump();
+    expect(screenAwakeGateway.disableCount, 1);
+
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+    await tester.pump();
+    expect(screenAwakeGateway.enableCount, 2);
+
+    await tester.pumpWidget(const SizedBox.shrink());
+    await tester.pump();
+
+    expect(screenAwakeGateway.disableCount, 2);
   });
 
   testWidgets('開始・終了で共通の車トランジションWidgetを表示する', (tester) async {
@@ -108,7 +173,12 @@ void main() {
     await tester.tap(find.byKey(const Key('drive-mode-entry')));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('start-drive-mode')));
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(milliseconds: 400));
+    await tester.pump(const Duration(milliseconds: 800));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
 
     final gesture = await tester.startGesture(const Offset(400, 300));
     await tester.pump(const Duration(milliseconds: 600));

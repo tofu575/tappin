@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 import 'package:tappin/presentation/widgets/record_feedback_controller.dart';
 
-/// [child]全体を覆う成功色フラッシュを[controller]から再生するWidget。
+/// [child]全体を覆う記録結果色フラッシュを[controller]から再生するWidget。
 class RecordFeedback extends StatefulWidget {
   const RecordFeedback({
     super.key,
@@ -25,6 +25,7 @@ class _RecordFeedbackState extends State<RecordFeedback>
 
   late final AnimationController _animationController;
   late final Animation<double> _opacity;
+  bool _isFailure = false;
 
   @override
   void initState() {
@@ -37,25 +38,31 @@ class _RecordFeedbackState extends State<RecordFeedback>
       TweenSequenceItem(tween: ConstantTween<double>(0.3), weight: 37.5),
       TweenSequenceItem(tween: Tween<double>(begin: 0.3, end: 0), weight: 62.5),
     ]).animate(_animationController);
-    widget.controller.attach(_showFlash);
+    widget.controller.attach(_showSuccessFlash, _showFailureFlash);
   }
 
   @override
   void didUpdateWidget(covariant RecordFeedback oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.controller != widget.controller) {
-      oldWidget.controller.detach(_showFlash);
-      widget.controller.attach(_showFlash);
+      oldWidget.controller.detach(_showSuccessFlash, _showFailureFlash);
+      widget.controller.attach(_showSuccessFlash, _showFailureFlash);
     }
   }
 
-  void _showFlash() {
+  void _showSuccessFlash() {
+    setState(() => _isFailure = false);
+    unawaited(_animationController.forward(from: 0));
+  }
+
+  void _showFailureFlash() {
+    setState(() => _isFailure = true);
     unawaited(_animationController.forward(from: 0));
   }
 
   @override
   void dispose() {
-    widget.controller.detach(_showFlash);
+    widget.controller.detach(_showSuccessFlash, _showFailureFlash);
     _animationController.dispose();
     super.dispose();
   }
@@ -71,7 +78,9 @@ class _RecordFeedbackState extends State<RecordFeedback>
             opacity: _opacity,
             child: ColoredBox(
               key: const Key('record-feedback-flash'),
-              color: Theme.of(context).colorScheme.primary,
+              color: _isFailure
+                  ? Theme.of(context).colorScheme.error
+                  : Theme.of(context).colorScheme.primary,
             ),
           ),
         ),

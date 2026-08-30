@@ -4,8 +4,10 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:tappin/domain/services/location_service.dart';
 import 'package:tappin/presentation/pages/drive_mode/drive_mode_page.dart';
+import 'package:tappin/presentation/pages/drive_mode/drive_mode_transition_page.dart';
 import 'package:tappin/presentation/pages/home_page.dart';
 import 'package:tappin/presentation/providers/interactor_provider.dart';
+import 'package:tappin/presentation/providers/screen_awake_provider.dart';
 
 import '../../helpers/build_test_interactor.dart';
 import '../../helpers/mock_geocoding_service.dart';
@@ -13,6 +15,7 @@ import '../../helpers/mock_haptic_gateway.dart';
 import '../../helpers/mock_location_service.dart';
 import '../../helpers/mock_overlay_service.dart';
 import '../../helpers/mock_repository.dart';
+import '../../helpers/mock_screen_awake_gateway.dart';
 
 Widget _buildPage({
   MockRipository? repo,
@@ -31,6 +34,7 @@ Widget _buildPage({
           hapticGateway: hapticGateway,
         ),
       ),
+      screenAwakeProvider.overrideWithValue(MockScreenAwakeGateway()),
     ],
     child: const MaterialApp(home: HomePage()),
   );
@@ -65,6 +69,20 @@ void main() {
     expect(find.text('キャンセル'), findsOneWidget);
   });
 
+  testWidgets('Drive modeの入口を上スワイプして開始確認を開ける', (tester) async {
+    await tester.pumpWidget(_buildPage());
+    await tester.pump();
+
+    await tester.fling(
+      find.byKey(const Key('drive-mode-entry')),
+      const Offset(0, -200),
+      1000,
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('開始する'), findsOneWidget);
+  });
+
   testWidgets('Drive mode開始確認をキャンセルするとHomeに留まる', (tester) async {
     await tester.pumpWidget(_buildPage());
     await tester.pump();
@@ -85,9 +103,15 @@ void main() {
     await tester.tap(find.byKey(const Key('drive-mode-entry')));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('start-drive-mode')));
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(milliseconds: 400));
+    await tester.pump(const Duration(milliseconds: 800));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
 
     expect(find.byType(DriveModePage), findsOneWidget);
+    expect(find.byType(DriveModeTransitionPage), findsNothing);
     expect(find.text('画面のどこでもタップで記録'), findsOneWidget);
   });
 
@@ -166,15 +190,28 @@ void main() {
   });
 
   testWidgets('予期しないエラーが発生した場合、エラーメッセージが表示される', (tester) async {
+    final hapticGateway = MockHapticGateway();
     await tester.pumpWidget(
-      _buildPage(locationService: MockLocationService.error('GPS unavailable')),
+      _buildPage(
+        locationService: MockLocationService.error('GPS unavailable'),
+        hapticGateway: hapticGateway,
+      ),
     );
     await tester.pump();
 
     await tester.tap(find.text('記録'));
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(milliseconds: 100));
 
     expect(find.textContaining('エラーが発生しました'), findsOneWidget);
+    expect(hapticGateway.recordSuccessCount, 0);
+    expect(hapticGateway.recordFailureCount, 1);
+    final failureFlash = tester.widget<ColoredBox>(
+      find.byKey(const Key('record-feedback-flash')),
+    );
+    expect(
+      failureFlash.color,
+      Theme.of(tester.element(find.byType(HomePage))).colorScheme.error,
+    );
   });
 
   testWidgets('AppBarに地図・一覧ボタンが表示される', (tester) async {

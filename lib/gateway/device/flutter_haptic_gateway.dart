@@ -12,4 +12,9 @@ class FlutterHapticGateway implements HapticGateway {
   void playRecordSuccess() {
     unawaited(HapticFeedback.mediumImpact());
   }
+
+  @override
+  void playRecordFailure() {
+    unawaited(HapticFeedback.vibrate());
+  }
 }

@@ -9,6 +9,7 @@ import 'package:tappin/config/app_env.dart';
 import 'package:tappin/domain/interactor/interactor.dart';
 import 'package:tappin/gateway/device/flutter_haptic_gateway.dart';
 import 'package:tappin/gateway/device/system_clock_gateway.dart';
+import 'package:tappin/gateway/device/wakelock_screen_awake_gateway.dart';
 import 'package:tappin/gateway/external_map/url_launcher_external_map_gateway.dart';
 import 'package:tappin/gateway/geocoding/native_geocoding_service.dart';
 import 'package:tappin/gateway/location/geolocator_location_service.dart';
@@ -16,6 +17,7 @@ import 'package:tappin/gateway/onboarding/shared_preferences_onboarding_gateway.
 import 'package:tappin/gateway/overlay/native_overlay_service.dart';
 import 'package:tappin/gateway/storage/method_channel_storage.dart';
 import 'package:tappin/presentation/providers/interactor_provider.dart';
+import 'package:tappin/presentation/providers/screen_awake_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -40,7 +42,12 @@ void main() async {
 
   runApp(
     ProviderScope(
-      overrides: [interactorProvider.overrideWithValue(interactor)],
+      overrides: [
+        interactorProvider.overrideWithValue(interactor),
+        screenAwakeProvider.overrideWithValue(
+          const WakelockScreenAwakeGateway(),
+        ),
+      ],
       child: App(showOnboarding: !interactor.hasCompletedOnboarding()),
     ),
   );

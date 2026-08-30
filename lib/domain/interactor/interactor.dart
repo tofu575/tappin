@@ -63,6 +63,9 @@ class Interactor {
   /// 現在地を取得してPinを保存し、成功ハプティクスを開始する。
   Future<Pin?> recordCurrentLocation() => _recordCurrentLocation(this);
 
+  /// 記録失敗を示す触覚フィードバックを開始する。
+  void playRecordFailure() => _hapticGateway.playRecordFailure();
+
   /// [id]のPinを削除する。
   Future<void> deletePin(int id) => _deletePin(this, id);
 

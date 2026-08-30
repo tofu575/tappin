@@ -3,14 +3,20 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:tappin/domain/services/screen_awake_gateway.dart';
+import 'package:tappin/presentation/pages/drive_mode/components/drive_mode_car.dart';
+import 'package:tappin/presentation/pages/drive_mode/components/recording_pin_indicator.dart';
 import 'package:tappin/presentation/pages/drive_mode/drive_mode_transition_page.dart';
 import 'package:tappin/presentation/pages/drive_mode/drive_transition_direction.dart';
 import 'package:tappin/presentation/providers/recording_provider.dart';
+import 'package:tappin/presentation/providers/screen_awake_provider.dart';
 import 'package:tappin/presentation/widgets/record_action.dart';
 import 'package:tappin/presentation/widgets/record_feedback.dart';
 import 'package:tappin/presentation/widgets/record_feedback_controller.dart';
 
 const _exitProgressDuration = Duration(seconds: 1);
+const _minimumPinFillDuration = Duration(milliseconds: 250);
+const _completedPinHoldDuration = Duration(milliseconds: 100);
 
 /// 画面全体のタップで記録し、約1.5秒の長押しで安全に終了するDrive mode画面。
 class DriveModePage extends ConsumerStatefulWidget {
@@ -21,9 +27,11 @@ class DriveModePage extends ConsumerStatefulWidget {
 }
 
 class _DriveModePageState extends ConsumerState<DriveModePage>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin, WidgetsBindingObserver {
   final _feedbackController = RecordFeedbackController();
   late final AnimationController _exitProgressController;
+  late final AnimationController _pinProgressController;
+  late final ScreenAwakeGateway _screenAwakeGateway;
   int _recordCount = 0;
   bool _isHolding = false;
   bool _isExiting = false;
@@ -31,10 +39,31 @@ class _DriveModePageState extends ConsumerState<DriveModePage>
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _screenAwakeGateway = ref.read(screenAwakeProvider);
     _exitProgressController = AnimationController(
       vsync: this,
       duration: _exitProgressDuration,
     )..addStatusListener(_handleExitProgress);
+    _pinProgressController = AnimationController(
+      vsync: this,
+      duration: _minimumPinFillDuration,
+    );
+    unawaited(_screenAwakeGateway.enable());
+  }
+
+  /// バックグラウンド中は解除し、Drive modeへ復帰した場合だけ再度有効化する。
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    switch (state) {
+      case AppLifecycleState.resumed:
+        unawaited(_screenAwakeGateway.enable());
+      case AppLifecycleState.inactive:
+      case AppLifecycleState.hidden:
+      case AppLifecycleState.paused:
+      case AppLifecycleState.detached:
+        unawaited(_screenAwakeGateway.disable());
+    }
   }
 
   void _handleExitProgress(AnimationStatus status) {
@@ -53,14 +82,41 @@ class _DriveModePageState extends ConsumerState<DriveModePage>
   }
 
   Future<void> _record() async {
+    final minimumFill = Future<void>.delayed(_minimumPinFillDuration);
+    unawaited(
+      _pinProgressController.animateTo(
+        0.82,
+        duration: _minimumPinFillDuration,
+        curve: Curves.easeOut,
+      ),
+    );
+    var succeeded = false;
     await performRecordAction(
       context: context,
       ref: ref,
       feedbackController: _feedbackController,
       onSuccess: (_) {
+        succeeded = true;
         if (mounted) setState(() => _recordCount++);
       },
     );
+    await minimumFill;
+    if (!mounted) return;
+    if (!succeeded) {
+      await _pinProgressController.animateBack(
+        0,
+        duration: const Duration(milliseconds: 120),
+      );
+      return;
+    }
+
+    await _pinProgressController.animateTo(
+      1,
+      duration: const Duration(milliseconds: 30),
+      curve: Curves.easeOut,
+    );
+    await Future<void>.delayed(_completedPinHoldDuration);
+    if (mounted) _pinProgressController.value = 0;
   }
 
   void _startExitHold(LongPressStartDetails _) {
@@ -79,9 +135,12 @@ class _DriveModePageState extends ConsumerState<DriveModePage>
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    unawaited(_screenAwakeGateway.disable());
     _exitProgressController
       ..removeStatusListener(_handleExitProgress)
       ..dispose();
+    _pinProgressController.dispose();
     super.dispose();
   }
 
@@ -129,31 +188,17 @@ class _DriveModePageState extends ConsumerState<DriveModePage>
                         ],
                       ),
                       const Spacer(),
+                      RecordingPinIndicator(progress: _pinProgressController),
                       AnimatedSwitcher(
                         duration: const Duration(milliseconds: 180),
-                        child: isRecording
-                            ? CircularProgressIndicator(
-                                key: const Key('drive-recording-progress'),
-                                color: colorScheme.primary,
-                              )
-                            : Column(
-                                key: ValueKey(_recordCount),
-                                children: [
-                                  Text(
-                                    '$_recordCount',
-                                    style: textTheme.displayLarge?.copyWith(
-                                      color: colorScheme.onPrimaryContainer,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  Text(
-                                    'このドライブで記録済み',
-                                    style: textTheme.titleMedium?.copyWith(
-                                      color: colorScheme.onPrimaryContainer,
-                                    ),
-                                  ),
-                                ],
-                              ),
+                        child: Text(
+                          '$_recordCount 件記録済み',
+                          key: ValueKey(_recordCount),
+                          style: textTheme.titleMedium?.copyWith(
+                            color: colorScheme.onPrimaryContainer,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                       ),
                       const Spacer(),
                       if (_isHolding)
@@ -203,6 +248,8 @@ class _DriveModePageState extends ConsumerState<DriveModePage>
                             ),
                           ],
                         ),
+                      const SizedBox(height: 18),
+                      const DriveModeCar(),
                       const SizedBox(height: 20),
                     ],
                   ),

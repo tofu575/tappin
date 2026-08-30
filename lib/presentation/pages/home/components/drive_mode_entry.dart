@@ -14,25 +14,37 @@ class DriveModeEntry extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     return SafeArea(
       top: false,
-      child: Material(
-        color: colorScheme.surfaceContainer,
-        child: InkWell(
-          key: const Key('drive-mode-entry'),
-          onTap: onTap,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
-            child: Row(
-              children: [
-                Icon(Icons.directions_car_rounded, color: colorScheme.primary),
-                const SizedBox(width: 16),
-                const Expanded(
-                  child: Text(
-                    _driveModeTitle,
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+      child: GestureDetector(
+        key: const Key('drive-mode-entry'),
+        behavior: HitTestBehavior.opaque,
+        onVerticalDragEnd: (details) {
+          if ((details.primaryVelocity ?? 0) < -250) onTap();
+        },
+        child: Material(
+          color: colorScheme.surfaceContainer,
+          child: InkWell(
+            onTap: onTap,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.directions_car_rounded,
+                    color: colorScheme.primary,
                   ),
-                ),
-                const Icon(Icons.chevron_right_rounded),
-              ],
+                  const SizedBox(width: 16),
+                  const Expanded(
+                    child: Text(
+                      _driveModeTitle,
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                  const Icon(Icons.chevron_right_rounded),
+                ],
+              ),
             ),
           ),
         ),

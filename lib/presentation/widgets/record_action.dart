@@ -35,6 +35,8 @@ Future<void> performRecordAction({
     ).showSnackBar(const SnackBar(content: Text(_recordSuccessMessage)));
   } on LocationPermissionPermanentlyDeniedException {
     if (!context.mounted) return;
+    feedbackController.showFailure();
+    ref.read(interactorProvider).playRecordFailure();
     await showDialog<void>(
       context: context,
       builder: (dialogContext) => AlertDialog(
@@ -57,11 +59,15 @@ Future<void> performRecordAction({
     );
   } on LocationPermissionDeniedException {
     if (!context.mounted) return;
+    feedbackController.showFailure();
+    ref.read(interactorProvider).playRecordFailure();
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(const SnackBar(content: Text(_permissionDeniedMessage)));
   } catch (error) {
     if (!context.mounted) return;
+    feedbackController.showFailure();
+    ref.read(interactorProvider).playRecordFailure();
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(SnackBar(content: Text('$_recordErrorPrefix$error')));
