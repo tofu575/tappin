@@ -2,6 +2,14 @@ import 'package:flutter/material.dart';
 
 import 'package:tappin/presentation/theme/tap_pin_colors.dart';
 
+const _gothicFontFamily = 'sans-serif';
+const _gothicFontFallback = <String>[
+  'Noto Sans JP',
+  'Hiragino Sans',
+  'Yu Gothic',
+  'Meiryo',
+];
+
 /// 画鋲と現代的なフィールドノートを表すアプリThemeを構築する。
 ThemeData buildTapPinTheme() {
   const colors = tapPinLightColors;
@@ -31,6 +39,8 @@ ThemeData buildTapPinTheme() {
     colorScheme: scheme,
     scaffoldBackgroundColor: colors.paper,
     useMaterial3: true,
+    fontFamily: _gothicFontFamily,
+    fontFamilyFallback: _gothicFontFallback,
     extensions: const [colors],
     appBarTheme: AppBarTheme(
       backgroundColor: Colors.transparent,
@@ -43,6 +53,8 @@ ThemeData buildTapPinTheme() {
         fontSize: 20,
         fontWeight: FontWeight.w700,
         letterSpacing: 0.2,
+        fontFamily: _gothicFontFamily,
+        fontFamilyFallback: _gothicFontFallback,
       ),
     ),
     cardTheme: CardThemeData(

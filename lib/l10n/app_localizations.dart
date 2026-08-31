@@ -139,19 +139,19 @@ abstract class AppLocalizations {
   /// No description provided for @onboardingWelcomeDescription.
   ///
   /// In ja, this message translates to:
-  /// **'気になった場所を、その場でワンタップ。\nあとで思い出すために、いったん預けられます。'**
+  /// **'気になった場所を見つけたら、その場でワンタップ。\n場所と時間をすぐに記録できます。'**
   String get onboardingWelcomeDescription;
 
   /// No description provided for @onboardingReviewTitle.
   ///
   /// In ja, this message translates to:
-  /// **'あとで、ゆっくり確認'**
+  /// **'あとから場所を確認'**
   String get onboardingReviewTitle;
 
   /// No description provided for @onboardingReviewDescription.
   ///
   /// In ja, this message translates to:
-  /// **'記録した場所は履歴にまとまります。\n地図で調べて、分かったことをメモできます。'**
+  /// **'記録した場所は、あとから地図で確認できます。\n分かったことはメモに残せます。'**
   String get onboardingReviewDescription;
 
   /// No description provided for @onboardingQuickModeTitle.
@@ -163,7 +163,7 @@ abstract class AppLocalizations {
   /// No description provided for @onboardingQuickModeDescription.
   ///
   /// In ja, this message translates to:
-  /// **'画面のどこをタップしても場所を記録。\n車でも電車でも、歩いているときでも使えます。'**
+  /// **'画面のどこをタップしても場所を記録できます。\n車や電車、徒歩での移動中に使えます。'**
   String get onboardingQuickModeDescription;
 
   /// No description provided for @onboardingPrivacyTitle.
@@ -175,7 +175,7 @@ abstract class AppLocalizations {
   /// No description provided for @onboardingPrivacyDescription.
   ///
   /// In ja, this message translates to:
-  /// **'位置情報はピンの記録にのみ使用します。\nデータはすべてお使いの端末内に保存され、外部に送信されません。'**
+  /// **'位置情報は場所の記録にのみ使用します。\n記録したデータは端末内に保存され、外部には送信されません。'**
   String get onboardingPrivacyDescription;
 
   /// No description provided for @start.
@@ -193,7 +193,7 @@ abstract class AppLocalizations {
   /// No description provided for @homeTagline.
   ///
   /// In ja, this message translates to:
-  /// **'気になった場所を、ここに預けよう。'**
+  /// **'気になった場所を記録しよう。'**
   String get homeTagline;
 
   /// No description provided for @record.
@@ -205,7 +205,7 @@ abstract class AppLocalizations {
   /// No description provided for @pinHere.
   ///
   /// In ja, this message translates to:
-  /// **'ここに留める'**
+  /// **'場所を記録'**
   String get pinHere;
 
   /// No description provided for @history.
@@ -229,7 +229,7 @@ abstract class AppLocalizations {
   /// No description provided for @quickModeGuide.
   ///
   /// In ja, this message translates to:
-  /// **'画面のどこをタップしても、\n気になった場所をすぐ記録できます。'**
+  /// **'画面のどこをタップしても、\n現在地をすぐに記録できます。'**
   String get quickModeGuide;
 
   /// No description provided for @startQuickMode.
@@ -247,13 +247,13 @@ abstract class AppLocalizations {
   /// No description provided for @coordinateRecorded.
   ///
   /// In ja, this message translates to:
-  /// **'記録した座標を預かりました'**
+  /// **'位置を記録しました'**
   String get coordinateRecorded;
 
   /// No description provided for @justPinned.
   ///
   /// In ja, this message translates to:
-  /// **'いま預けました'**
+  /// **'記録しました'**
   String get justPinned;
 
   /// No description provided for @historyTitle.
@@ -271,7 +271,7 @@ abstract class AppLocalizations {
   /// No description provided for @historyDescription.
   ///
   /// In ja, this message translates to:
-  /// **'気になった場所を、ひとつずつ確かめよう。'**
+  /// **'記録した場所を、ひとつずつ確認できます。'**
   String get historyDescription;
 
   /// No description provided for @unreviewedCount.
@@ -295,37 +295,37 @@ abstract class AppLocalizations {
   /// No description provided for @noPinsDescription.
   ///
   /// In ja, this message translates to:
-  /// **'ホームから、気になった場所を預けてみましょう。'**
+  /// **'気になった場所を記録してみましょう。'**
   String get noPinsDescription;
 
   /// No description provided for @noUnreviewedTitle.
   ///
   /// In ja, this message translates to:
-  /// **'いま確認する記録はありません'**
+  /// **'未確認の記録はありません'**
   String get noUnreviewedTitle;
 
   /// No description provided for @noReviewedTitle.
   ///
   /// In ja, this message translates to:
-  /// **'確認済みの記録はまだありません'**
+  /// **'確認済みの記録はありません'**
   String get noReviewedTitle;
 
   /// No description provided for @noUnreviewedDescription.
   ///
   /// In ja, this message translates to:
-  /// **'気になった場所は、ホームから気軽に預けられます。'**
+  /// **'新しく記録した場所がここに表示されます。'**
   String get noUnreviewedDescription;
 
   /// No description provided for @noReviewedDescription.
   ///
   /// In ja, this message translates to:
-  /// **'確認を終えた記録がここに残ります。'**
+  /// **'確認を終えた記録がここに表示されます。'**
   String get noReviewedDescription;
 
   /// No description provided for @reviewLater.
   ///
   /// In ja, this message translates to:
-  /// **'あとで見る'**
+  /// **'あとで確認'**
   String get reviewLater;
 
   /// No description provided for @reviewed.
@@ -379,13 +379,13 @@ abstract class AppLocalizations {
   /// No description provided for @reviewLaterRecord.
   ///
   /// In ja, this message translates to:
-  /// **'あとで見るための記録'**
+  /// **'未確認の記録'**
   String get reviewLaterRecord;
 
   /// No description provided for @checkingAddress.
   ///
   /// In ja, this message translates to:
-  /// **'住所を確認しています…'**
+  /// **'住所を確認中…'**
   String get checkingAddress;
 
   /// No description provided for @pinRecordedAt.
@@ -415,19 +415,19 @@ abstract class AppLocalizations {
   /// No description provided for @researchPlaceTitle.
   ///
   /// In ja, this message translates to:
-  /// **'この場所を調べる'**
+  /// **'場所を確認'**
   String get researchPlaceTitle;
 
   /// No description provided for @externalMapDescription.
   ///
   /// In ja, this message translates to:
-  /// **'外部の地図アプリが開きます。'**
+  /// **'外部の地図アプリを開きます。'**
   String get externalMapDescription;
 
   /// No description provided for @findingsTitle.
   ///
   /// In ja, this message translates to:
-  /// **'分かったこと'**
+  /// **'メモ'**
   String get findingsTitle;
 
   /// No description provided for @addMemo.
@@ -439,13 +439,13 @@ abstract class AppLocalizations {
   /// No description provided for @noMemoYet.
   ///
   /// In ja, this message translates to:
-  /// **'まだメモはありません'**
+  /// **'メモはありません'**
   String get noMemoYet;
 
   /// No description provided for @markReviewed.
   ///
   /// In ja, this message translates to:
-  /// **'確認できた'**
+  /// **'確認済みにする'**
   String get markReviewed;
 
   /// No description provided for @markUnreviewed.
@@ -457,13 +457,13 @@ abstract class AppLocalizations {
   /// No description provided for @googleMapsAction.
   ///
   /// In ja, this message translates to:
-  /// **'Google Mapsで場所を確認'**
+  /// **'Google Mapsで確認'**
   String get googleMapsAction;
 
   /// No description provided for @streetViewAction.
   ///
   /// In ja, this message translates to:
-  /// **'ストリートビューで周辺を見る'**
+  /// **'ストリートビューで確認'**
   String get streetViewAction;
 
   /// No description provided for @externalMapError.
@@ -487,7 +487,7 @@ abstract class AppLocalizations {
   /// No description provided for @permissionDenied.
   ///
   /// In ja, this message translates to:
-  /// **'位置情報が許可されませんでした'**
+  /// **'位置情報が許可されていません'**
   String get permissionDenied;
 
   /// No description provided for @permissionRequiredTitle.
@@ -499,7 +499,7 @@ abstract class AppLocalizations {
   /// No description provided for @permissionRequiredDescription.
   ///
   /// In ja, this message translates to:
-  /// **'設定から位置情報へのアクセスを許可してください'**
+  /// **'設定から位置情報へのアクセスを許可してください。'**
   String get permissionRequiredDescription;
 
   /// No description provided for @openSettings.
@@ -517,19 +517,19 @@ abstract class AppLocalizations {
   /// No description provided for @recordError.
   ///
   /// In ja, this message translates to:
-  /// **'エラーが発生しました: {error}'**
+  /// **'記録できませんでした: {error}'**
   String recordError(String error);
 
   /// No description provided for @quickModeReturningHome.
   ///
   /// In ja, this message translates to:
-  /// **'ホームへ戻ります'**
+  /// **'Quick Modeを終了します'**
   String get quickModeReturningHome;
 
   /// No description provided for @quickModeRecordedCount.
   ///
   /// In ja, this message translates to:
-  /// **'{count} 件記録済み'**
+  /// **'{count} 件記録'**
   String quickModeRecordedCount(int count);
 
   /// No description provided for @quickModeHoldToFinish.
@@ -547,7 +547,7 @@ abstract class AppLocalizations {
   /// No description provided for @quickModeExitGuide.
   ///
   /// In ja, this message translates to:
-  /// **'終了するには約1.5秒長押し'**
+  /// **'約1.5秒長押しで終了'**
   String get quickModeExitGuide;
 
   /// No description provided for @recordListTitle.
@@ -559,25 +559,25 @@ abstract class AppLocalizations {
   /// No description provided for @deleteRecordTitle.
   ///
   /// In ja, this message translates to:
-  /// **'削除しますか？'**
+  /// **'この記録を削除しますか？'**
   String get deleteRecordTitle;
 
   /// No description provided for @deleteRecordDescription.
   ///
   /// In ja, this message translates to:
-  /// **'この記録を削除します。元に戻せません。'**
+  /// **'削除した記録は元に戻せません。'**
   String get deleteRecordDescription;
 
   /// No description provided for @deleteSwipeGuide.
   ///
   /// In ja, this message translates to:
-  /// **'記録を左にスワイプすると削除できます'**
+  /// **'左にスワイプして削除'**
   String get deleteSwipeGuide;
 
   /// No description provided for @emptyRecordListDescription.
   ///
   /// In ja, this message translates to:
-  /// **'ホーム画面の記録ボタンを押して\n現在地を保存しましょう'**
+  /// **'ホームから気になった場所を記録してみましょう。'**
   String get emptyRecordListDescription;
 
   /// No description provided for @mapTitle.
