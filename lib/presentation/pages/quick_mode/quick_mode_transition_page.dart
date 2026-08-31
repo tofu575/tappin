@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:tappin/presentation/assets/tap_pin_visual_assets.dart';
 import 'package:tappin/presentation/pages/quick_mode/quick_mode_character.dart';
 import 'package:tappin/presentation/pages/quick_mode/quick_mode_transition_direction.dart';
+import 'package:tappin/presentation/localization/app_localizations_context.dart';
 import 'package:tappin/presentation/theme/tap_pin_colors_context.dart';
 
 const _transitionDuration = Duration(milliseconds: 750);
@@ -93,7 +94,9 @@ class _QuickModeTransitionPageState extends State<QuickModeTransitionPage>
                 Align(
                   alignment: const Alignment(0, 0.48),
                   child: Text(
-                    entering ? 'Quick Mode' : 'ホームへ戻ります',
+                    entering
+                        ? context.l10n.quickMode
+                        : context.l10n.quickModeReturningHome,
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                           color: colors.quickModeInk,
                           fontWeight: FontWeight.bold,

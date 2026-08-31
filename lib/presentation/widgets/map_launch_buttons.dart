@@ -4,8 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tappin/domain/models/location/coordinate.dart';
 import 'package:tappin/domain/services/external_map_destination.dart';
 import 'package:tappin/presentation/providers/interactor_provider.dart';
-
-const _externalMapErrorMessage = '地図アプリを開けませんでした';
+import 'package:tappin/presentation/localization/app_localizations_context.dart';
 
 /// [coordinate]を外部の地図アプリで調べる目的が分かる導線を表示する。
 class MapLaunchButtons extends ConsumerWidget {
@@ -24,7 +23,7 @@ class MapLaunchButtons extends ConsumerWidget {
         if (!context.mounted) return;
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(const SnackBar(content: Text(_externalMapErrorMessage)));
+        ).showSnackBar(SnackBar(content: Text(context.l10n.externalMapError)));
       }
     }
 
@@ -34,14 +33,14 @@ class MapLaunchButtons extends ConsumerWidget {
         FilledButton.icon(
           key: const Key('open-google-maps'),
           icon: const Icon(Icons.open_in_new_rounded),
-          label: const Text('Google Mapsで場所を確認'),
+          label: Text(context.l10n.googleMapsAction),
           onPressed: () => open(ExternalMapDestination.map),
         ),
         const SizedBox(height: 8),
         OutlinedButton.icon(
           key: const Key('open-street-view'),
           icon: const Icon(Icons.explore_outlined),
-          label: const Text('ストリートビューで周辺を見る'),
+          label: Text(context.l10n.streetViewAction),
           onPressed: () => open(ExternalMapDestination.streetView),
         ),
       ],

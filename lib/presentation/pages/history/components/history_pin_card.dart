@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tappin/domain/models/location/coordinate.dart';
 import 'package:tappin/domain/models/pin/pin.dart';
 import 'package:tappin/domain/models/pin/pin_review_status.dart';
+import 'package:tappin/presentation/localization/app_localizations_context.dart';
 import 'package:tappin/presentation/providers/provider.dart';
 import 'package:tappin/presentation/theme/tap_pin_colors_context.dart';
 
@@ -63,7 +64,9 @@ class HistoryPinCard extends ConsumerWidget {
                   ),
                   const SizedBox(width: 6),
                   Text(
-                    isUnreviewed ? 'あとで見る' : '確認済み',
+                    isUnreviewed
+                        ? context.l10n.reviewLater
+                        : context.l10n.reviewed,
                     style: textTheme.labelLarge?.copyWith(
                       color: isUnreviewed
                           ? colors.ink
@@ -73,7 +76,7 @@ class HistoryPinCard extends ConsumerWidget {
                   ),
                   const Spacer(),
                   Text(
-                    _dateText(pin.createdAt.value),
+                    _dateText(context, pin.createdAt.value),
                     style: textTheme.labelMedium?.copyWith(
                       color: colorScheme.onSurfaceVariant,
                     ),
@@ -110,7 +113,7 @@ class HistoryPinCard extends ConsumerWidget {
                   const SizedBox(width: 10),
                   Expanded(
                     child: Text(
-                      memo.isEmpty ? 'メモなし' : memo,
+                      memo.isEmpty ? context.l10n.noMemo : memo,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: textTheme.bodyMedium?.copyWith(
@@ -125,7 +128,7 @@ class HistoryPinCard extends ConsumerWidget {
                 Align(
                   alignment: Alignment.centerRight,
                   child: Text(
-                    '場所を確認する  →',
+                    context.l10n.checkPlaceAction,
                     style: textTheme.labelLarge?.copyWith(
                       color: colors.ink,
                       fontWeight: FontWeight.w700,
@@ -142,9 +145,13 @@ class HistoryPinCard extends ConsumerWidget {
 }
 
 /// 履歴カード向けに日時を短く整形する。
-String _dateText(DateTime value) => '${value.month}/${value.day} '
-    '${value.hour.toString().padLeft(2, '0')}:'
-    '${value.minute.toString().padLeft(2, '0')}';
+String _dateText(BuildContext context, DateTime value) =>
+    context.l10n.historyDate(
+      value.month.toString(),
+      value.day.toString(),
+      value.hour.toString().padLeft(2, '0'),
+      value.minute.toString().padLeft(2, '0'),
+    );
 
 /// 住所取得前でも場所を識別できる座標文字列を返す。
 String _coordinateText(Coordinate coordinate) =>

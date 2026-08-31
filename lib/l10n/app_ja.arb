@@ -1,0 +1,130 @@
+{
+  "@@locale": "ja",
+  "appTitle": "TapPin",
+  "cancel": "キャンセル",
+  "delete": "削除",
+  "save": "保存",
+  "edit": "編集",
+  "errorWithDetail": "エラー: {error}",
+  "@errorWithDetail": {"placeholders": {"error": {"type": "String"}}},
+
+  "onboardingWelcomeTitle": "TapPin へようこそ",
+  "onboardingWelcomeDescription": "気になった場所を見つけたら、その場でワンタップ。\n場所と時間をすぐに記録できます。",
+
+  "onboardingReviewTitle": "あとから場所を確認",
+  "onboardingReviewDescription": "記録した場所は、あとから地図で確認できます。\n分かったことはメモに残せます。",
+
+  "onboardingQuickModeTitle": "移動中は Quick Mode",
+  "onboardingQuickModeDescription": "画面のどこをタップしても場所を記録できます。\n車や電車、徒歩での移動中に使えます。",
+
+  "onboardingPrivacyTitle": "位置情報について",
+  "onboardingPrivacyDescription": "位置情報は場所の記録にのみ使用します。\n記録したデータは端末内に保存され、外部には送信されません。",
+
+  "start": "はじめる",
+  "next": "次へ",
+
+  "homeTagline": "気になった場所を記録しよう。",
+  "record": "記録",
+  "pinHere": "場所を記録",
+  "history": "履歴",
+
+  "unreviewedCountCompact": "未確認 {count}",
+  "@unreviewedCountCompact": {"placeholders": {"count": {"type": "int"}}},
+
+  "quickMode": "Quick Mode",
+  "quickModeGuide": "画面のどこをタップしても、\n現在地をすぐに記録できます。",
+  "startQuickMode": "Quick Modeをはじめる",
+
+  "checkingPlace": "場所を確認中…",
+  "coordinateRecorded": "位置を記録しました",
+  "justPinned": "記録しました",
+
+  "historyTitle": "記録をふりかえる",
+  "historyLoadError": "記録を読み込めませんでした\n{error}",
+  "@historyLoadError": {"placeholders": {"error": {"type": "String"}}},
+
+  "historyDescription": "記録した場所を、ひとつずつ確認できます。",
+
+  "unreviewedCount": "未確認  {count}",
+  "@unreviewedCount": {"placeholders": {"count": {"type": "int"}}},
+
+  "reviewedCount": "確認済み  {count}",
+  "@reviewedCount": {"placeholders": {"count": {"type": "int"}}},
+
+  "noPinsTitle": "まだ記録がありません",
+  "noPinsDescription": "気になった場所を記録してみましょう。",
+
+  "noUnreviewedTitle": "未確認の記録はありません",
+  "noReviewedTitle": "確認済みの記録はありません",
+  "noUnreviewedDescription": "新しく記録した場所がここに表示されます。",
+  "noReviewedDescription": "確認を終えた記録がここに表示されます。",
+
+  "reviewLater": "あとで確認",
+  "reviewed": "確認済み",
+  "noMemo": "メモなし",
+  "checkPlaceAction": "場所を確認する  →",
+
+  "historyDate": "{month}/{day} {hour}:{minute}",
+  "@historyDate": {"placeholders": {"month": {"type": "String"}, "day": {"type": "String"}, "hour": {"type": "String"}, "minute": {"type": "String"}}},
+
+  "pinDetailTitle": "記録の詳細",
+  "deletePinTooltip": "記録を削除",
+  "deletePinTitle": "この記録を削除しますか？",
+  "deletePinDescription": "削除した記録は元に戻せません。",
+
+  "reviewLaterRecord": "未確認の記録",
+  "checkingAddress": "住所を確認中…",
+
+  "pinRecordedAt": "{year}/{month}/{day} {hour}:{minute} に記録",
+  "@pinRecordedAt": {"placeholders": {"year": {"type": "String"}, "month": {"type": "String"}, "day": {"type": "String"}, "hour": {"type": "String"}, "minute": {"type": "String"}}},
+
+  "pinDateTime": "{year}/{month}/{day} {hour}:{minute}",
+  "@pinDateTime": {"placeholders": {"year": {"type": "String"}, "month": {"type": "String"}, "day": {"type": "String"}, "hour": {"type": "String"}, "minute": {"type": "String"}}},
+
+  "researchPlaceTitle": "場所を確認",
+  "externalMapDescription": "外部の地図アプリを開きます。",
+
+  "findingsTitle": "メモ",
+  "addMemo": "メモを追加",
+  "noMemoYet": "メモはありません",
+
+  "markReviewed": "確認済みにする",
+  "markUnreviewed": "未確認に戻す",
+
+  "googleMapsAction": "Google Mapsで確認",
+  "streetViewAction": "ストリートビューで確認",
+  "externalMapError": "地図アプリを開けませんでした",
+
+  "memoEditTitle": "メモを編集",
+  "memoHint": "メモを入力...",
+
+  "permissionDenied": "位置情報が許可されていません",
+  "permissionRequiredTitle": "位置情報の許可が必要です",
+  "permissionRequiredDescription": "設定から位置情報へのアクセスを許可してください。",
+  "openSettings": "設定を開く",
+
+  "recordSuccess": "現在地を記録しました",
+  "recordError": "記録できませんでした: {error}",
+  "@recordError": {"placeholders": {"error": {"type": "String"}}},
+
+  "quickModeReturningHome": "Quick Modeを終了します",
+
+  "quickModeRecordedCount": "{count} 件記録",
+  "@quickModeRecordedCount": {"placeholders": {"count": {"type": "int"}}},
+
+  "quickModeHoldToFinish": "そのまま長押しで終了",
+  "quickModeTapAnywhere": "画面のどこでもタップで記録",
+  "quickModeExitGuide": "約1.5秒長押しで終了",
+
+  "recordListTitle": "記録一覧",
+  "deleteRecordTitle": "この記録を削除しますか？",
+  "deleteRecordDescription": "削除した記録は元に戻せません。",
+  "deleteSwipeGuide": "左にスワイプして削除",
+
+  "emptyRecordListDescription": "ホームから気になった場所を記録してみましょう。",
+
+  "mapTitle": "マップ",
+  "loading": "読み込み中...",
+  "memoEmptyParenthesized": "(メモなし)",
+  "editMemoTooltip": "メモを編集"
+}

@@ -8,6 +8,7 @@ import 'package:tappin/domain/models/pin/pin.dart';
 import 'package:tappin/domain/models/pin/pin_review_status.dart';
 import 'package:tappin/presentation/assets/tap_pin_visual_assets.dart';
 import 'package:tappin/presentation/pages/history/history_page.dart';
+import 'package:tappin/presentation/localization/app_localizations_context.dart';
 import 'package:tappin/presentation/pages/home/components/history_index_tab.dart';
 import 'package:tappin/presentation/pages/home/components/latest_pin_card.dart';
 import 'package:tappin/presentation/pages/home/components/quick_mode_entry.dart';
@@ -31,6 +32,7 @@ class HomePage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final latestPin = useState<Pin?>(null);
+    final l10n = context.l10n;
     final feedbackController = useMemoized(RecordFeedbackController.new);
     final pins = ref.watch(pinsProvider).value ?? const <Pin>[];
     final unreviewedCount = pins
@@ -79,7 +81,7 @@ class HomePage extends HookConsumerWidget {
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    'Quick Mode',
+                    l10n.quickMode,
                     textAlign: TextAlign.center,
                     style: Theme.of(sheetContext)
                         .textTheme
@@ -87,19 +89,19 @@ class HomePage extends HookConsumerWidget {
                         ?.copyWith(fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 12),
-                  const Text(
-                    '画面のどこをタップしても、\n気になった場所をすぐ記録できます。',
+                  Text(
+                    l10n.quickModeGuide,
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 24),
                   FilledButton(
                     key: const Key('start-quick-mode'),
                     onPressed: () => Navigator.pop(sheetContext, true),
-                    child: const Text('Quick Modeをはじめる'),
+                    child: Text(l10n.startQuickMode),
                   ),
                   TextButton(
                     onPressed: () => Navigator.pop(sheetContext, false),
-                    child: const Text('キャンセル'),
+                    child: Text(l10n.cancel),
                   ),
                 ],
               ),
@@ -155,7 +157,7 @@ class HomePage extends HookConsumerWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'TapPin',
+                              l10n.appTitle,
                               style: Theme.of(context)
                                   .textTheme
                                   .headlineMedium
@@ -163,7 +165,7 @@ class HomePage extends HookConsumerWidget {
                             ),
                             const SizedBox(height: 2),
                             Text(
-                              '気になった場所を、ここに預けよう。',
+                              l10n.homeTagline,
                               style: Theme.of(context)
                                   .textTheme
                                   .bodySmall

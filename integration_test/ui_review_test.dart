@@ -59,9 +59,9 @@ void main() {
     await tester.pumpAndSettle();
     await _takeUiScreenshot(binding, tester, '06_pin_detail');
 
-    await tester.pageBack();
+    await tester.tap(find.byType(BackButton));
     await tester.pumpAndSettle();
-    await tester.pageBack();
+    await tester.tap(find.byType(BackButton));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('quick-mode-entry')));
     await tester.pumpAndSettle();

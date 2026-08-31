@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:tappin/presentation/theme/tap_pin_colors_context.dart';
+import 'package:tappin/presentation/localization/app_localizations_context.dart';
 
 /// Home右端から覗き、履歴と穏やかな未確認件数を示すインデックスタブ。
 class HistoryIndexTab extends StatelessWidget {
@@ -40,7 +41,9 @@ class HistoryIndexTab extends StatelessWidget {
                 ),
                 const SizedBox(height: 3),
                 Text(
-                  unreviewedCount > 0 ? '未確認 $unreviewedCount' : '履歴',
+                  unreviewedCount > 0
+                      ? context.l10n.unreviewedCountCompact(unreviewedCount)
+                      : context.l10n.history,
                   style: Theme.of(context).textTheme.labelLarge?.copyWith(
                         color: colors.ink,
                         fontWeight: FontWeight.w700,

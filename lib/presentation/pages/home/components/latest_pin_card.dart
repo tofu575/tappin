@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tappin/domain/models/location/coordinate.dart';
 import 'package:tappin/domain/models/pin/pin.dart';
 import 'package:tappin/presentation/providers/provider.dart';
+import 'package:tappin/presentation/localization/app_localizations_context.dart';
 import 'package:tappin/presentation/theme/tap_pin_colors_context.dart';
 
 /// Homeで直前に預けた場所を短く表示する。
@@ -19,8 +20,8 @@ class LatestPinCard extends ConsumerWidget {
       longitude: pin.longitude,
     );
     final address = ref.watch(addressProvider(coordinate)).when(
-          loading: () => '場所を確認中…',
-          error: (_, _) => '記録した座標を預かりました',
+          loading: () => context.l10n.checkingPlace,
+          error: (_, _) => context.l10n.coordinateRecorded,
           data: (value) => value,
         );
     final colors = context.tapPinColors;
@@ -42,7 +43,7 @@ class LatestPinCard extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'いま預けました',
+                  context.l10n.justPinned,
                   style: Theme.of(context).textTheme.labelLarge?.copyWith(
                         color: colors.ink,
                         fontWeight: FontWeight.w700,

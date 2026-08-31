@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:tappin/presentation/pages/home_page.dart';
+import 'package:tappin/presentation/localization/app_localizations_context.dart';
 import 'package:tappin/presentation/assets/onboarding_visual.dart';
 import 'package:tappin/presentation/assets/tap_pin_visual_assets.dart';
 import 'package:tappin/presentation/providers/interactor_provider.dart';
@@ -20,28 +21,7 @@ class _OnboardingStep {
   final String description;
 }
 
-const _steps = [
-  _OnboardingStep(
-    visual: OnboardingVisual.pin,
-    title: 'TapPin へようこそ',
-    description: '気になった場所を、その場でワンタップ。\nあとで思い出すために、いったん預けられます。',
-  ),
-  _OnboardingStep(
-    visual: OnboardingVisual.review,
-    title: 'あとで、ゆっくり確認',
-    description: '記録した場所は履歴にまとまります。\n地図で調べて、分かったことをメモできます。',
-  ),
-  _OnboardingStep(
-    visual: OnboardingVisual.quickMode,
-    title: '移動中は Quick Mode',
-    description: '画面のどこをタップしても場所を記録。\n車でも電車でも、歩いているときでも使えます。',
-  ),
-  _OnboardingStep(
-    visual: OnboardingVisual.privacy,
-    title: '位置情報について',
-    description: '位置情報はピンの記録にのみ使用します。\nデータはすべてお使いの端末内に保存され、外部に送信されません。',
-  ),
-];
+const _onboardingStepCount = 4;
 
 class OnboardingPage extends ConsumerStatefulWidget {
   const OnboardingPage({super.key});
@@ -80,7 +60,30 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final isLastPage = _currentPage == _steps.length - 1;
+    final l10n = context.l10n;
+    final steps = [
+      _OnboardingStep(
+        visual: OnboardingVisual.pin,
+        title: l10n.onboardingWelcomeTitle,
+        description: l10n.onboardingWelcomeDescription,
+      ),
+      _OnboardingStep(
+        visual: OnboardingVisual.review,
+        title: l10n.onboardingReviewTitle,
+        description: l10n.onboardingReviewDescription,
+      ),
+      _OnboardingStep(
+        visual: OnboardingVisual.quickMode,
+        title: l10n.onboardingQuickModeTitle,
+        description: l10n.onboardingQuickModeDescription,
+      ),
+      _OnboardingStep(
+        visual: OnboardingVisual.privacy,
+        title: l10n.onboardingPrivacyTitle,
+        description: l10n.onboardingPrivacyDescription,
+      ),
+    ];
+    final isLastPage = _currentPage == _onboardingStepCount - 1;
 
     return Scaffold(
       body: PaperBackground(
@@ -90,11 +93,11 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
               Expanded(
                 child: PageView.builder(
                   controller: _pageController,
-                  itemCount: _steps.length,
+                  itemCount: _onboardingStepCount,
                   onPageChanged: (index) =>
                       setState(() => _currentPage = index),
                   itemBuilder: (context, index) =>
-                      _OnboardingStepView(step: _steps[index]),
+                      _OnboardingStepView(step: steps[index]),
                 ),
               ),
               Padding(
@@ -105,7 +108,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: List.generate(
-                        _steps.length,
+                        _onboardingStepCount,
                         (index) => AnimatedContainer(
                           duration: const Duration(milliseconds: 300),
                           margin: const EdgeInsets.symmetric(horizontal: 4),
@@ -133,7 +136,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                           ),
                         ),
                         child: Text(
-                          isLastPage ? 'はじめる' : '次へ',
+                          isLastPage ? l10n.start : l10n.next,
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,

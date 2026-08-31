@@ -6,6 +6,7 @@ import 'package:tappin/domain/models/location/coordinate.dart';
 import 'package:tappin/domain/models/pin/memo.dart';
 import 'package:tappin/domain/models/pin/pin.dart';
 import 'package:tappin/domain/models/pin/pin_review_status.dart';
+import 'package:tappin/presentation/localization/app_localizations_context.dart';
 import 'package:tappin/presentation/providers/provider.dart';
 import 'package:tappin/presentation/widgets/map_launch_buttons.dart';
 import 'package:tappin/presentation/widgets/memo_edit_dialog.dart';
@@ -31,7 +32,7 @@ class PinDetailPage extends HookConsumerWidget {
     final colors = context.tapPinColors;
     final textTheme = Theme.of(context).textTheme;
     final address = ref.watch(addressProvider(coordinate)).when(
-          loading: () => '住所を確認しています…',
+          loading: () => context.l10n.checkingAddress,
           error: (_, _) => _coordinateText(coordinate),
           data: (result) => result,
         );
@@ -71,16 +72,19 @@ class PinDetailPage extends HookConsumerWidget {
       final confirmed = await showDialog<bool>(
         context: context,
         builder: (dialogContext) => AlertDialog(
-          title: const Text('この記録を削除しますか？'),
-          content: const Text('削除した記録は元に戻せません。'),
+          title: Text(context.l10n.deletePinTitle),
+          content: Text(context.l10n.deletePinDescription),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(dialogContext, false),
-              child: const Text('キャンセル'),
+              child: Text(context.l10n.cancel),
             ),
             TextButton(
               onPressed: () => Navigator.pop(dialogContext, true),
-              child: Text('削除', style: TextStyle(color: colorScheme.error)),
+              child: Text(
+                context.l10n.delete,
+                style: TextStyle(color: colorScheme.error),
+              ),
             ),
           ],
         ),
@@ -92,11 +96,11 @@ class PinDetailPage extends HookConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('記録の詳細'),
+        title: Text(context.l10n.pinDetailTitle),
         actions: [
           IconButton(
             key: const Key('delete-pin'),
-            tooltip: '記録を削除',
+            tooltip: context.l10n.deletePinTooltip,
             onPressed: deletePin,
             icon: const Icon(Icons.delete_outline_rounded),
           ),
@@ -118,7 +122,9 @@ class PinDetailPage extends HookConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    isUnreviewed ? 'あとで見るための記録' : '確認済み',
+                    isUnreviewed
+                        ? context.l10n.reviewLaterRecord
+                        : context.l10n.reviewed,
                     style: textTheme.labelLarge?.copyWith(
                       color: isUnreviewed
                           ? colors.ink
@@ -138,7 +144,7 @@ class PinDetailPage extends HookConsumerWidget {
                   ),
                   const SizedBox(height: 10),
                   Text(
-                    _dateText(value.createdAt.value),
+                    _dateText(context, value.createdAt.value),
                     style: textTheme.bodyMedium?.copyWith(
                       color: colorScheme.onSurfaceVariant,
                     ),
@@ -155,13 +161,13 @@ class PinDetailPage extends HookConsumerWidget {
             ),
             const SizedBox(height: 24),
             Text(
-              'この場所を調べる',
+              context.l10n.researchPlaceTitle,
               style:
                   textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: 6),
             Text(
-              '外部の地図アプリが開きます。',
+              context.l10n.externalMapDescription,
               style: textTheme.bodySmall?.copyWith(
                 color: colorScheme.onSurfaceVariant,
               ),
@@ -172,7 +178,7 @@ class PinDetailPage extends HookConsumerWidget {
             Row(
               children: [
                 Text(
-                  '分かったこと',
+                  context.l10n.findingsTitle,
                   style: textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w700,
                   ),
@@ -181,7 +187,9 @@ class PinDetailPage extends HookConsumerWidget {
                 TextButton(
                   key: const Key('edit-pin-memo'),
                   onPressed: editMemo,
-                  child: Text(memo.isEmpty ? 'メモを追加' : '編集'),
+                  child: Text(
+                    memo.isEmpty ? context.l10n.addMemo : context.l10n.edit,
+                  ),
                 ),
               ],
             ),
@@ -194,7 +202,7 @@ class PinDetailPage extends HookConsumerWidget {
                 border: Border.all(color: colors.dividerInk),
               ),
               child: Text(
-                memo.isEmpty ? 'まだメモはありません' : memo,
+                memo.isEmpty ? context.l10n.noMemoYet : memo,
                 style: textTheme.bodyLarge?.copyWith(
                   color: memo.isEmpty
                       ? colorScheme.onSurfaceVariant
@@ -208,7 +216,7 @@ class PinDetailPage extends HookConsumerWidget {
                 key: const Key('mark-pin-reviewed'),
                 onPressed: isUpdating.value ? null : toggleReviewStatus,
                 icon: const Icon(Icons.check_rounded),
-                label: const Text('確認できた'),
+                label: Text(context.l10n.markReviewed),
                 style: FilledButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 15),
                 ),
@@ -217,7 +225,7 @@ class PinDetailPage extends HookConsumerWidget {
               TextButton(
                 key: const Key('mark-pin-unreviewed'),
                 onPressed: isUpdating.value ? null : toggleReviewStatus,
-                child: const Text('未確認に戻す'),
+                child: Text(context.l10n.markUnreviewed),
               ),
           ],
         ),
@@ -227,11 +235,14 @@ class PinDetailPage extends HookConsumerWidget {
 }
 
 /// 詳細画面向けに記録日時を整形する。
-String _dateText(DateTime value) =>
-    '${value.year}/${value.month.toString().padLeft(2, '0')}/'
-    '${value.day.toString().padLeft(2, '0')} '
-    '${value.hour.toString().padLeft(2, '0')}:'
-    '${value.minute.toString().padLeft(2, '0')} に記録';
+String _dateText(BuildContext context, DateTime value) =>
+    context.l10n.pinRecordedAt(
+      value.year.toString(),
+      value.month.toString().padLeft(2, '0'),
+      value.day.toString().padLeft(2, '0'),
+      value.hour.toString().padLeft(2, '0'),
+      value.minute.toString().padLeft(2, '0'),
+    );
 
 /// 緯度経度を端末表示用の短い文字列へ整形する。
 String _coordinateText(Coordinate coordinate) =>

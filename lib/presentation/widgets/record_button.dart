@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:tappin/presentation/theme/tap_pin_colors_context.dart';
+import 'package:tappin/presentation/localization/app_localizations_context.dart';
 import 'package:tappin/presentation/widgets/tap_pin_mark.dart';
 import 'package:tappin/presentation/widgets/tap_pin_mark_state.dart';
 
@@ -66,7 +67,7 @@ class _RecordButtonState extends State<RecordButton> {
                     const TapPinMark(size: 62),
                     const SizedBox(height: 6),
                     Text(
-                      '記録',
+                      context.l10n.record,
                       style: TextStyle(
                         fontSize: 20,
                         color: colors.ink,
@@ -75,7 +76,7 @@ class _RecordButtonState extends State<RecordButton> {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      'ここに留める',
+                      context.l10n.pinHere,
                       style: TextStyle(fontSize: 11, color: colors.ink),
                     ),
                   ],

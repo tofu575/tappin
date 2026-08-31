@@ -94,6 +94,14 @@ void main() {
     expect(find.text('キャンセル'), findsOneWidget);
   });
 
+  testWidgets('Quick Modeの入口は下から引き出す方向を示す', (tester) async {
+    await tester.pumpWidget(_buildPage());
+    await tester.pump();
+
+    expect(find.byIcon(Icons.keyboard_arrow_up_rounded), findsOneWidget);
+    expect(find.byIcon(Icons.chevron_right_rounded), findsNothing);
+  });
+
   testWidgets('Quick Modeの入口を上スワイプして開始確認を開ける', (tester) async {
     await tester.pumpWidget(_buildPage());
     await tester.pump();

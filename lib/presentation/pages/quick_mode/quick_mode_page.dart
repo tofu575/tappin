@@ -10,6 +10,7 @@ import 'package:tappin/presentation/pages/quick_mode/quick_mode_character.dart';
 import 'package:tappin/presentation/pages/quick_mode/quick_mode_transition_page.dart';
 import 'package:tappin/presentation/pages/quick_mode/quick_mode_transition_direction.dart';
 import 'package:tappin/presentation/providers/recording_provider.dart';
+import 'package:tappin/presentation/localization/app_localizations_context.dart';
 import 'package:tappin/presentation/providers/screen_awake_provider.dart';
 import 'package:tappin/presentation/widgets/record_action.dart';
 import 'package:tappin/presentation/widgets/record_feedback.dart';
@@ -182,7 +183,7 @@ class _QuickModePageState extends ConsumerState<QuickModePage>
                           Icon(Icons.route_rounded, color: colors.quickModeInk),
                           const SizedBox(width: 10),
                           Text(
-                            'QUICK MODE',
+                            context.l10n.quickMode.toUpperCase(),
                             style: textTheme.titleMedium?.copyWith(
                               color: colors.quickModeInk,
                               fontWeight: FontWeight.bold,
@@ -196,7 +197,7 @@ class _QuickModePageState extends ConsumerState<QuickModePage>
                       AnimatedSwitcher(
                         duration: const Duration(milliseconds: 180),
                         child: Text(
-                          '$_recordCount 件記録済み',
+                          context.l10n.quickModeRecordedCount(_recordCount),
                           key: ValueKey(_recordCount),
                           style: textTheme.titleMedium?.copyWith(
                             color: colorScheme.onPrimaryContainer,
@@ -223,7 +224,7 @@ class _QuickModePageState extends ConsumerState<QuickModePage>
                               ),
                             ),
                             const SizedBox(height: 12),
-                            const Text('そのまま長押しで終了'),
+                            Text(context.l10n.quickModeHoldToFinish),
                           ],
                         )
                       else
@@ -236,7 +237,7 @@ class _QuickModePageState extends ConsumerState<QuickModePage>
                             ),
                             const SizedBox(height: 10),
                             Text(
-                              '画面のどこでもタップで記録',
+                              context.l10n.quickModeTapAnywhere,
                               style: textTheme.titleMedium?.copyWith(
                                 color: colors.quickModeInk,
                                 fontWeight: FontWeight.w600,
@@ -244,7 +245,7 @@ class _QuickModePageState extends ConsumerState<QuickModePage>
                             ),
                             const SizedBox(height: 6),
                             Text(
-                              '終了するには約1.5秒長押し',
+                              context.l10n.quickModeExitGuide,
                               style: textTheme.bodyMedium?.copyWith(
                                 color:
                                     colors.quickModeInk.withValues(alpha: 0.75),

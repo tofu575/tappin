@@ -11,6 +11,7 @@ import 'package:tappin/domain/models/location/coordinate.dart';
 import 'package:tappin/domain/models/pin/memo.dart';
 import 'package:tappin/domain/models/pin/pin.dart';
 import 'package:tappin/domain/services/location_service.dart';
+import 'package:tappin/presentation/localization/app_localizations_context.dart';
 import 'package:tappin/presentation/providers/interactor_provider.dart';
 import 'package:tappin/presentation/providers/provider.dart';
 import 'package:tappin/presentation/widgets/map_launch_buttons.dart';
@@ -31,10 +32,12 @@ class MapPage extends ConsumerWidget {
     final pinsAsync = ref.watch(pinsProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('マップ')),
+      appBar: AppBar(title: Text(context.l10n.mapTitle)),
       body: pinsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('エラー: $e')),
+        error: (e, _) => Center(
+          child: Text(context.l10n.errorWithDetail(e.toString())),
+        ),
         data: (pins) => _MapView(pins: pins),
       ),
     );
@@ -61,9 +64,8 @@ class _MapView extends HookConsumerWidget {
       if (isFetchingLocation.value) return;
       isFetchingLocation.value = true;
       try {
-        final coordinate = await ref
-            .read(interactorProvider)
-            .fetchCurrentLocation();
+        final coordinate =
+            await ref.read(interactorProvider).fetchCurrentLocation();
         final location = LatLng(
           coordinate.latitude.value,
           coordinate.longitude.value,
@@ -75,19 +77,19 @@ class _MapView extends HookConsumerWidget {
           showDialog<void>(
             context: context,
             builder: (_) => AlertDialog(
-              title: const Text('位置情報の許可が必要です'),
-              content: const Text('設定から位置情報へのアクセスを許可してください'),
+              title: Text(context.l10n.permissionRequiredTitle),
+              content: Text(context.l10n.permissionRequiredDescription),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text('キャンセル'),
+                  child: Text(context.l10n.cancel),
                 ),
                 TextButton(
                   onPressed: () {
                     Navigator.pop(context);
                     ref.read(interactorProvider).openLocationSettings();
                   },
-                  child: const Text('設定を開く'),
+                  child: Text(context.l10n.openSettings),
                 ),
               ],
             ),
@@ -227,13 +229,17 @@ class _PinDetailSheet extends HookConsumerWidget {
       latitude: pin.latitude,
       longitude: pin.longitude,
     );
-    final dateStr =
-        '${pin.createdAt.value.year}/${pin.createdAt.value.month.toString().padLeft(2, '0')}/${pin.createdAt.value.day.toString().padLeft(2, '0')} '
-        '${pin.createdAt.value.hour.toString().padLeft(2, '0')}:${pin.createdAt.value.minute.toString().padLeft(2, '0')}';
+    final dateStr = context.l10n.pinDateTime(
+      pin.createdAt.value.year.toString(),
+      pin.createdAt.value.month.toString().padLeft(2, '0'),
+      pin.createdAt.value.day.toString().padLeft(2, '0'),
+      pin.createdAt.value.hour.toString().padLeft(2, '0'),
+      pin.createdAt.value.minute.toString().padLeft(2, '0'),
+    );
 
     final addressAsync = ref.watch(addressProvider(coordinate));
     final addressText = addressAsync.when(
-      loading: () => '読み込み中...',
+      loading: () => context.l10n.loading,
       error: (e, _) =>
           '${coordinate.latitude.value.toStringAsFixed(6)}, ${coordinate.longitude.value.toStringAsFixed(6)}',
       data: (address) => address,
@@ -268,10 +274,13 @@ class _PinDetailSheet extends HookConsumerWidget {
             leading: const Icon(Icons.notes),
             title: memo.value != null
                 ? Text(memo.value!.value)
-                : const Text('(メモなし)', style: TextStyle(color: Colors.grey)),
+                : Text(
+                    context.l10n.memoEmptyParenthesized,
+                    style: const TextStyle(color: Colors.grey),
+                  ),
             trailing: IconButton(
               icon: const Icon(Icons.edit),
-              tooltip: 'メモを編集',
+              tooltip: context.l10n.editMemoTooltip,
               onPressed: openMemoEditor,
             ),
           ),

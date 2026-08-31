@@ -3,6 +3,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:tappin/domain/models/pin/pin_review_status.dart';
+import 'package:tappin/presentation/localization/app_localizations_context.dart';
 import 'package:tappin/presentation/pages/history/components/history_pin_card.dart';
 import 'package:tappin/presentation/pages/pin_detail/pin_detail_page.dart';
 import 'package:tappin/presentation/providers/provider.dart';
@@ -20,11 +21,13 @@ class HistoryPage extends HookConsumerWidget {
     final pinsAsync = ref.watch(pinsProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('記録をふりかえる')),
+      appBar: AppBar(title: Text(context.l10n.historyTitle)),
       body: PaperBackground(
         child: pinsAsync.when(
           loading: () => const Center(child: CircularProgressIndicator()),
-          error: (error, _) => Center(child: Text('記録を読み込めませんでした\n$error')),
+          error: (error, _) => Center(
+            child: Text(context.l10n.historyLoadError(error.toString())),
+          ),
           data: (pins) {
             if (pins.isEmpty) return _noPinsState(context);
             final unreviewed = pins
@@ -47,7 +50,7 @@ class HistoryPage extends HookConsumerWidget {
                 Padding(
                   padding: const EdgeInsets.fromLTRB(20, 8, 20, 14),
                   child: Text(
-                    '気になった場所を、ひとつずつ確かめよう。',
+                    context.l10n.historyDescription,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
@@ -62,12 +65,16 @@ class HistoryPage extends HookConsumerWidget {
                       ButtonSegment(
                         value: PinReviewStatus.unreviewed,
                         icon: const Icon(Icons.bookmark_outline_rounded),
-                        label: Text('未確認  ${unreviewed.length}'),
+                        label: Text(
+                          context.l10n.unreviewedCount(unreviewed.length),
+                        ),
                       ),
                       ButtonSegment(
                         value: PinReviewStatus.reviewed,
                         icon: const Icon(Icons.inventory_2_outlined),
-                        label: Text('確認済み  ${reviewed.length}'),
+                        label: Text(
+                          context.l10n.reviewedCount(reviewed.length),
+                        ),
                       ),
                     ],
                     selected: {currentStatus},
@@ -120,14 +127,14 @@ Widget _noPinsState(BuildContext context) {
           const TapPinMark(size: 54),
           const SizedBox(height: 16),
           Text(
-            'まだ記録がありません',
+            context.l10n.noPinsTitle,
             style: Theme.of(
               context,
             ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
           ),
           const SizedBox(height: 8),
           Text(
-            'ホームから、気になった場所を預けてみましょう。',
+            context.l10n.noPinsDescription,
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -157,7 +164,9 @@ Widget _emptyState(BuildContext context, PinReviewStatus status) {
           ),
           const SizedBox(height: 16),
           Text(
-            isUnreviewed ? 'いま確認する記録はありません' : '確認済みの記録はまだありません',
+            isUnreviewed
+                ? context.l10n.noUnreviewedTitle
+                : context.l10n.noReviewedTitle,
             textAlign: TextAlign.center,
             style: Theme.of(
               context,
@@ -165,7 +174,9 @@ Widget _emptyState(BuildContext context, PinReviewStatus status) {
           ),
           const SizedBox(height: 8),
           Text(
-            isUnreviewed ? '気になった場所は、ホームから気軽に預けられます。' : '確認を終えた記録がここに残ります。',
+            isUnreviewed
+                ? context.l10n.noUnreviewedDescription
+                : context.l10n.noReviewedDescription,
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: Theme.of(context).colorScheme.onSurfaceVariant,
