@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:tappin/presentation/theme/tap_pin_colors_context.dart';
+
 /// Home右端から覗き、履歴と穏やかな未確認件数を示すインデックスタブ。
 class HistoryIndexTab extends StatelessWidget {
   const HistoryIndexTab({
@@ -13,28 +15,38 @@ class HistoryIndexTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final colors = context.tapPinColors;
     return Material(
       key: const Key('history-index-tab'),
-      color: unreviewedCount > 0
-          ? colorScheme.tertiaryContainer
-          : colorScheme.surfaceContainerHigh,
-      borderRadius: const BorderRadius.horizontal(left: Radius.circular(18)),
+      color: unreviewedCount > 0 ? colors.stickyNote : colors.paperElevated,
+      shape: RoundedRectangleBorder(
+        borderRadius: const BorderRadius.horizontal(left: Radius.circular(7)),
+        side: BorderSide(color: colors.dividerInk),
+      ),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
         child: SizedBox(
-          width: 92,
-          height: 58,
+          width: 86,
+          height: 64,
           child: Center(
-            child: Text(
-              unreviewedCount > 0 ? '未確認 $unreviewedCount' : '履歴',
-              style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                color: unreviewedCount > 0
-                    ? colorScheme.onTertiaryContainer
-                    : colorScheme.onSurfaceVariant,
-                fontWeight: FontWeight.w700,
-              ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.bookmarks_outlined,
+                  size: 18,
+                  color: colors.ink,
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  unreviewedCount > 0 ? '未確認 $unreviewedCount' : '履歴',
+                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                        color: colors.ink,
+                        fontWeight: FontWeight.w700,
+                      ),
+                ),
+              ],
             ),
           ),
         ),

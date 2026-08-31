@@ -14,6 +14,7 @@ import 'package:tappin/presentation/providers/screen_awake_provider.dart';
 import 'package:tappin/presentation/widgets/record_action.dart';
 import 'package:tappin/presentation/widgets/record_feedback.dart';
 import 'package:tappin/presentation/widgets/record_feedback_controller.dart';
+import 'package:tappin/presentation/theme/tap_pin_colors_context.dart';
 
 // GestureDetectorの長押し認識約500msと合わせ、合計約1.5秒にする。
 const _exitProgressDuration = Duration(seconds: 1);
@@ -152,6 +153,7 @@ class _QuickModePageState extends ConsumerState<QuickModePage>
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final colors = context.tapPinColors;
     final textTheme = Theme.of(context).textTheme;
     final isRecording = ref.watch(recordingProvider).isLoading;
 
@@ -160,7 +162,7 @@ class _QuickModePageState extends ConsumerState<QuickModePage>
       child: RecordFeedback(
         controller: _feedbackController,
         child: Scaffold(
-          backgroundColor: colorScheme.primaryContainer,
+          backgroundColor: colors.quickModeSurface,
           // TapとLongPressをgesture arenaで競合させ、終了長押しによる記録を防ぐ。
           body: GestureDetector(
             key: const Key('quick-record-area'),
@@ -177,12 +179,12 @@ class _QuickModePageState extends ConsumerState<QuickModePage>
                     children: [
                       Row(
                         children: [
-                          Icon(Icons.bolt_rounded, color: colorScheme.primary),
+                          Icon(Icons.route_rounded, color: colors.quickModeInk),
                           const SizedBox(width: 10),
                           Text(
                             'QUICK MODE',
                             style: textTheme.titleMedium?.copyWith(
-                              color: colorScheme.onPrimaryContainer,
+                              color: colors.quickModeInk,
                               fontWeight: FontWeight.bold,
                               letterSpacing: 1.4,
                             ),
@@ -215,8 +217,8 @@ class _QuickModePageState extends ConsumerState<QuickModePage>
                                   key: const Key('drive-exit-progress'),
                                   value: _exitProgressController.value,
                                   strokeWidth: 5,
-                                  color: colorScheme.primary,
-                                  backgroundColor: colorScheme.surfaceContainer,
+                                  color: colors.pinRed,
+                                  backgroundColor: colors.paperElevated,
                                 ),
                               ),
                             ),
@@ -230,13 +232,13 @@ class _QuickModePageState extends ConsumerState<QuickModePage>
                             Icon(
                               Icons.touch_app_rounded,
                               size: 36,
-                              color: colorScheme.primary,
+                              color: colors.quickModeInk,
                             ),
                             const SizedBox(height: 10),
                             Text(
                               '画面のどこでもタップで記録',
                               style: textTheme.titleMedium?.copyWith(
-                                color: colorScheme.onPrimaryContainer,
+                                color: colors.quickModeInk,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
@@ -244,8 +246,8 @@ class _QuickModePageState extends ConsumerState<QuickModePage>
                             Text(
                               '終了するには約1.5秒長押し',
                               style: textTheme.bodyMedium?.copyWith(
-                                color: colorScheme.onPrimaryContainer
-                                    .withValues(alpha: 0.75),
+                                color:
+                                    colors.quickModeInk.withValues(alpha: 0.75),
                               ),
                             ),
                           ],

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import 'package:tappin/presentation/widgets/record_feedback_controller.dart';
+import 'package:tappin/presentation/theme/tap_pin_colors_context.dart';
 
 /// [child]全体を覆う記録結果色フラッシュを[controller]から再生するWidget。
 class RecordFeedback extends StatefulWidget {
@@ -35,8 +36,9 @@ class _RecordFeedbackState extends State<RecordFeedback>
       duration: _feedbackDuration,
     );
     _opacity = TweenSequence<double>([
-      TweenSequenceItem(tween: ConstantTween<double>(0.3), weight: 37.5),
-      TweenSequenceItem(tween: Tween<double>(begin: 0.3, end: 0), weight: 62.5),
+      TweenSequenceItem(tween: Tween<double>(begin: 0, end: 0.22), weight: 15),
+      TweenSequenceItem(tween: ConstantTween<double>(0.22), weight: 20),
+      TweenSequenceItem(tween: Tween<double>(begin: 0.22, end: 0), weight: 65),
     ]).animate(_animationController);
     widget.controller.attach(_showSuccessFlash, _showFailureFlash);
   }
@@ -52,12 +54,12 @@ class _RecordFeedbackState extends State<RecordFeedback>
 
   void _showSuccessFlash() {
     setState(() => _isFailure = false);
-    unawaited(_animationController.forward(from: 0));
+    unawaited(_animationController.forward(from: 0.05));
   }
 
   void _showFailureFlash() {
     setState(() => _isFailure = true);
-    unawaited(_animationController.forward(from: 0));
+    unawaited(_animationController.forward(from: 0.05));
   }
 
   @override
@@ -80,7 +82,7 @@ class _RecordFeedbackState extends State<RecordFeedback>
               key: const Key('record-feedback-flash'),
               color: _isFailure
                   ? Theme.of(context).colorScheme.error
-                  : Theme.of(context).colorScheme.primary,
+                  : context.tapPinColors.pinRed,
             ),
           ),
         ),

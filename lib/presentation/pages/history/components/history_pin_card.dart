@@ -5,6 +5,7 @@ import 'package:tappin/domain/models/location/coordinate.dart';
 import 'package:tappin/domain/models/pin/pin.dart';
 import 'package:tappin/domain/models/pin/pin_review_status.dart';
 import 'package:tappin/presentation/providers/provider.dart';
+import 'package:tappin/presentation/theme/tap_pin_colors_context.dart';
 
 /// 履歴一覧でPinの確認状態・場所・メモと次の行動をまとめて表示する。
 class HistoryPinCard extends ConsumerWidget {
@@ -16,15 +17,14 @@ class HistoryPinCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colorScheme = Theme.of(context).colorScheme;
+    final colors = context.tapPinColors;
     final textTheme = Theme.of(context).textTheme;
     final isUnreviewed = pin.reviewStatus == PinReviewStatus.unreviewed;
     final coordinate = Coordinate(
       latitude: pin.latitude,
       longitude: pin.longitude,
     );
-    final address = ref
-        .watch(addressProvider(coordinate))
-        .when(
+    final address = ref.watch(addressProvider(coordinate)).when(
           loading: () => _coordinateText(coordinate),
           error: (_, _) => _coordinateText(coordinate),
           data: (value) => value,
@@ -34,10 +34,14 @@ class HistoryPinCard extends ConsumerWidget {
     return Card(
       key: ValueKey('history-pin-${pin.id}'),
       margin: const EdgeInsets.only(bottom: 12),
-      elevation: isUnreviewed ? 2 : 0,
+      elevation: isUnreviewed ? 1 : 0,
       color: isUnreviewed
-          ? colorScheme.primaryContainer.withValues(alpha: 0.46)
-          : colorScheme.surfaceContainerLow,
+          ? colors.stickyNote.withValues(alpha: 0.74)
+          : colors.reviewedSurface,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+        side: BorderSide(color: colors.dividerInk, width: 0.8),
+      ),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
@@ -48,11 +52,21 @@ class HistoryPinCard extends ConsumerWidget {
             children: [
               Row(
                 children: [
+                  Icon(
+                    isUnreviewed
+                        ? Icons.bookmark_outline_rounded
+                        : Icons.check_rounded,
+                    size: 18,
+                    color: isUnreviewed
+                        ? colors.ink
+                        : colorScheme.onSurfaceVariant,
+                  ),
+                  const SizedBox(width: 6),
                   Text(
-                    isUnreviewed ? '👀 あとで見る' : '✓ 確認済み',
+                    isUnreviewed ? 'あとで見る' : '確認済み',
                     style: textTheme.labelLarge?.copyWith(
                       color: isUnreviewed
-                          ? colorScheme.primary
+                          ? colors.ink
                           : colorScheme.onSurfaceVariant,
                       fontWeight: FontWeight.w700,
                     ),
@@ -70,7 +84,7 @@ class HistoryPinCard extends ConsumerWidget {
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('📍', style: TextStyle(fontSize: 18)),
+                  Icon(Icons.place_outlined, size: 19, color: colors.ink),
                   const SizedBox(width: 10),
                   Expanded(
                     child: Text(
@@ -78,9 +92,8 @@ class HistoryPinCard extends ConsumerWidget {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: textTheme.bodyLarge?.copyWith(
-                        fontWeight: isUnreviewed
-                            ? FontWeight.w600
-                            : FontWeight.w500,
+                        fontWeight:
+                            isUnreviewed ? FontWeight.w600 : FontWeight.w500,
                       ),
                     ),
                   ),
@@ -89,7 +102,11 @@ class HistoryPinCard extends ConsumerWidget {
               const SizedBox(height: 10),
               Row(
                 children: [
-                  const Text('📝', style: TextStyle(fontSize: 17)),
+                  Icon(
+                    Icons.notes_rounded,
+                    size: 19,
+                    color: colorScheme.onSurfaceVariant,
+                  ),
                   const SizedBox(width: 10),
                   Expanded(
                     child: Text(
@@ -110,7 +127,7 @@ class HistoryPinCard extends ConsumerWidget {
                   child: Text(
                     '場所を確認する  →',
                     style: textTheme.labelLarge?.copyWith(
-                      color: colorScheme.primary,
+                      color: colors.ink,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
@@ -125,8 +142,7 @@ class HistoryPinCard extends ConsumerWidget {
 }
 
 /// 履歴カード向けに日時を短く整形する。
-String _dateText(DateTime value) =>
-    '${value.month}/${value.day} '
+String _dateText(DateTime value) => '${value.month}/${value.day} '
     '${value.hour.toString().padLeft(2, '0')}:'
     '${value.minute.toString().padLeft(2, '0')}';
 

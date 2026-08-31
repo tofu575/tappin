@@ -49,11 +49,11 @@ void main() {
     await tester.pumpAndSettle();
     await _takeUiScreenshot(binding, tester, '04_history_unreviewed');
 
-    await tester.tap(find.textContaining('✓ 確認済み'));
+    await tester.tap(find.textContaining('確認済み'));
     await tester.pumpAndSettle();
     await _takeUiScreenshot(binding, tester, '05_history_reviewed');
 
-    await tester.tap(find.textContaining('👀 未確認'));
+    await tester.tap(find.textContaining('未確認'));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const ValueKey('history-pin-1')));
     await tester.pumpAndSettle();

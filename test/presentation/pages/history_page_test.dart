@@ -8,6 +8,7 @@ import 'package:tappin/domain/models/pin/pin_review_status.dart';
 import 'package:tappin/presentation/pages/history/history_page.dart';
 import 'package:tappin/presentation/pages/pin_detail/pin_detail_page.dart';
 import 'package:tappin/presentation/providers/interactor_provider.dart';
+import 'package:tappin/presentation/widgets/tap_pin_mark.dart';
 
 import '../../helpers/build_test_interactor.dart';
 import '../../helpers/mock_repository.dart';
@@ -32,7 +33,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('まだ記録がありません'), findsOneWidget);
-    expect(find.text('📍'), findsOneWidget);
+    expect(find.byType(TapPinMark), findsOneWidget);
   });
 
   testWidgets('未確認カードに日時・場所・メモ状態・次の行動をまとめる', (tester) async {
@@ -41,7 +42,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('👀 あとで見る'), findsOneWidget);
+    expect(find.text('あとで見る'), findsOneWidget);
     expect(find.text('1/15 10:30'), findsOneWidget);
     expect(find.text('東京都渋谷区道玄坂'), findsOneWidget);
     expect(find.text('赤い看板の店'), findsOneWidget);
@@ -70,7 +71,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('✓ 確認済み'), findsOneWidget);
+    expect(find.text('確認済み'), findsWidgets);
     expect(find.text('確認した場所'), findsOneWidget);
     expect(find.text('場所を確認する  →'), findsNothing);
   });
@@ -98,7 +99,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(repository.updatedReviewStatuses[42], PinReviewStatus.reviewed);
-    expect(find.text('✓ 確認済み'), findsOneWidget);
+    expect(find.text('確認済み'), findsWidgets);
   });
 
   testWidgets('メモ編集は一覧ではなく詳細から行う', (tester) async {

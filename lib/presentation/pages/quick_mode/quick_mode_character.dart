@@ -2,15 +2,11 @@ import 'dart:math';
 
 /// Quick Modeセッション中に一貫して表示する移動キャラクター。
 enum QuickModeCharacter {
-  car('🚗'),
-  bus('🚌'),
-  train('🚃'),
-  bicycle('🚲'),
-  walking('🚶');
-
-  const QuickModeCharacter(this.emoji);
-
-  final String emoji;
+  car,
+  bus,
+  train,
+  bicycle,
+  walking;
 
   /// セッション開始時にキャラクターを1種類だけ選ぶ。
   static QuickModeCharacter selectRandom() {

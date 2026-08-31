@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:tappin/presentation/assets/tap_pin_visual_assets.dart';
 import 'package:tappin/presentation/pages/quick_mode/quick_mode_character.dart';
 
 const _lapDuration = Duration(seconds: 6);
@@ -46,8 +47,8 @@ class _QuickModeCharacterLaneState extends State<QuickModeCharacterLane>
             final opacity = progress < 0.08
                 ? progress / 0.08
                 : progress > 0.92
-                ? (1 - progress) / 0.08
-                : 1.0;
+                    ? (1 - progress) / 0.08
+                    : 1.0;
             return Transform.translate(
               offset: Offset(horizontal, 0),
               child: Align(
@@ -56,10 +57,10 @@ class _QuickModeCharacterLaneState extends State<QuickModeCharacterLane>
               ),
             );
           },
-          child: Text(
-            widget.character.emoji,
+          child: TapPinVisualAssets.movementCharacter(
+            widget.character,
             key: const Key('quick-mode-character'),
-            style: const TextStyle(fontSize: 30),
+            size: 30,
           ),
         ),
       ),

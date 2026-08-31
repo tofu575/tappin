@@ -165,6 +165,15 @@ void main() {
 
     await tester.pumpWidget(_buildPage(hapticGateway: hapticGateway));
     await tester.pump();
+    final initialFlash = tester.widget<FadeTransition>(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is FadeTransition &&
+            widget.child?.key == const Key('record-feedback-flash'),
+      ),
+    );
+    expect(initialFlash.opacity.value, 0);
+
     await tester.tap(find.text('記録'));
     await tester.pump(const Duration(milliseconds: 100));
 

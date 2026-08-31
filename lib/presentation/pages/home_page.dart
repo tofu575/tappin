@@ -6,6 +6,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:tappin/domain/models/pin/pin.dart';
 import 'package:tappin/domain/models/pin/pin_review_status.dart';
+import 'package:tappin/presentation/assets/tap_pin_visual_assets.dart';
 import 'package:tappin/presentation/pages/history/history_page.dart';
 import 'package:tappin/presentation/pages/home/components/history_index_tab.dart';
 import 'package:tappin/presentation/pages/home/components/latest_pin_card.dart';
@@ -21,6 +22,7 @@ import 'package:tappin/presentation/widgets/record_action.dart';
 import 'package:tappin/presentation/widgets/record_button.dart';
 import 'package:tappin/presentation/widgets/record_feedback.dart';
 import 'package:tappin/presentation/widgets/record_feedback_controller.dart';
+import 'package:tappin/presentation/widgets/paper_background.dart';
 
 /// 通常記録を主役に、履歴とQuick Modeを画面端へ配置するHome画面。
 class HomePage extends HookConsumerWidget {
@@ -56,16 +58,32 @@ class HomePage extends HookConsumerWidget {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const Text(
-                    '🚲  🚶  🚌',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 34),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      TapPinVisualAssets.movementCharacter(
+                        QuickModeCharacter.bicycle,
+                        size: 32,
+                      ),
+                      const SizedBox(width: 16),
+                      TapPinVisualAssets.movementCharacter(
+                        QuickModeCharacter.walking,
+                        size: 32,
+                      ),
+                      const SizedBox(width: 16),
+                      TapPinVisualAssets.movementCharacter(
+                        QuickModeCharacter.bus,
+                        size: 32,
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 12),
                   Text(
                     'Quick Mode',
                     textAlign: TextAlign.center,
-                    style: Theme.of(sheetContext).textTheme.headlineSmall
+                    style: Theme.of(sheetContext)
+                        .textTheme
+                        .headlineSmall
                         ?.copyWith(fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 12),
@@ -122,67 +140,73 @@ class HomePage extends HookConsumerWidget {
     return RecordFeedback(
       controller: feedbackController,
       child: Scaffold(
-        body: SafeArea(
-          bottom: false,
-          child: Stack(
-            children: [
-              Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(24, 18, 92, 0),
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'TapPin',
-                            style: Theme.of(context).textTheme.headlineMedium
-                                ?.copyWith(fontWeight: FontWeight.w800),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            '気になった場所を、ここに預けよう。',
-                            style: Theme.of(context).textTheme.bodySmall
-                                ?.copyWith(
-                                  color: Theme.of(
-                                    context,
-                                  ).colorScheme.onSurfaceVariant,
-                                ),
-                          ),
-                        ],
+        body: PaperBackground(
+          child: SafeArea(
+            bottom: false,
+            child: Stack(
+              children: [
+                Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(24, 18, 92, 0),
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'TapPin',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headlineMedium
+                                  ?.copyWith(fontWeight: FontWeight.w800),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              '気になった場所を、ここに預けよう。',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodySmall
+                                  ?.copyWith(
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurfaceVariant,
+                                  ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                  Expanded(
-                    child: Center(
-                      child: RecordButton(
-                        onPressed: recordCurrentLocation,
-                        isLoading: ref.watch(recordingProvider).isLoading,
+                    Expanded(
+                      child: Center(
+                        child: RecordButton(
+                          onPressed: recordCurrentLocation,
+                          isLoading: ref.watch(recordingProvider).isLoading,
+                        ),
                       ),
                     ),
-                  ),
-                  if (latestPin.value != null)
-                    LatestPinCard(pin: latestPin.value!),
-                  QuickModeEntry(onTap: openQuickMode),
-                ],
-              ),
-              Positioned(
-                right: 0,
-                top: 92,
-                child: HistoryIndexTab(
-                  unreviewedCount: unreviewedCount,
-                  onTap: () async {
-                    await Navigator.of(context).push(
-                      MaterialPageRoute<void>(
-                        builder: (_) => const HistoryPage(),
-                      ),
-                    );
-                    ref.invalidate(pinsProvider);
-                  },
+                    if (latestPin.value != null)
+                      LatestPinCard(pin: latestPin.value!),
+                    QuickModeEntry(onTap: openQuickMode),
+                  ],
                 ),
-              ),
-            ],
+                Positioned(
+                  right: 0,
+                  top: 92,
+                  child: HistoryIndexTab(
+                    unreviewedCount: unreviewedCount,
+                    onTap: () async {
+                      await Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                          builder: (_) => const HistoryPage(),
+                        ),
+                      );
+                      ref.invalidate(pinsProvider);
+                    },
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
