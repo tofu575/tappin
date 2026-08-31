@@ -1,6 +1,7 @@
 import 'package:tappin/domain/models/location/coordinate.dart';
 import 'package:tappin/domain/models/pin/memo.dart';
 import 'package:tappin/domain/models/pin/pin.dart';
+import 'package:tappin/domain/models/pin/pin_review_status.dart';
 import 'package:tappin/domain/repositories/repository.dart';
 import 'package:tappin/domain/services/clock_gateway.dart';
 import 'package:tappin/domain/services/external_map_destination.dart';
@@ -23,6 +24,7 @@ part 'open_location_settings.part.dart';
 part 'record_current_location.part.dart';
 part 'show_overlay.part.dart';
 part 'update_memo.part.dart';
+part 'update_pin_review_status.part.dart';
 part 'warm_up_location.part.dart';
 
 /// Presentationへアプリケーションの操作単位を提供する。
@@ -71,6 +73,10 @@ class Interactor {
 
   /// [id]のPinのメモを[memo]へ更新する。
   Future<void> updateMemo(int id, Memo memo) => _updateMemo(this, id, memo);
+
+  /// [id]のPinの確認状態を[status]へ更新する。
+  Future<void> updatePinReviewStatus(int id, PinReviewStatus status) =>
+      _updatePinReviewStatus(this, id, status);
 
   /// 位置情報Gatewayを事前準備する。
   Future<void> warmUpLocation() => _warmUpLocation(this);

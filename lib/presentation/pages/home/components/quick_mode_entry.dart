@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-const _driveModeTitle = 'Drive mode';
+const _quickModeTitle = 'Quick Mode';
 
-/// [onTap]でDrive modeの開始確認を開く、Home下部の入口。
-class DriveModeEntry extends StatelessWidget {
-  const DriveModeEntry({super.key, required this.onTap});
+/// [onTap]でQuick Modeの開始確認を開く、Home下端から覗く入口。
+class QuickModeEntry extends StatelessWidget {
+  const QuickModeEntry({super.key, required this.onTap});
 
   final VoidCallback onTap;
 
@@ -15,27 +15,24 @@ class DriveModeEntry extends StatelessWidget {
     return SafeArea(
       top: false,
       child: GestureDetector(
-        key: const Key('drive-mode-entry'),
+        key: const Key('quick-mode-entry'),
         behavior: HitTestBehavior.opaque,
         onVerticalDragEnd: (details) {
           if ((details.primaryVelocity ?? 0) < -250) onTap();
         },
         child: Material(
-          color: colorScheme.surfaceContainer,
+          color: colorScheme.secondaryContainer.withValues(alpha: 0.72),
           child: InkWell(
             onTap: onTap,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
               child: Row(
                 children: [
-                  Icon(
-                    Icons.directions_car_rounded,
-                    color: colorScheme.primary,
-                  ),
+                  const Text('✨', style: TextStyle(fontSize: 22)),
                   const SizedBox(width: 16),
                   const Expanded(
                     child: Text(
-                      _driveModeTitle,
+                      _quickModeTitle,
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,

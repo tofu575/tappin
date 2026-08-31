@@ -159,7 +159,11 @@ class _MapView extends HookConsumerWidget {
               subdomains: _tileSubdomains,
               userAgentPackageName: _userAgentPackageName,
               retinaMode: RetinaMode.isHighDensity(context),
-              tileProvider: FMTCStore('mapTiles').getTileProvider(),
+              tileProvider: FMTCTileProvider(
+                stores: const {
+                  'mapTiles': BrowseStoreStrategy.readUpdateCreate,
+                },
+              ),
             ),
             MarkerLayer(markers: currentLocationMarkers),
             MarkerClusterLayerWidget(

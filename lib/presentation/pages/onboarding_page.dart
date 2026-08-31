@@ -6,29 +6,34 @@ import 'package:tappin/presentation/providers/interactor_provider.dart';
 
 class _OnboardingStep {
   const _OnboardingStep({
-    required this.icon,
+    required this.emoji,
     required this.title,
     required this.description,
   });
 
-  final IconData icon;
+  final String emoji;
   final String title;
   final String description;
 }
 
 const _steps = [
   _OnboardingStep(
-    icon: Icons.location_on,
+    emoji: '📍',
     title: 'TapPin へようこそ',
-    description: 'ワンタップで現在地を記録。\nドライブや外出先の場所を素早くメモできます。',
+    description: '気になった場所を、その場でワンタップ。\nあとで思い出すために、いったん預けられます。',
   ),
   _OnboardingStep(
-    icon: Icons.touch_app,
-    title: 'かんたん操作',
-    description: '住所・日時を自動で保存します。\nメモを追加して記録をより詳しく残せます。',
+    emoji: '👀',
+    title: 'あとで、ゆっくり確認',
+    description: '記録した場所は履歴にまとまります。\n地図で調べて、分かったことをメモできます。',
   ),
   _OnboardingStep(
-    icon: Icons.my_location,
+    emoji: '✨',
+    title: '移動中は Quick Mode',
+    description: '画面のどこをタップしても場所を記録。\n車でも電車でも、歩いているときでも使えます。',
+  ),
+  _OnboardingStep(
+    emoji: '🔒',
     title: '位置情報について',
     description: '位置情報はピンの記録にのみ使用します。\nデータはすべてお使いの端末内に保存され、外部に送信されません。',
   ),
@@ -162,10 +167,8 @@ class _OnboardingStepView extends StatelessWidget {
               color: colorScheme.primaryContainer,
               shape: BoxShape.circle,
             ),
-            child: Icon(
-              step.icon,
-              size: 60,
-              color: colorScheme.onPrimaryContainer,
+            child: Center(
+              child: Text(step.emoji, style: const TextStyle(fontSize: 58)),
             ),
           ),
           const SizedBox(height: 40),

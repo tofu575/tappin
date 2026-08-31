@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tappin/domain/models/location/coordinate.dart';
 import 'package:tappin/domain/models/pin/memo.dart';
 import 'package:tappin/domain/models/pin/pin.dart';
+import 'package:tappin/domain/models/pin/pin_review_status.dart';
 import 'package:tappin/presentation/providers/interactor_provider.dart';
 
 final addressProvider = FutureProvider.autoDispose.family<String, Coordinate>((
@@ -36,6 +37,12 @@ class PinsNotifier extends AsyncNotifier<List<Pin>> {
 
   Future<void> updateMemo(int id, Memo memo) async {
     await ref.read(interactorProvider).updateMemo(id, memo);
+    ref.invalidateSelf();
+  }
+
+  /// 指定したPinの確認状態を保存し、一覧を再読込する。
+  Future<void> updateReviewStatus(int id, PinReviewStatus status) async {
+    await ref.read(interactorProvider).updatePinReviewStatus(id, status);
     ref.invalidateSelf();
   }
 }

@@ -1,26 +1,29 @@
 import 'package:flutter/material.dart';
 
-import 'package:tappin/presentation/pages/drive_mode/drive_transition_direction.dart';
+import 'package:tappin/presentation/pages/quick_mode/quick_mode_character.dart';
+import 'package:tappin/presentation/pages/quick_mode/quick_mode_transition_direction.dart';
 
 const _transitionDuration = Duration(milliseconds: 750);
 
-/// [direction]に応じて車を横切らせ、完了時に[onCompleted]へ遷移を引き継ぐ画面。
-class DriveModeTransitionPage extends StatefulWidget {
-  const DriveModeTransitionPage({
+/// 同じ移動キャラクターを横切らせ、Quick Modeへの出入りを表現する。
+class QuickModeTransitionPage extends StatefulWidget {
+  const QuickModeTransitionPage({
     super.key,
     required this.direction,
+    required this.character,
     required this.onCompleted,
   });
 
-  final DriveTransitionDirection direction;
+  final QuickModeTransitionDirection direction;
+  final QuickModeCharacter character;
   final ValueChanged<BuildContext> onCompleted;
 
   @override
-  State<DriveModeTransitionPage> createState() =>
-      _DriveModeTransitionPageState();
+  State<QuickModeTransitionPage> createState() =>
+      _QuickModeTransitionPageState();
 }
 
-class _DriveModeTransitionPageState extends State<DriveModeTransitionPage>
+class _QuickModeTransitionPageState extends State<QuickModeTransitionPage>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
   bool _didComplete = false;
@@ -54,7 +57,7 @@ class _DriveModeTransitionPageState extends State<DriveModeTransitionPage>
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final entering = widget.direction == DriveTransitionDirection.entering;
+    final entering = widget.direction == QuickModeTransitionDirection.entering;
 
     return Scaffold(
       body: AnimatedBuilder(
@@ -79,17 +82,16 @@ class _DriveModeTransitionPageState extends State<DriveModeTransitionPage>
               children: [
                 Align(
                   alignment: Alignment(horizontal, 0),
-                  child: Icon(
-                    Icons.directions_car_rounded,
-                    key: const Key('drive-transition-car'),
-                    size: 72,
-                    color: colorScheme.primary,
+                  child: Text(
+                    widget.character.emoji,
+                    key: const Key('quick-mode-transition-character'),
+                    style: const TextStyle(fontSize: 72),
                   ),
                 ),
                 Align(
                   alignment: const Alignment(0, 0.48),
                   child: Text(
-                    entering ? 'Drive mode' : '通常モードへ戻ります',
+                    entering ? 'Quick Mode' : 'ホームへ戻ります',
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       color: colorScheme.onPrimaryContainer,
                       fontWeight: FontWeight.bold,

@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:tappin/presentation/pages/drive_mode/drive_mode_page.dart';
-import 'package:tappin/presentation/pages/drive_mode/drive_mode_transition_page.dart';
-import 'package:tappin/presentation/pages/drive_mode/drive_transition_direction.dart';
-import 'package:tappin/presentation/pages/drive_mode/components/drive_mode_car.dart';
-import 'package:tappin/presentation/pages/drive_mode/components/recording_pin_indicator.dart';
+import 'package:tappin/presentation/pages/quick_mode/components/quick_mode_character_lane.dart';
+import 'package:tappin/presentation/pages/quick_mode/components/recording_pin_indicator.dart';
+import 'package:tappin/presentation/pages/quick_mode/quick_mode_character.dart';
+import 'package:tappin/presentation/pages/quick_mode/quick_mode_page.dart';
+import 'package:tappin/presentation/pages/quick_mode/quick_mode_transition_page.dart';
+import 'package:tappin/presentation/pages/quick_mode/quick_mode_transition_direction.dart';
 import 'package:tappin/presentation/pages/home_page.dart';
 import 'package:tappin/presentation/providers/interactor_provider.dart';
 import 'package:tappin/presentation/providers/screen_awake_provider.dart';
@@ -16,8 +17,8 @@ import '../../helpers/mock_haptic_gateway.dart';
 import '../../helpers/mock_repository.dart';
 import '../../helpers/mock_screen_awake_gateway.dart';
 
-/// [repo]へ保存するDrive mode画面を本番と同じProvider境界で構築する。
-Widget _buildDrivePage(
+/// [repo]へ保存するQuick Mode画面を本番と同じProvider境界で構築する。
+Widget _buildQuickModePage(
   MockRipository repo, {
   MockHapticGateway? hapticGateway,
   MockScreenAwakeGateway? screenAwakeGateway,
@@ -31,7 +32,9 @@ Widget _buildDrivePage(
         screenAwakeGateway ?? MockScreenAwakeGateway(),
       ),
     ],
-    child: const MaterialApp(home: DriveModePage()),
+    child: const MaterialApp(
+      home: QuickModePage(character: QuickModeCharacter.bicycle),
+    ),
   );
 }
 
@@ -53,14 +56,14 @@ Widget _buildHomePage(
   );
 }
 
-/// Drive modeの全画面記録と安全な長押し終了を検証する。
+/// Quick Modeの全画面記録と安全な長押し終了を検証する。
 void main() {
   testWidgets('画面の異なる位置をタップすると1タップにつき1回記録する', (tester) async {
     for (final position in const [Offset(30, 120), Offset(760, 300)]) {
       final repo = MockRipository();
       final hapticGateway = MockHapticGateway();
       await tester.pumpWidget(
-        _buildDrivePage(repo, hapticGateway: hapticGateway),
+        _buildQuickModePage(repo, hapticGateway: hapticGateway),
       );
       await tester.pump();
 
@@ -86,11 +89,12 @@ void main() {
 
   testWidgets('記録中はピンが下から満たされ、車の常時アニメーションが存在する', (tester) async {
     final repo = MockRipository();
-    await tester.pumpWidget(_buildDrivePage(repo));
+    await tester.pumpWidget(_buildQuickModePage(repo));
     await tester.pump();
 
     expect(find.byType(RecordingPinIndicator), findsOneWidget);
-    expect(find.byType(DriveModeCar), findsOneWidget);
+    expect(find.byType(QuickModeCharacterLane), findsOneWidget);
+    expect(find.text('🚲'), findsOneWidget);
 
     await tester.tapAt(const Offset(400, 300));
     await tester.pump();
@@ -113,7 +117,10 @@ void main() {
   testWidgets('表示中だけScreen Awakeを有効にし、バックグラウンドと破棄時に解除する', (tester) async {
     final screenAwakeGateway = MockScreenAwakeGateway();
     await tester.pumpWidget(
-      _buildDrivePage(MockRipository(), screenAwakeGateway: screenAwakeGateway),
+      _buildQuickModePage(
+        MockRipository(),
+        screenAwakeGateway: screenAwakeGateway,
+      ),
     );
     await tester.pump();
 
@@ -136,21 +143,25 @@ void main() {
   testWidgets('開始・終了で共通の車トランジションWidgetを表示する', (tester) async {
     await tester.pumpWidget(
       MaterialApp(
-        home: DriveModeTransitionPage(
-          direction: DriveTransitionDirection.entering,
+        home: QuickModeTransitionPage(
+          direction: QuickModeTransitionDirection.entering,
+          character: QuickModeCharacter.bicycle,
           onCompleted: (_) {},
         ),
       ),
     );
     await tester.pump();
 
-    expect(find.byKey(const Key('drive-transition-car')), findsOneWidget);
-    expect(find.text('Drive mode'), findsOneWidget);
+    expect(
+      find.byKey(const Key('quick-mode-transition-character')),
+      findsOneWidget,
+    );
+    expect(find.text('Quick Mode'), findsOneWidget);
   });
 
   testWidgets('長押し途中で離すと終了せず記録も発生しない', (tester) async {
     final repo = MockRipository();
-    await tester.pumpWidget(_buildDrivePage(repo));
+    await tester.pumpWidget(_buildQuickModePage(repo));
     await tester.pump();
 
     final gesture = await tester.startGesture(const Offset(400, 300));
@@ -160,7 +171,7 @@ void main() {
     await gesture.up();
     await tester.pump();
 
-    expect(find.byType(DriveModePage), findsOneWidget);
+    expect(find.byType(QuickModePage), findsOneWidget);
     expect(find.byKey(const Key('drive-exit-progress')), findsNothing);
     expect(repo.savedPins, isEmpty);
   });
@@ -170,9 +181,9 @@ void main() {
     await tester.pumpWidget(_buildHomePage(repo));
     await tester.pump();
 
-    await tester.tap(find.byKey(const Key('drive-mode-entry')));
+    await tester.tap(find.byKey(const Key('quick-mode-entry')));
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('start-drive-mode')));
+    await tester.tap(find.byKey(const Key('start-quick-mode')));
     await tester.pump(const Duration(milliseconds: 400));
     await tester.pump(const Duration(milliseconds: 800));
     await tester.pump();
@@ -187,15 +198,15 @@ void main() {
     await tester.pump(const Duration(milliseconds: 1));
     await tester.pump();
 
-    expect(find.byType(DriveModeTransitionPage), findsOneWidget);
-    expect(find.text('通常モードへ戻ります'), findsOneWidget);
+    expect(find.byType(QuickModeTransitionPage), findsOneWidget);
+    expect(find.text('ホームへ戻ります'), findsOneWidget);
     expect(repo.savedPins, isEmpty);
 
     await gesture.up();
     await tester.pumpAndSettle();
 
     expect(find.byType(HomePage), findsOneWidget);
-    expect(find.byType(DriveModePage), findsNothing);
+    expect(find.byType(QuickModePage), findsNothing);
     expect(repo.savedPins, isEmpty);
   });
 }

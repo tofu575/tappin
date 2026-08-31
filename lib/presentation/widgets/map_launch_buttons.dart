@@ -7,7 +7,7 @@ import 'package:tappin/presentation/providers/interactor_provider.dart';
 
 const _externalMapErrorMessage = '地図アプリを開けませんでした';
 
-/// [coordinate]を外部地図またはStreet Viewで開く操作を表示する。
+/// [coordinate]を外部の地図アプリで調べる目的が分かる導線を表示する。
 class MapLaunchButtons extends ConsumerWidget {
   const MapLaunchButtons({super.key, required this.coordinate});
 
@@ -28,17 +28,20 @@ class MapLaunchButtons extends ConsumerWidget {
       }
     }
 
-    return Row(
-      mainAxisSize: MainAxisSize.min,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        IconButton(
-          icon: const Icon(Icons.map),
-          tooltip: 'Google Maps',
+        FilledButton.icon(
+          key: const Key('open-google-maps'),
+          icon: const Icon(Icons.open_in_new_rounded),
+          label: const Text('Google Mapsで場所を確認'),
           onPressed: () => open(ExternalMapDestination.map),
         ),
-        IconButton(
-          icon: const Icon(Icons.streetview),
-          tooltip: 'ストリートビュー',
+        const SizedBox(height: 8),
+        OutlinedButton.icon(
+          key: const Key('open-street-view'),
+          icon: const Icon(Icons.explore_outlined),
+          label: const Text('ストリートビューで周辺を見る'),
           onPressed: () => open(ExternalMapDestination.streetView),
         ),
       ],

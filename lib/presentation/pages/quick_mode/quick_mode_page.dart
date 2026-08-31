@@ -4,29 +4,33 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:tappin/domain/services/screen_awake_gateway.dart';
-import 'package:tappin/presentation/pages/drive_mode/components/drive_mode_car.dart';
-import 'package:tappin/presentation/pages/drive_mode/components/recording_pin_indicator.dart';
-import 'package:tappin/presentation/pages/drive_mode/drive_mode_transition_page.dart';
-import 'package:tappin/presentation/pages/drive_mode/drive_transition_direction.dart';
+import 'package:tappin/presentation/pages/quick_mode/components/quick_mode_character_lane.dart';
+import 'package:tappin/presentation/pages/quick_mode/components/recording_pin_indicator.dart';
+import 'package:tappin/presentation/pages/quick_mode/quick_mode_character.dart';
+import 'package:tappin/presentation/pages/quick_mode/quick_mode_transition_page.dart';
+import 'package:tappin/presentation/pages/quick_mode/quick_mode_transition_direction.dart';
 import 'package:tappin/presentation/providers/recording_provider.dart';
 import 'package:tappin/presentation/providers/screen_awake_provider.dart';
 import 'package:tappin/presentation/widgets/record_action.dart';
 import 'package:tappin/presentation/widgets/record_feedback.dart';
 import 'package:tappin/presentation/widgets/record_feedback_controller.dart';
 
+// GestureDetectorの長押し認識約500msと合わせ、合計約1.5秒にする。
 const _exitProgressDuration = Duration(seconds: 1);
 const _minimumPinFillDuration = Duration(milliseconds: 250);
 const _completedPinHoldDuration = Duration(milliseconds: 100);
 
-/// 画面全体のタップで記録し、約1.5秒の長押しで安全に終了するDrive mode画面。
-class DriveModePage extends ConsumerStatefulWidget {
-  const DriveModePage({super.key});
+/// 画面全体のタップで記録し、約1.5秒の長押しで終了するQuick Mode画面。
+class QuickModePage extends ConsumerStatefulWidget {
+  const QuickModePage({super.key, required this.character});
+
+  final QuickModeCharacter character;
 
   @override
-  ConsumerState<DriveModePage> createState() => _DriveModePageState();
+  ConsumerState<QuickModePage> createState() => _QuickModePageState();
 }
 
-class _DriveModePageState extends ConsumerState<DriveModePage>
+class _QuickModePageState extends ConsumerState<QuickModePage>
     with TickerProviderStateMixin, WidgetsBindingObserver {
   final _feedbackController = RecordFeedbackController();
   late final AnimationController _exitProgressController;
@@ -52,7 +56,7 @@ class _DriveModePageState extends ConsumerState<DriveModePage>
     unawaited(_screenAwakeGateway.enable());
   }
 
-  /// バックグラウンド中は解除し、Drive modeへ復帰した場合だけ再度有効化する。
+  /// バックグラウンド中は解除し、Quick Modeへ復帰した場合だけ再度有効化する。
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     switch (state) {
@@ -71,8 +75,9 @@ class _DriveModePageState extends ConsumerState<DriveModePage>
     _isExiting = true;
     Navigator.of(context).pushReplacement(
       MaterialPageRoute<void>(
-        builder: (_) => DriveModeTransitionPage(
-          direction: DriveTransitionDirection.exiting,
+        builder: (_) => QuickModeTransitionPage(
+          direction: QuickModeTransitionDirection.exiting,
+          character: widget.character,
           onCompleted: (transitionContext) {
             Navigator.of(transitionContext).pop();
           },
@@ -158,7 +163,7 @@ class _DriveModePageState extends ConsumerState<DriveModePage>
           backgroundColor: colorScheme.primaryContainer,
           // TapとLongPressをgesture arenaで競合させ、終了長押しによる記録を防ぐ。
           body: GestureDetector(
-            key: const Key('drive-record-area'),
+            key: const Key('quick-record-area'),
             behavior: HitTestBehavior.opaque,
             onTap: isRecording || _isExiting ? null : _record,
             onLongPressStart: _startExitHold,
@@ -172,13 +177,10 @@ class _DriveModePageState extends ConsumerState<DriveModePage>
                     children: [
                       Row(
                         children: [
-                          Icon(
-                            Icons.directions_car_rounded,
-                            color: colorScheme.primary,
-                          ),
+                          Icon(Icons.bolt_rounded, color: colorScheme.primary),
                           const SizedBox(width: 10),
                           Text(
-                            'DRIVE MODE',
+                            'QUICK MODE',
                             style: textTheme.titleMedium?.copyWith(
                               color: colorScheme.onPrimaryContainer,
                               fontWeight: FontWeight.bold,
@@ -249,7 +251,7 @@ class _DriveModePageState extends ConsumerState<DriveModePage>
                           ],
                         ),
                       const SizedBox(height: 18),
-                      const DriveModeCar(),
+                      QuickModeCharacterLane(character: widget.character),
                       const SizedBox(height: 20),
                     ],
                   ),

@@ -3,8 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:tappin/domain/services/location_service.dart';
-import 'package:tappin/presentation/pages/drive_mode/drive_mode_page.dart';
-import 'package:tappin/presentation/pages/drive_mode/drive_mode_transition_page.dart';
+import 'package:tappin/domain/models/pin/pin_review_status.dart';
+import 'package:tappin/presentation/pages/quick_mode/quick_mode_page.dart';
+import 'package:tappin/presentation/pages/quick_mode/quick_mode_transition_page.dart';
 import 'package:tappin/presentation/pages/home_page.dart';
 import 'package:tappin/presentation/providers/interactor_provider.dart';
 import 'package:tappin/presentation/providers/screen_awake_provider.dart';
@@ -57,52 +58,76 @@ void main() {
     expect(find.text('記録'), findsOneWidget);
   });
 
-  testWidgets('Drive modeの入口から開始確認を開ける', (tester) async {
+  testWidgets('未確認が0件なら右端のインデックスを履歴と表示する', (tester) async {
+    await tester.pumpWidget(_buildPage(repo: MockRipository()));
+    await tester.pumpAndSettle();
+
+    expect(find.text('履歴'), findsOneWidget);
+  });
+
+  testWidgets('右端のインデックスへ未確認件数を穏やかに表示する', (tester) async {
+    await tester.pumpWidget(
+      _buildPage(
+        repo: MockRipository(
+          stubbedPins: [
+            buildTestPin(id: 1),
+            buildTestPin(id: 2),
+            buildTestPin(id: 3, reviewStatus: PinReviewStatus.reviewed),
+          ],
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('未確認 2'), findsOneWidget);
+  });
+
+  testWidgets('Quick Modeの入口から開始確認を開ける', (tester) async {
     await tester.pumpWidget(_buildPage());
     await tester.pump();
 
-    await tester.tap(find.byKey(const Key('drive-mode-entry')));
+    await tester.tap(find.byKey(const Key('quick-mode-entry')));
     await tester.pumpAndSettle();
 
-    expect(find.textContaining('画面全体が記録ボタンになります。'), findsOneWidget);
-    expect(find.text('開始する'), findsOneWidget);
+    expect(find.textContaining('画面のどこをタップしても'), findsOneWidget);
+    expect(find.text('Quick Modeをはじめる'), findsOneWidget);
     expect(find.text('キャンセル'), findsOneWidget);
   });
 
-  testWidgets('Drive modeの入口を上スワイプして開始確認を開ける', (tester) async {
+  testWidgets('Quick Modeの入口を上スワイプして開始確認を開ける', (tester) async {
     await tester.pumpWidget(_buildPage());
     await tester.pump();
 
     await tester.fling(
-      find.byKey(const Key('drive-mode-entry')),
+      find.byKey(const Key('quick-mode-entry')),
       const Offset(0, -200),
       1000,
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('開始する'), findsOneWidget);
+    expect(find.text('Quick Modeをはじめる'), findsOneWidget);
   });
 
-  testWidgets('Drive mode開始確認をキャンセルするとHomeに留まる', (tester) async {
+  testWidgets('Quick Mode開始確認をキャンセルするとHomeに留まる', (tester) async {
     await tester.pumpWidget(_buildPage());
     await tester.pump();
 
-    await tester.tap(find.byKey(const Key('drive-mode-entry')));
+    await tester.tap(find.byKey(const Key('quick-mode-entry')));
     await tester.pumpAndSettle();
     await tester.tap(find.text('キャンセル'));
     await tester.pumpAndSettle();
 
     expect(find.byType(HomePage), findsOneWidget);
-    expect(find.byType(DriveModePage), findsNothing);
+    expect(find.byType(QuickModePage), findsNothing);
   });
 
-  testWidgets('Drive modeを開始すると車の演出後に専用画面へ遷移する', (tester) async {
+  testWidgets('Quick Modeを開始すると移動キャラクターの演出後に遷移する', (tester) async {
     await tester.pumpWidget(_buildPage());
     await tester.pump();
 
-    await tester.tap(find.byKey(const Key('drive-mode-entry')));
+    await tester.tap(find.byKey(const Key('quick-mode-entry')));
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('start-drive-mode')));
+    await tester.tap(find.byKey(const Key('start-quick-mode')));
     await tester.pump(const Duration(milliseconds: 400));
     await tester.pump(const Duration(milliseconds: 800));
     await tester.pump();
@@ -110,8 +135,8 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 400));
 
-    expect(find.byType(DriveModePage), findsOneWidget);
-    expect(find.byType(DriveModeTransitionPage), findsNothing);
+    expect(find.byType(QuickModePage), findsOneWidget);
+    expect(find.byType(QuickModeTransitionPage), findsNothing);
     expect(find.text('画面のどこでもタップで記録'), findsOneWidget);
   });
 
@@ -161,7 +186,7 @@ void main() {
     await tester.tap(find.text('記録'));
     await tester.pumpAndSettle();
 
-    expect(find.byType(Card), findsOneWidget);
+    expect(find.text('いま預けました'), findsOneWidget);
   });
 
   testWidgets('位置情報の権限が一時的に拒否された場合、スナックバーが表示される', (tester) async {
@@ -214,11 +239,12 @@ void main() {
     );
   });
 
-  testWidgets('AppBarに地図・一覧ボタンが表示される', (tester) async {
+  testWidgets('主要導線にMapとOverlayを置かず履歴タブを表示する', (tester) async {
     await tester.pumpWidget(_buildPage());
     await tester.pump();
 
-    expect(find.byIcon(Icons.map), findsOneWidget);
-    expect(find.byIcon(Icons.list), findsOneWidget);
+    expect(find.byIcon(Icons.map), findsNothing);
+    expect(find.byIcon(Icons.picture_in_picture), findsNothing);
+    expect(find.byKey(const Key('history-index-tab')), findsOneWidget);
   });
 }

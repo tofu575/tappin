@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
 
+import 'package:tappin/presentation/pages/quick_mode/quick_mode_character.dart';
+
 const _lapDuration = Duration(seconds: 6);
 
-/// Drive mode中、画面下部を穏やかに横切り続ける車を表示する。
-class DriveModeCar extends StatefulWidget {
-  const DriveModeCar({super.key});
+/// Quick Mode中、選ばれた移動キャラクターを穏やかに動かす。
+class QuickModeCharacterLane extends StatefulWidget {
+  const QuickModeCharacterLane({super.key, required this.character});
+
+  final QuickModeCharacter character;
 
   @override
-  State<DriveModeCar> createState() => _DriveModeCarState();
+  State<QuickModeCharacterLane> createState() => _QuickModeCharacterLaneState();
 }
 
-class _DriveModeCarState extends State<DriveModeCar>
+class _QuickModeCharacterLaneState extends State<QuickModeCharacterLane>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
 
@@ -29,10 +33,9 @@ class _DriveModeCarState extends State<DriveModeCar>
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
     return SizedBox(
-      key: const Key('drive-mode-car'),
-      height: 40,
+      key: const Key('quick-mode-character-lane'),
+      height: 44,
       width: double.infinity,
       child: LayoutBuilder(
         builder: (context, constraints) => AnimatedBuilder(
@@ -53,10 +56,10 @@ class _DriveModeCarState extends State<DriveModeCar>
               ),
             );
           },
-          child: Icon(
-            Icons.directions_car_rounded,
-            size: 30,
-            color: colorScheme.primary.withValues(alpha: 0.7),
+          child: Text(
+            widget.character.emoji,
+            key: const Key('quick-mode-character'),
+            style: const TextStyle(fontSize: 30),
           ),
         ),
       ),

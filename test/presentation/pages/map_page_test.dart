@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:tappin/domain/models/pin/memo.dart';
 import 'package:tappin/domain/repositories/repository.dart';
 import 'package:tappin/domain/models/pin/pin.dart';
+import 'package:tappin/domain/models/pin/pin_review_status.dart';
 import 'package:tappin/presentation/pages/map_page.dart';
 import 'package:tappin/presentation/providers/interactor_provider.dart';
 
@@ -19,6 +20,9 @@ class _ErrorRepository implements Repository {
   Future<void> deletePin(int id) async => throw UnimplementedError();
   @override
   Future<void> updateMemo(int id, Memo memo) async =>
+      throw UnimplementedError();
+  @override
+  Future<void> updateReviewStatus(int id, PinReviewStatus status) async =>
       throw UnimplementedError();
 }
 

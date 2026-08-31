@@ -2,6 +2,7 @@ import 'package:flutter/services.dart';
 
 import 'package:tappin/domain/models/pin/memo.dart';
 import 'package:tappin/domain/models/pin/pin.dart';
+import 'package:tappin/domain/models/pin/pin_review_status.dart';
 import 'package:tappin/domain/repositories/repository.dart';
 
 class MethodChannelStorage implements Repository {
@@ -9,7 +10,9 @@ class MethodChannelStorage implements Repository {
 
   @override
   Future<List<Pin>> getPins() async {
-    final result = await _channel.invokeListMethod<Map<Object?, Object?>>('storage/getPins');
+    final result = await _channel.invokeListMethod<Map<Object?, Object?>>(
+      'storage/getPins',
+    );
     if (result == null) return [];
     return result.map((raw) {
       final map = raw.map((k, v) => MapEntry(k.toString(), v));
@@ -37,6 +40,14 @@ class MethodChannelStorage implements Repository {
     await _channel.invokeMethod<void>('storage/updateMemo', {
       'id': id,
       'memo': memo.value,
+    });
+  }
+
+  @override
+  Future<void> updateReviewStatus(int id, PinReviewStatus status) async {
+    await _channel.invokeMethod<void>('storage/updateReviewStatus', {
+      'id': id,
+      'reviewed': status == PinReviewStatus.reviewed,
     });
   }
 }
