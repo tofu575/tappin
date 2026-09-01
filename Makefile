@@ -1,15 +1,23 @@
 PACKAGE_DIRS = \
 	lib/domain/model \
 	lib/domain/usecase \
-	config \
-	lib/gateway/device_gateway \
-	lib/gateway/api_client \
-	lib/gateway/remote_image_gateway \
-	lib/gateway/stub/in_memory_user_repository \
-	lib/gateway/stub/in_memory_observation_repository \
-	lib/gateway/stub/in_memory_discussion_repository \
-	lib/gateway/stub/stub_image_metadata_reader \
-	lib/presentation
+	lib/gateway/flutter_haptic_gateway \
+	lib/gateway/system_clock_gateway \
+	lib/gateway/wakelock_screen_awake_gateway \
+	lib/gateway/url_launcher_external_map_gateway \
+	lib/gateway/native_geocoding_service \
+	lib/gateway/geolocator_location_service \
+	lib/gateway/shared_preferences_onboarding_gateway \
+	lib/gateway/native_overlay_service \
+	lib/gateway/method_channel_storage
+
+TEST_PACKAGE_DIRS = \
+	lib/domain/model \
+	lib/domain/usecase
+
+FLUTTER_TEST_PACKAGE_DIRS = \
+	lib/gateway/geolocator_location_service \
+	lib/gateway/shared_preferences_onboarding_gateway
 
 .PHONY: flutter-run-device flutter-build-apk flutter-build-apk-stub flutter-build-bundle flutter-build-ios api-codegen pub-get format analyze test
 
@@ -46,12 +54,19 @@ pub-get:
 	done
 
 format:
-	fvm dart format config/lib config/test lib test
+	fvm dart format lib test integration_test
 
 analyze:
-	cd config && fvm dart analyze
+	@for package_dir in $(PACKAGE_DIRS); do \
+		(cd $$package_dir && fvm dart analyze) || exit 1; \
+	done
 	fvm flutter analyze
 
 test:
-	cd config && fvm dart test
+	@for package_dir in $(TEST_PACKAGE_DIRS); do \
+		(cd $$package_dir && fvm dart test) || exit 1; \
+	done
+	@for package_dir in $(FLUTTER_TEST_PACKAGE_DIRS); do \
+		(cd $$package_dir && fvm flutter test) || exit 1; \
+	done
 	fvm flutter test

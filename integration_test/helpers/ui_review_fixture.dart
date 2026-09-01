@@ -1,9 +1,4 @@
-import 'package:tappin/domain/models/core/my_datetime.dart';
-import 'package:tappin/domain/models/location/latitude.dart';
-import 'package:tappin/domain/models/location/longitude.dart';
-import 'package:tappin/domain/models/pin/memo.dart';
-import 'package:tappin/domain/models/pin/pin.dart';
-import 'package:tappin/domain/models/pin/pin_review_status.dart';
+import 'package:model/model.dart';
 
 /// UIレビューで日時・場所・メモの表示を確認できる固定Pinを返す。
 List<Pin> buildUiReviewPins() => [

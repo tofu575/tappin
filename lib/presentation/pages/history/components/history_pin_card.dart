@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:tappin/domain/models/location/coordinate.dart';
-import 'package:tappin/domain/models/pin/pin.dart';
-import 'package:tappin/domain/models/pin/pin_review_status.dart';
+import 'package:model/model.dart';
 import 'package:tappin/presentation/localization/app_localizations_context.dart';
 import 'package:tappin/presentation/providers/provider.dart';
 import 'package:tappin/presentation/theme/tap_pin_colors_context.dart';
@@ -25,7 +23,9 @@ class HistoryPinCard extends ConsumerWidget {
       latitude: pin.latitude,
       longitude: pin.longitude,
     );
-    final address = ref.watch(addressProvider(coordinate)).when(
+    final address = ref
+        .watch(addressProvider(coordinate))
+        .when(
           loading: () => _coordinateText(coordinate),
           error: (_, _) => _coordinateText(coordinate),
           data: (value) => value,
@@ -95,8 +95,9 @@ class HistoryPinCard extends ConsumerWidget {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: textTheme.bodyLarge?.copyWith(
-                        fontWeight:
-                            isUnreviewed ? FontWeight.w600 : FontWeight.w500,
+                        fontWeight: isUnreviewed
+                            ? FontWeight.w600
+                            : FontWeight.w500,
                       ),
                     ),
                   ),

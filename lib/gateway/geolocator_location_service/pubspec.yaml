@@ -1,0 +1,21 @@
+name: geolocator_location_service
+description: "geolocatorを使う位置情報Gateway"
+publish_to: "none"
+
+version: 0.1.0+1
+environment:
+  sdk: ^3.11.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  geolocator: ^14.0.0
+  model:
+    path: ../../domain/model
+  usecase:
+    path: ../../domain/usecase
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  lints: ^6.0.0

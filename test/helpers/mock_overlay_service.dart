@@ -1,4 +1,4 @@
-import 'package:tappin/domain/services/overlay_service.dart';
+import 'package:usecase/usecase.dart';
 
 class MockOverlayService implements OverlayService {
   bool showCalled = false;

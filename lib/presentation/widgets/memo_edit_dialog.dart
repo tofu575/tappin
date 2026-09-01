@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
-import 'package:tappin/domain/models/pin/memo.dart';
+import 'package:model/model.dart';
 import 'package:tappin/presentation/localization/app_localizations_context.dart';
 
 class MemoEditDialog extends HookWidget {

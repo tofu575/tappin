@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:tappin/domain/models/location/coordinate.dart';
-import 'package:tappin/domain/models/pin/memo.dart';
-import 'package:tappin/domain/models/pin/pin.dart';
+import 'package:model/model.dart';
 import 'package:tappin/presentation/localization/app_localizations_context.dart';
 import 'package:tappin/presentation/providers/provider.dart';
 import 'package:tappin/presentation/widgets/map_launch_buttons.dart';
@@ -20,9 +18,8 @@ class ListPage extends ConsumerWidget {
       appBar: AppBar(title: Text(context.l10n.recordListTitle)),
       body: pinsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(
-          child: Text(context.l10n.errorWithDetail(e.toString())),
-        ),
+        error: (e, _) =>
+            Center(child: Text(context.l10n.errorWithDetail(e.toString()))),
         data: (pins) {
           if (pins.isEmpty) {
             return const _EmptyState();

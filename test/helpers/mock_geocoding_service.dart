@@ -1,5 +1,5 @@
-import 'package:tappin/domain/models/location/coordinate.dart';
-import 'package:tappin/domain/services/geocoding_service.dart';
+import 'package:model/model.dart';
+import 'package:usecase/usecase.dart';
 
 class MockGeocodingService implements GeocodingService {
   final String stubbedAddress;

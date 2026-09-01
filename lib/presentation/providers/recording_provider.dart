@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:tappin/domain/models/pin/pin.dart';
+import 'package:model/model.dart';
 import 'package:tappin/presentation/providers/interactor_provider.dart';
 import 'package:tappin/presentation/providers/provider.dart';
 

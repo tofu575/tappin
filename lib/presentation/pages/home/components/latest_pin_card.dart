@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:tappin/domain/models/location/coordinate.dart';
-import 'package:tappin/domain/models/pin/pin.dart';
+import 'package:model/model.dart';
 import 'package:tappin/presentation/providers/provider.dart';
 import 'package:tappin/presentation/localization/app_localizations_context.dart';
 import 'package:tappin/presentation/theme/tap_pin_colors_context.dart';
@@ -19,7 +18,9 @@ class LatestPinCard extends ConsumerWidget {
       latitude: pin.latitude,
       longitude: pin.longitude,
     );
-    final address = ref.watch(addressProvider(coordinate)).when(
+    final address = ref
+        .watch(addressProvider(coordinate))
+        .when(
           loading: () => context.l10n.checkingPlace,
           error: (_, _) => context.l10n.coordinateRecorded,
           data: (value) => value,
@@ -45,9 +46,9 @@ class LatestPinCard extends ConsumerWidget {
                 Text(
                   context.l10n.justPinned,
                   style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                        color: colors.ink,
-                        fontWeight: FontWeight.w700,
-                      ),
+                    color: colors.ink,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
                 const SizedBox(height: 3),
                 Text(address, maxLines: 1, overflow: TextOverflow.ellipsis),

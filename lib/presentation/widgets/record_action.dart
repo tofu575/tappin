@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:tappin/domain/models/pin/pin.dart';
-import 'package:tappin/domain/services/location_service.dart';
+import 'package:model/model.dart';
+import 'package:usecase/usecase.dart';
 import 'package:tappin/presentation/providers/interactor_provider.dart';
 import 'package:tappin/presentation/localization/app_localizations_context.dart';
 import 'package:tappin/presentation/providers/recording_provider.dart';
@@ -17,8 +17,9 @@ Future<void> performRecordAction({
   ValueChanged<Pin>? onSuccess,
 }) async {
   try {
-    final pin =
-        await ref.read(recordingProvider.notifier).recordCurrentLocation();
+    final pin = await ref
+        .read(recordingProvider.notifier)
+        .recordCurrentLocation();
     if (pin == null || !context.mounted) return;
 
     onSuccess?.call(pin);
@@ -61,9 +62,7 @@ Future<void> performRecordAction({
     if (!context.mounted) return;
     feedbackController.showFailure();
     ref.read(interactorProvider).playRecordFailure();
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(
+    ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(context.l10n.recordError(error.toString()))),
     );
   }

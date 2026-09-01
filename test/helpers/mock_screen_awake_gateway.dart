@@ -1,4 +1,4 @@
-import 'package:tappin/domain/services/screen_awake_gateway.dart';
+import 'package:usecase/usecase.dart';
 
 /// Screen Awakeの有効化・解除回数を保持するMock Gateway。
 class MockScreenAwakeGateway implements ScreenAwakeGateway {

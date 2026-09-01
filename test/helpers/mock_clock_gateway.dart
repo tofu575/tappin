@@ -1,5 +1,5 @@
-import 'package:tappin/domain/models/core/my_datetime.dart';
-import 'package:tappin/domain/services/clock_gateway.dart';
+import 'package:model/model.dart';
+import 'package:usecase/usecase.dart';
 
 /// テスト時点の現在時刻を返すClock Gateway。
 class MockClockGateway implements ClockGateway {

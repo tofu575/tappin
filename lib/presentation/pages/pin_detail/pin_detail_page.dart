@@ -2,10 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'package:tappin/domain/models/location/coordinate.dart';
-import 'package:tappin/domain/models/pin/memo.dart';
-import 'package:tappin/domain/models/pin/pin.dart';
-import 'package:tappin/domain/models/pin/pin_review_status.dart';
+import 'package:model/model.dart';
 import 'package:tappin/presentation/localization/app_localizations_context.dart';
 import 'package:tappin/presentation/providers/provider.dart';
 import 'package:tappin/presentation/widgets/map_launch_buttons.dart';
@@ -31,7 +28,9 @@ class PinDetailPage extends HookConsumerWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final colors = context.tapPinColors;
     final textTheme = Theme.of(context).textTheme;
-    final address = ref.watch(addressProvider(coordinate)).when(
+    final address = ref
+        .watch(addressProvider(coordinate))
+        .when(
           loading: () => context.l10n.checkingAddress,
           error: (_, _) => _coordinateText(coordinate),
           data: (result) => result,
@@ -54,8 +53,9 @@ class PinDetailPage extends HookConsumerWidget {
       final id = value.id;
       if (id == null || isUpdating.value) return;
       isUpdating.value = true;
-      final nextStatus =
-          isUnreviewed ? PinReviewStatus.reviewed : PinReviewStatus.unreviewed;
+      final nextStatus = isUnreviewed
+          ? PinReviewStatus.reviewed
+          : PinReviewStatus.unreviewed;
       try {
         await ref
             .read(pinsProvider.notifier)
@@ -113,8 +113,9 @@ class PinDetailPage extends HookConsumerWidget {
             Container(
               padding: const EdgeInsets.all(18),
               decoration: BoxDecoration(
-                color:
-                    isUnreviewed ? colors.stickyNote : colors.reviewedSurface,
+                color: isUnreviewed
+                    ? colors.stickyNote
+                    : colors.reviewedSurface,
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: colors.dividerInk),
               ),
@@ -139,7 +140,8 @@ class PinDetailPage extends HookConsumerWidget {
                       Icon(Icons.place_outlined, color: colors.ink),
                       const SizedBox(width: 8),
                       Expanded(
-                          child: Text(address, style: textTheme.titleMedium)),
+                        child: Text(address, style: textTheme.titleMedium),
+                      ),
                     ],
                   ),
                   const SizedBox(height: 10),
@@ -162,8 +164,9 @@ class PinDetailPage extends HookConsumerWidget {
             const SizedBox(height: 24),
             Text(
               context.l10n.researchPlaceTitle,
-              style:
-                  textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+              style: textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w700,
+              ),
             ),
             const SizedBox(height: 6),
             Text(
@@ -251,10 +254,10 @@ String _coordinateText(Coordinate coordinate) =>
 
 /// 詳細画面のローカル表示用にPinを複製する。
 Pin _copyPin(Pin pin, {Memo? memo, PinReviewStatus? reviewStatus}) => Pin(
-      id: pin.id,
-      latitude: pin.latitude,
-      longitude: pin.longitude,
-      createdAt: pin.createdAt,
-      memo: memo ?? pin.memo,
-      reviewStatus: reviewStatus ?? pin.reviewStatus,
-    );
+  id: pin.id,
+  latitude: pin.latitude,
+  longitude: pin.longitude,
+  createdAt: pin.createdAt,
+  memo: memo ?? pin.memo,
+  reviewStatus: reviewStatus ?? pin.reviewStatus,
+);

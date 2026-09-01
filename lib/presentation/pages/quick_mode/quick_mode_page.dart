@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:tappin/domain/services/screen_awake_gateway.dart';
+import 'package:usecase/usecase.dart';
 import 'package:tappin/presentation/pages/quick_mode/components/quick_mode_character_lane.dart';
 import 'package:tappin/presentation/pages/quick_mode/components/recording_pin_indicator.dart';
 import 'package:tappin/presentation/pages/quick_mode/quick_mode_character.dart';
@@ -247,8 +247,9 @@ class _QuickModePageState extends ConsumerState<QuickModePage>
                             Text(
                               context.l10n.quickModeExitGuide,
                               style: textTheme.bodyMedium?.copyWith(
-                                color:
-                                    colors.quickModeInk.withValues(alpha: 0.75),
+                                color: colors.quickModeInk.withValues(
+                                  alpha: 0.75,
+                                ),
                               ),
                             ),
                           ],

@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:tappin/domain/models/pin/memo.dart';
-import 'package:tappin/domain/repositories/repository.dart';
-import 'package:tappin/domain/models/pin/pin.dart';
-import 'package:tappin/domain/models/pin/pin_review_status.dart';
+import 'package:model/model.dart';
+import 'package:usecase/usecase.dart';
 import 'package:tappin/presentation/pages/map_page.dart';
 import 'package:tappin/presentation/providers/interactor_provider.dart';
 

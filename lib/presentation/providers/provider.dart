@@ -1,9 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:tappin/domain/models/location/coordinate.dart';
-import 'package:tappin/domain/models/pin/memo.dart';
-import 'package:tappin/domain/models/pin/pin.dart';
-import 'package:tappin/domain/models/pin/pin_review_status.dart';
+import 'package:model/model.dart';
 import 'package:tappin/presentation/providers/interactor_provider.dart';
 
 final addressProvider = FutureProvider.autoDispose.family<String, Coordinate>((

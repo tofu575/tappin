@@ -1,7 +1,5 @@
-import 'package:tappin/domain/models/location/coordinate.dart';
-import 'package:tappin/domain/models/location/latitude.dart';
-import 'package:tappin/domain/models/location/longitude.dart';
-import 'package:tappin/domain/services/location_service.dart';
+import 'package:model/model.dart';
+import 'package:usecase/usecase.dart';
 
 final testCoordinate = Coordinate(
   latitude: Latitude(35.6812),

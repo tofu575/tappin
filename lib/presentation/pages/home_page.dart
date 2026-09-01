@@ -4,8 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'package:tappin/domain/models/pin/pin.dart';
-import 'package:tappin/domain/models/pin/pin_review_status.dart';
+import 'package:model/model.dart';
 import 'package:tappin/presentation/assets/tap_pin_visual_assets.dart';
 import 'package:tappin/presentation/pages/history/history_page.dart';
 import 'package:tappin/presentation/localization/app_localizations_context.dart';
@@ -83,16 +82,11 @@ class HomePage extends HookConsumerWidget {
                   Text(
                     l10n.quickMode,
                     textAlign: TextAlign.center,
-                    style: Theme.of(sheetContext)
-                        .textTheme
-                        .headlineSmall
+                    style: Theme.of(sheetContext).textTheme.headlineSmall
                         ?.copyWith(fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 12),
-                  Text(
-                    l10n.quickModeGuide,
-                    textAlign: TextAlign.center,
-                  ),
+                  Text(l10n.quickModeGuide, textAlign: TextAlign.center),
                   const SizedBox(height: 24),
                   FilledButton(
                     key: const Key('start-quick-mode'),
@@ -158,17 +152,13 @@ class HomePage extends HookConsumerWidget {
                           children: [
                             Text(
                               l10n.appTitle,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .headlineMedium
+                              style: Theme.of(context).textTheme.headlineMedium
                                   ?.copyWith(fontWeight: FontWeight.w800),
                             ),
                             const SizedBox(height: 2),
                             Text(
                               l10n.homeTagline,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodySmall
+                              style: Theme.of(context).textTheme.bodySmall
                                   ?.copyWith(
                                     color: Theme.of(
                                       context,

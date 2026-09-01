@@ -4,11 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 
 import 'package:tappin/app.dart';
-import 'package:tappin/domain/models/core/my_datetime.dart';
-import 'package:tappin/domain/models/location/coordinate.dart';
-import 'package:tappin/domain/models/location/latitude.dart';
-import 'package:tappin/domain/models/location/longitude.dart';
-import 'package:tappin/domain/models/pin/pin.dart';
+import 'package:model/model.dart';
 import 'package:tappin/presentation/pages/quick_mode/quick_mode_page.dart';
 import 'package:tappin/presentation/providers/interactor_provider.dart';
 import 'package:tappin/presentation/providers/screen_awake_provider.dart';

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:tappin/domain/services/location_service.dart';
-import 'package:tappin/domain/models/pin/pin_review_status.dart';
+import 'package:usecase/usecase.dart';
+import 'package:model/model.dart';
 import 'package:tappin/presentation/pages/quick_mode/quick_mode_page.dart';
 import 'package:tappin/presentation/pages/quick_mode/quick_mode_transition_page.dart';
 import 'package:tappin/presentation/pages/home_page.dart';

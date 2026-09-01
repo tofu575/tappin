@@ -7,10 +7,8 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:latlong2/latlong.dart';
 
 import 'package:tappin/config/app_env.dart';
-import 'package:tappin/domain/models/location/coordinate.dart';
-import 'package:tappin/domain/models/pin/memo.dart';
-import 'package:tappin/domain/models/pin/pin.dart';
-import 'package:tappin/domain/services/location_service.dart';
+import 'package:model/model.dart';
+import 'package:usecase/usecase.dart';
 import 'package:tappin/presentation/localization/app_localizations_context.dart';
 import 'package:tappin/presentation/providers/interactor_provider.dart';
 import 'package:tappin/presentation/providers/provider.dart';
@@ -35,9 +33,8 @@ class MapPage extends ConsumerWidget {
       appBar: AppBar(title: Text(context.l10n.mapTitle)),
       body: pinsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(
-          child: Text(context.l10n.errorWithDetail(e.toString())),
-        ),
+        error: (e, _) =>
+            Center(child: Text(context.l10n.errorWithDetail(e.toString()))),
         data: (pins) => _MapView(pins: pins),
       ),
     );
@@ -64,8 +61,9 @@ class _MapView extends HookConsumerWidget {
       if (isFetchingLocation.value) return;
       isFetchingLocation.value = true;
       try {
-        final coordinate =
-            await ref.read(interactorProvider).fetchCurrentLocation();
+        final coordinate = await ref
+            .read(interactorProvider)
+            .fetchCurrentLocation();
         final location = LatLng(
           coordinate.latitude.value,
           coordinate.longitude.value,

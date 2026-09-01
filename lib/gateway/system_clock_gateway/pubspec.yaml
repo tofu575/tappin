@@ -1,0 +1,16 @@
+name: system_clock_gateway
+description: "システム時計を使うClock Gateway"
+publish_to: "none"
+
+version: 0.1.0+1
+environment:
+  sdk: ^3.11.0
+
+dependencies:
+  model:
+    path: ../../domain/model
+  usecase:
+    path: ../../domain/usecase
+
+dev_dependencies:
+  lints: ^6.0.0

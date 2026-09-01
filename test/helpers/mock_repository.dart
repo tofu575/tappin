@@ -1,10 +1,5 @@
-import 'package:tappin/domain/models/core/my_datetime.dart';
-import 'package:tappin/domain/models/location/latitude.dart';
-import 'package:tappin/domain/models/location/longitude.dart';
-import 'package:tappin/domain/models/pin/memo.dart';
-import 'package:tappin/domain/models/pin/pin.dart';
-import 'package:tappin/domain/models/pin/pin_review_status.dart';
-import 'package:tappin/domain/repositories/repository.dart';
+import 'package:model/model.dart';
+import 'package:usecase/usecase.dart';
 
 Pin buildTestPin({
   int id = 1,

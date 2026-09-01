@@ -1,12 +1,4 @@
-import 'package:tappin/domain/interactor/interactor.dart';
-import 'package:tappin/domain/repositories/repository.dart';
-import 'package:tappin/domain/services/clock_gateway.dart';
-import 'package:tappin/domain/services/external_map_gateway.dart';
-import 'package:tappin/domain/services/geocoding_service.dart';
-import 'package:tappin/domain/services/haptic_gateway.dart';
-import 'package:tappin/domain/services/location_service.dart';
-import 'package:tappin/domain/services/onboarding_gateway.dart';
-import 'package:tappin/domain/services/overlay_service.dart';
+import 'package:usecase/usecase.dart';
 
 import 'mock_clock_gateway.dart';
 import 'mock_external_map_gateway.dart';

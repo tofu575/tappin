@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'package:tappin/domain/models/pin/pin_review_status.dart';
+import 'package:model/model.dart';
 import 'package:tappin/presentation/localization/app_localizations_context.dart';
 import 'package:tappin/presentation/pages/history/components/history_pin_card.dart';
 import 'package:tappin/presentation/pages/pin_detail/pin_detail_page.dart';
@@ -36,7 +36,8 @@ class HistoryPage extends HookConsumerWidget {
             final reviewed = pins
                 .where((pin) => pin.reviewStatus == PinReviewStatus.reviewed)
                 .toList();
-            final currentStatus = selectedStatus.value ??
+            final currentStatus =
+                selectedStatus.value ??
                 (unreviewed.isNotEmpty
                     ? PinReviewStatus.unreviewed
                     : PinReviewStatus.reviewed);
@@ -52,8 +53,8 @@ class HistoryPage extends HookConsumerWidget {
                   child: Text(
                     context.l10n.historyDescription,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
                   ),
                 ),
                 Padding(
@@ -137,8 +138,8 @@ Widget _noPinsState(BuildContext context) {
             context.l10n.noPinsDescription,
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
           ),
         ],
       ),
@@ -179,8 +180,8 @@ Widget _emptyState(BuildContext context, PinReviewStatus status) {
                 : context.l10n.noReviewedDescription,
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
           ),
         ],
       ),

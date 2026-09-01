@@ -1,0 +1,17 @@
+name: wakelock_screen_awake_gateway
+description: "画面スリープ防止状態を切り替えるGateway"
+publish_to: "none"
+
+version: 0.1.0+1
+environment:
+  sdk: ^3.11.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  usecase:
+    path: ../../domain/usecase
+  wakelock_plus: ^1.7.0
+
+dev_dependencies:
+  lints: ^6.0.0

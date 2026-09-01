@@ -1,5 +1,5 @@
-import 'package:tappin/domain/models/location/coordinate.dart';
-import 'package:tappin/domain/services/geocoding_service.dart';
+import 'package:model/model.dart';
+import 'package:usecase/usecase.dart';
 
 /// UIレビュー用の座標へ固定住所を返し、ネットワーク参照を避ける。
 class UiReviewGeocodingService implements GeocodingService {
