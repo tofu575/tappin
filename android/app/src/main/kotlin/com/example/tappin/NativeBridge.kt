@@ -14,6 +14,7 @@ private const val METHOD_STORAGE_GET_PINS = "storage/getPins"
 private const val METHOD_STORAGE_SAVE_PIN = "storage/savePin"
 private const val METHOD_STORAGE_DELETE_PIN = "storage/deletePin"
 private const val METHOD_STORAGE_UPDATE_MEMO = "storage/updateMemo"
+private const val METHOD_STORAGE_UPDATE_REVIEW_STATUS = "storage/updateReviewStatus"
 private const val METHOD_OVERLAY_SHOW = "overlay/show"
 private const val METHOD_OVERLAY_HIDE = "overlay/hide"
 
@@ -40,6 +41,7 @@ class NativeBridge(private val context: Context) : MethodChannel.MethodCallHandl
                 METHOD_STORAGE_SAVE_PIN -> handleSavePin(call, result)
                 METHOD_STORAGE_DELETE_PIN -> handleDeletePin(call, result)
                 METHOD_STORAGE_UPDATE_MEMO -> handleUpdateMemo(call, result)
+                METHOD_STORAGE_UPDATE_REVIEW_STATUS -> handleUpdateReviewStatus(call, result)
                 METHOD_OVERLAY_SHOW -> handleOverlayShow(result)
                 METHOD_OVERLAY_HIDE -> handleOverlayHide(result)
                 else -> result.notImplemented()
@@ -119,6 +121,23 @@ class NativeBridge(private val context: Context) : MethodChannel.MethodCallHandl
 
         try {
             StorageHelper.updateMemo(context, (id as Number).toLong(), memo)
+            result.success(null)
+        } catch (e: Exception) {
+            result.error(ERROR_STORAGE_ERROR, e.message, null)
+        }
+    }
+
+    private fun handleUpdateReviewStatus(call: MethodCall, result: MethodChannel.Result) {
+        val id = call.argument<Any>("id")
+        val reviewed = call.argument<Boolean>("reviewed")
+
+        if (id == null || reviewed == null) {
+            result.error(ERROR_INVALID_ARGUMENTS, "id と reviewed が必要です", null)
+            return
+        }
+
+        try {
+            StorageHelper.updateReviewStatus(context, (id as Number).toLong(), reviewed)
             result.success(null)
         } catch (e: Exception) {
             result.error(ERROR_STORAGE_ERROR, e.message, null)

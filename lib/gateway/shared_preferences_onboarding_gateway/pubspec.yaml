@@ -1,0 +1,19 @@
+name: shared_preferences_onboarding_gateway
+description: "SharedPreferencesを使うOnboarding Gateway"
+publish_to: "none"
+
+version: 0.1.0+1
+environment:
+  sdk: ^3.11.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  shared_preferences: ^2.3.0
+  usecase:
+    path: ../../domain/usecase
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  lints: ^6.0.0

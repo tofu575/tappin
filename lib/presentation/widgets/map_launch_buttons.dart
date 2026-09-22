@@ -1,49 +1,47 @@
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:tappin/domain/models/location/coordinate.dart';
+import 'package:model/model.dart';
+import 'package:usecase/usecase.dart';
+import 'package:tappin/presentation/providers/interactor_provider.dart';
+import 'package:tappin/presentation/localization/app_localizations_context.dart';
 
-const _googleMapsBaseUrl =
-    'https://www.google.com/maps/search/?api=1&query=';
-const _streetViewBaseUrl =
-    'https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=';
-
-class MapLaunchButtons extends StatelessWidget {
+/// [coordinate]を外部の地図アプリで調べる目的が分かる導線を表示する。
+class MapLaunchButtons extends ConsumerWidget {
   const MapLaunchButtons({super.key, required this.coordinate});
 
   final Coordinate coordinate;
 
-  String get _coordQuery =>
-      '${coordinate.latitude.value},${coordinate.longitude.value}';
-
-  Future<void> _openGoogleMaps() async {
-    final uri = Uri.parse('$_googleMapsBaseUrl$_coordQuery');
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
-    }
-  }
-
-  Future<void> _openStreetView() async {
-    final uri = Uri.parse('$_streetViewBaseUrl$_coordQuery');
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
-    }
-  }
-
   @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
+  Widget build(BuildContext context, WidgetRef ref) {
+    Future<void> open(ExternalMapDestination destination) async {
+      try {
+        await ref
+            .read(interactorProvider)
+            .openExternalMap(coordinate, destination);
+      } catch (_) {
+        if (!context.mounted) return;
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(context.l10n.externalMapError)));
+      }
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        IconButton(
-          icon: const Icon(Icons.map),
-          tooltip: 'Google Maps',
-          onPressed: _openGoogleMaps,
+        FilledButton.icon(
+          key: const Key('open-google-maps'),
+          icon: const Icon(Icons.open_in_new_rounded),
+          label: Text(context.l10n.googleMapsAction),
+          onPressed: () => open(ExternalMapDestination.map),
         ),
-        IconButton(
-          icon: const Icon(Icons.streetview),
-          tooltip: 'ストリートビュー',
-          onPressed: _openStreetView,
+        const SizedBox(height: 8),
+        OutlinedButton.icon(
+          key: const Key('open-street-view'),
+          icon: const Icon(Icons.explore_outlined),
+          label: Text(context.l10n.streetViewAction),
+          onPressed: () => open(ExternalMapDestination.streetView),
         ),
       ],
     );

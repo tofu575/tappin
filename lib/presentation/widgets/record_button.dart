@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
 
+import 'package:tappin/presentation/theme/tap_pin_colors_context.dart';
+import 'package:tappin/presentation/localization/app_localizations_context.dart';
+import 'package:tappin/presentation/widgets/tap_pin_mark.dart';
+import 'package:tappin/presentation/widgets/tap_pin_mark_state.dart';
+
+/// 紙面へ画鋲を留める主操作を十分なHit Areaで表示する。
 class RecordButton extends StatefulWidget {
   final VoidCallback? onPressed;
   final bool isLoading;
@@ -23,7 +29,7 @@ class _RecordButtonState extends State<RecordButton> {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final colors = context.tapPinColors;
 
     return GestureDetector(
       onTapDown: widget.isLoading ? null : _handleTapDown,
@@ -38,38 +44,40 @@ class _RecordButtonState extends State<RecordButton> {
           height: 180,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                colorScheme.primary,
-                colorScheme.secondary,
-              ],
-            ),
+            color: colors.paperElevated,
+            border: Border.all(color: colors.dividerInk, width: 1.2),
             boxShadow: [
               BoxShadow(
-                color: colorScheme.primary.withValues(alpha: 0.4),
-                blurRadius: 20,
-                offset: const Offset(0, 8),
+                color: colors.ink.withValues(alpha: 0.12),
+                blurRadius: 14,
+                offset: const Offset(0, 5),
               ),
             ],
           ),
           child: widget.isLoading
-              ? const Center(
-                  child: CircularProgressIndicator(color: Colors.white),
+              ? Center(
+                  child: TapPinMark(
+                    state: TapPinMarkState.recording,
+                    size: 64,
+                  ),
                 )
-              : const Column(
+              : Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.location_on, size: 48, color: Colors.white),
-                    SizedBox(height: 8),
+                    const TapPinMark(size: 62),
+                    const SizedBox(height: 6),
                     Text(
-                      '記録',
+                      context.l10n.record,
                       style: TextStyle(
                         fontSize: 20,
-                        color: Colors.white,
+                        color: colors.ink,
                         fontWeight: FontWeight.bold,
                       ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      context.l10n.pinHere,
+                      style: TextStyle(fontSize: 11, color: colors.ink),
                     ),
                   ],
                 ),

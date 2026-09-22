@@ -2,12 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
-import 'package:tappin/domain/models/pin/memo.dart';
-
-const _title = 'メモを編集';
-const _hint = 'メモを入力...';
-const _cancel = 'キャンセル';
-const _save = '保存';
+import 'package:model/model.dart';
+import 'package:tappin/presentation/localization/app_localizations_context.dart';
 
 class MemoEditDialog extends HookWidget {
   const MemoEditDialog({super.key, required this.initialText});
@@ -19,7 +15,7 @@ class MemoEditDialog extends HookWidget {
     final controller = useTextEditingController(text: initialText);
 
     return AlertDialog(
-      title: const Text(_title),
+      title: Text(context.l10n.memoEditTitle),
       content: TextField(
         controller: controller,
         maxLines: 1,
@@ -29,17 +25,17 @@ class MemoEditDialog extends HookWidget {
           FilteringTextInputFormatter.deny(RegExp(r'\n')),
           LengthLimitingTextInputFormatter(Memo.maxLength),
         ],
-        decoration: const InputDecoration(hintText: _hint),
+        decoration: InputDecoration(hintText: context.l10n.memoHint),
         autofocus: true,
       ),
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text(_cancel),
+          child: Text(context.l10n.cancel),
         ),
         TextButton(
           onPressed: () => Navigator.pop(context, controller.text),
-          child: const Text(_save),
+          child: Text(context.l10n.save),
         ),
       ],
     );

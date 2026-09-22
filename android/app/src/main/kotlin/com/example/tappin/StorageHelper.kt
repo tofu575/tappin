@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 
 private const val DB_NAME = "tappin.db"
-private const val DB_VERSION = 1
+private const val DB_VERSION = 2
 private const val TABLE_NAME = "pins"
 
 class TappinDbHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME, null, DB_VERSION) {
@@ -18,13 +18,16 @@ class TappinDbHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME, null
                 latitude REAL NOT NULL,
                 longitude REAL NOT NULL,
                 created_at INTEGER NOT NULL,
-                memo TEXT NOT NULL
+                memo TEXT NOT NULL,
+                reviewed INTEGER NOT NULL DEFAULT 0
             )
         """.trimIndent())
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-        // 現時点ではバージョンアップなし
+        if (oldVersion < 2) {
+            db.execSQL("ALTER TABLE $TABLE_NAME ADD COLUMN reviewed INTEGER NOT NULL DEFAULT 0")
+        }
     }
 }
 
@@ -46,6 +49,7 @@ object StorageHelper {
                             "longitude" to cursor.getDouble(cursor.getColumnIndexOrThrow("longitude")),
                             "created_at" to cursor.getLong(cursor.getColumnIndexOrThrow("created_at")),
                             "memo" to memo,
+                            "reviewed" to cursor.getInt(cursor.getColumnIndexOrThrow("reviewed")),
                         )
                     )
                 }
@@ -63,6 +67,15 @@ object StorageHelper {
         }
     }
 
+    fun updateReviewStatus(context: Context, id: Long, reviewed: Boolean) {
+        val helper = TappinDbHelper(context)
+        helper.writableDatabase.use { db ->
+            db.update(TABLE_NAME, ContentValues().apply {
+                put("reviewed", if (reviewed) 1 else 0)
+            }, "id = ?", arrayOf(id.toString()))
+        }
+    }
+
     fun savePin(context: Context, latitude: Double, longitude: Double, createdAt: Long): Long {
         val helper = TappinDbHelper(context)
         return helper.writableDatabase.use { db ->
@@ -71,6 +84,7 @@ object StorageHelper {
                 put("longitude", longitude)
                 put("created_at", createdAt)
                 put("memo", "")
+                put("reviewed", 0)
             })
         }
     }

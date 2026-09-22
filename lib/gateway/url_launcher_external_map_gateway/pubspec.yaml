@@ -1,0 +1,19 @@
+name: url_launcher_external_map_gateway
+description: "url_launcherを使う外部地図Gateway"
+publish_to: "none"
+
+version: 0.1.0+1
+environment:
+  sdk: ^3.11.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  model:
+    path: ../../domain/model
+  usecase:
+    path: ../../domain/usecase
+  url_launcher: ^6.2.0
+
+dev_dependencies:
+  lints: ^6.0.0

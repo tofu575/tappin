@@ -1,0 +1,16 @@
+name: native_overlay_service
+description: "MethodChannelを使うOverlay Gateway"
+publish_to: "none"
+
+version: 0.1.0+1
+environment:
+  sdk: ^3.11.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  usecase:
+    path: ../../domain/usecase
+
+dev_dependencies:
+  lints: ^6.0.0

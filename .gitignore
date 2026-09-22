@@ -34,7 +34,10 @@ migrate_working_dir/
 .pub-cache/
 .pub/
 /build/
+/lib/**/build/
 /coverage/
+/screenshots/ui_review/*.png
+/lib/**/pubspec.lock
 
 # Symbolication related
 app.*.symbols

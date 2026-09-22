@@ -1,0 +1,19 @@
+name: native_geocoding_service
+description: "端末のネイティブAPIを使うGeocoding Gateway"
+publish_to: "none"
+
+version: 0.1.0+1
+environment:
+  sdk: ^3.11.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  geocoding: ^3.0.0
+  model:
+    path: ../../domain/model
+  usecase:
+    path: ../../domain/usecase
+
+dev_dependencies:
+  lints: ^6.0.0
