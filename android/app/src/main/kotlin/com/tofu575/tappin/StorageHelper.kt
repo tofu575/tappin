@@ -1,4 +1,4 @@
-package com.example.tappin
+package com.tofu575.tappin
 
 import android.content.ContentValues
 import android.content.Context

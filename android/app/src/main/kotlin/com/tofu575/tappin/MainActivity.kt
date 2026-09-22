@@ -1,10 +1,10 @@
-package com.example.tappin
+package com.tofu575.tappin
 
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 
-private const val CHANNEL_NAME = "com.example.tappin/native"
+private const val CHANNEL_NAME = "com.tofu575.tappin/native"
 
 class MainActivity : FlutterActivity() {
 

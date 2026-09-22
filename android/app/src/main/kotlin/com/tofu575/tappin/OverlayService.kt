@@ -1,4 +1,4 @@
-package com.example.tappin
+package com.tofu575.tappin
 
 import android.animation.ValueAnimator
 import android.app.NotificationChannel
