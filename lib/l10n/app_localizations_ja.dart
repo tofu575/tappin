@@ -9,7 +9,7 @@ class AppLocalizationsJa extends AppLocalizations {
   AppLocalizationsJa([String locale = 'ja']) : super(locale);
 
   @override
-  String get appTitle => 'TapPin';
+  String get appTitle => 'Tappin';
 
   @override
   String get cancel => 'キャンセル';
@@ -29,7 +29,7 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get onboardingWelcomeTitle => 'TapPin へようこそ';
+  String get onboardingWelcomeTitle => 'Tappin へようこそ';
 
   @override
   String get onboardingWelcomeDescription =>

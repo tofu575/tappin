@@ -13,19 +13,18 @@ class TapPinVisualAssets {
   /// ブランド画鋲の画像を返す。
   static Widget brandPin({double size = 72}) => _pinImage(size: size);
 
-  /// 移動キャラクター識別子を対応するEmojiへ変換する。
+  /// 移動キャラクター識別子に対応する画像を返す。
   static Widget movementCharacter(
     QuickModeCharacter character, {
     double size = 30,
     Key? key,
-  }) {
-    final emoji = _movementEmoji(character);
-    return Text(
-      emoji,
-      key: key,
-      style: TextStyle(fontSize: size),
-    );
-  }
+  }) => Image.asset(
+    _movementAssetPath(character),
+    key: key,
+    width: size,
+    height: size,
+    fit: BoxFit.contain,
+  );
 
   /// オンボーディング識別子を案内Iconまたは画鋲画像へ変換する。
   static Widget onboarding(
@@ -38,19 +37,17 @@ class TapPinVisualAssets {
     return Icon(icon, size: size, color: context.tapPinColors.ink);
   }
 
-  /// 移動識別子へ対応するEmojiを返す。
-  static String _movementEmoji(QuickModeCharacter character) {
+  /// 移動識別子へ対応するAssetパスを返す。
+  static String _movementAssetPath(QuickModeCharacter character) {
     switch (character) {
       case QuickModeCharacter.car:
-        return '🚗';
+        return 'assets/images/movement_car.png';
       case QuickModeCharacter.bus:
-        return '🚌';
-      case QuickModeCharacter.train:
-        return '🚃';
+        return 'assets/images/movement_bus.png';
       case QuickModeCharacter.bicycle:
-        return '🚲';
+        return 'assets/images/movement_bicycle.png';
       case QuickModeCharacter.walking:
-        return '🚶';
+        return 'assets/images/movement_walking.png';
     }
   }
 

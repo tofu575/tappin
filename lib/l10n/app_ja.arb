@@ -1,6 +1,6 @@
 {
   "@@locale": "ja",
-  "appTitle": "TapPin",
+  "appTitle": "Tappin",
   "cancel": "キャンセル",
   "delete": "削除",
   "save": "保存",
@@ -8,7 +8,7 @@
   "errorWithDetail": "エラー: {error}",
   "@errorWithDetail": {"placeholders": {"error": {"type": "String"}}},
 
-  "onboardingWelcomeTitle": "TapPin へようこそ",
+  "onboardingWelcomeTitle": "Tappin へようこそ",
   "onboardingWelcomeDescription": "気になった場所を見つけたら、その場でワンタップ。\n場所と時間をすぐに記録できます。",
 
   "onboardingReviewTitle": "あとから場所を確認",

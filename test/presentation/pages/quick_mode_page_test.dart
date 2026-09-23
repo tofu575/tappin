@@ -94,7 +94,10 @@ void main() {
 
     expect(find.byType(RecordingPinIndicator), findsOneWidget);
     expect(find.byType(QuickModeCharacterLane), findsOneWidget);
-    expect(find.text('🚲'), findsOneWidget);
+    expect(
+      find.image(const AssetImage('assets/images/movement_bicycle.png')),
+      findsOneWidget,
+    );
 
     await tester.tapAt(const Offset(400, 300));
     await tester.pump();

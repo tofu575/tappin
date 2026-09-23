@@ -4,7 +4,6 @@ import 'dart:math';
 enum QuickModeCharacter {
   car,
   bus,
-  train,
   bicycle,
   walking;
 

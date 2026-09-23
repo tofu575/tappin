@@ -97,7 +97,7 @@ abstract class AppLocalizations {
   /// No description provided for @appTitle.
   ///
   /// In ja, this message translates to:
-  /// **'TapPin'**
+  /// **'Tappin'**
   String get appTitle;
 
   /// No description provided for @cancel.
@@ -133,7 +133,7 @@ abstract class AppLocalizations {
   /// No description provided for @onboardingWelcomeTitle.
   ///
   /// In ja, this message translates to:
-  /// **'TapPin へようこそ'**
+  /// **'Tappin へようこそ'**
   String get onboardingWelcomeTitle;
 
   /// No description provided for @onboardingWelcomeDescription.

@@ -67,7 +67,7 @@ class OverlayService : Service() {
     }
 
     private fun buildNotification() = NotificationCompat.Builder(this, CHANNEL_ID)
-        .setContentTitle("TapPin")
+        .setContentTitle("Tappin")
         .setContentText("オーバーレイボタン表示中")
         .setSmallIcon(android.R.drawable.ic_menu_mylocation)
         .setPriority(NotificationCompat.PRIORITY_LOW)

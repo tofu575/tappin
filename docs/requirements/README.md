@@ -1,4 +1,4 @@
-# TapPin
+# Tappin
 
 ## 概要
 
