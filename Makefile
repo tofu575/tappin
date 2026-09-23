@@ -21,27 +21,23 @@ FLUTTER_TEST_PACKAGE_DIRS = \
 
 .PHONY: flutter-run-device flutter-build-apk flutter-build-apk-stub flutter-build-bundle flutter-build-ios api-codegen pub-get format analyze test
 
-DART_DEFINES_FILE ?= dart-defines.json
-DART_DEFINES_OPTION = --dart-define-from-file=$(DART_DEFINES_FILE)
-STUB_GATEWAY_DEFINE = --dart-define=OCHIZU_GATEWAY_MODE=stub
-
 flutter-run-emulator:
-	fvm flutter emulators --launch Pixel_5_API_33 && fvm flutter run $(DART_DEFINES_OPTION)
+	fvm flutter emulators --launch Pixel_5_API_33 && fvm flutter run
 
 flutter-run-device:
-	fvm flutter run $(DART_DEFINES_OPTION)
+	fvm flutter run
 
 flutter-build-apk:
-	fvm flutter build apk $(DART_DEFINES_OPTION)
+	fvm flutter build apk
 
 flutter-build-apk-stub:
-	fvm flutter build apk --debug $(DART_DEFINES_OPTION) $(STUB_GATEWAY_DEFINE)
+	fvm flutter build apk --debug
 
 flutter-build-bundle:
-	fvm flutter build appbundle --release $(DART_DEFINES_OPTION)
+	fvm flutter build appbundle --release
 
 flutter-build-ios:
-	fvm flutter build ios $(DART_DEFINES_OPTION)
+	fvm flutter build ios
 
 api-codegen:
 	cd lib/gateway/api_client && ../../../.fvm/flutter_sdk/bin/dart run tool/sync_openapi.dart
