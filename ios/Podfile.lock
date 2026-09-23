@@ -30,6 +30,6 @@ SPEC CHECKSUMS:
   objectbox_flutter_libs: 09b1dec1b4cd27bf1a5f9bae7ccaa7e43588bf31
   permission_handler_apple: 4ed2196e43d0651e8ff7ca3483a069d469701f2d
 
-PODFILE CHECKSUM: 3c63482e143d1b91d2d2560aee9fb04ecc74ac7e
+PODFILE CHECKSUM: 34bc16b4cda17c891399c2eda53a8c64c82fada0
 
 COCOAPODS: 1.17.0
