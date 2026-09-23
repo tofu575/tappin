@@ -4,7 +4,6 @@ import 'package:flutter_haptic_gateway/flutter_haptic_gateway.dart';
 import 'package:geolocator_location_service/geolocator_location_service.dart';
 import 'package:method_channel_storage/method_channel_storage.dart';
 import 'package:native_geocoding_service/native_geocoding_service.dart';
-import 'package:native_overlay_service/native_overlay_service.dart';
 import 'package:shared_preferences_onboarding_gateway/shared_preferences_onboarding_gateway.dart';
 import 'package:system_clock_gateway/system_clock_gateway.dart';
 import 'package:url_launcher_external_map_gateway/url_launcher_external_map_gateway.dart';
@@ -23,7 +22,6 @@ void main() async {
     repository: MethodChannelStorage(),
     locationGateway: GeolocatorLocationService(),
     geocodingGateway: NativeGeocodingService(),
-    overlayGateway: NativeOverlayService(),
     clockGateway: const SystemClockGateway(),
     hapticGateway: const FlutterHapticGateway(),
     externalMapGateway: const UrlLauncherExternalMapGateway(),

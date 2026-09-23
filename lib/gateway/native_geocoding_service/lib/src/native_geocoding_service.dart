@@ -3,10 +3,13 @@ import 'package:geocoding/geocoding.dart';
 import 'package:model/model.dart';
 import 'package:usecase/usecase.dart';
 
+/// 端末のジオコーディング機能から座標に対応する住所を取得する。
 class NativeGeocodingService implements GeocodingService {
+  final Geocoding _geocoding = Geocoding();
+
   @override
   Future<String> fetchAddress(Coordinate coordinate) async {
-    final placemarks = await placemarkFromCoordinates(
+    final placemarks = await _geocoding.placemarkFromCoordinates(
       coordinate.latitude.value,
       coordinate.longitude.value,
     );

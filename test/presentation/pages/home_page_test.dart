@@ -14,14 +14,12 @@ import '../../helpers/build_test_interactor.dart';
 import '../../helpers/mock_geocoding_service.dart';
 import '../../helpers/mock_haptic_gateway.dart';
 import '../../helpers/mock_location_service.dart';
-import '../../helpers/mock_overlay_service.dart';
 import '../../helpers/mock_repository.dart';
 import '../../helpers/mock_screen_awake_gateway.dart';
 
 Widget _buildPage({
   MockRipository? repo,
   LocationService? locationService,
-  MockOverlayService? overlayService,
   MockHapticGateway? hapticGateway,
 }) {
   return ProviderScope(
@@ -31,7 +29,6 @@ Widget _buildPage({
           repository: repo,
           locationGateway: locationService,
           geocodingGateway: MockGeocodingService(),
-          overlayGateway: overlayService,
           hapticGateway: hapticGateway,
         ),
       ),
@@ -203,7 +200,7 @@ void main() {
     await tester.tap(find.text('記録'));
     await tester.pumpAndSettle();
 
-    expect(find.text('いま預けました'), findsOneWidget);
+    expect(find.text('記録しました'), findsOneWidget);
   });
 
   testWidgets('位置情報の権限が一時的に拒否された場合、スナックバーが表示される', (tester) async {
@@ -215,7 +212,7 @@ void main() {
     await tester.tap(find.text('記録'));
     await tester.pumpAndSettle();
 
-    expect(find.text('位置情報が許可されませんでした'), findsOneWidget);
+    expect(find.text('位置情報が許可されていません'), findsOneWidget);
   });
 
   testWidgets('位置情報の権限が永久に拒否された場合、設定ダイアログが表示される', (tester) async {
@@ -228,7 +225,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('位置情報の許可が必要です'), findsOneWidget);
-    expect(find.text('設定から位置情報へのアクセスを許可してください'), findsOneWidget);
+    expect(find.text('設定から位置情報へのアクセスを許可してください。'), findsOneWidget);
   });
 
   testWidgets('予期しないエラーが発生した場合、エラーメッセージが表示される', (tester) async {
@@ -244,7 +241,7 @@ void main() {
     await tester.tap(find.text('記録'));
     await tester.pump(const Duration(milliseconds: 100));
 
-    expect(find.textContaining('エラーが発生しました'), findsOneWidget);
+    expect(find.textContaining('記録できませんでした'), findsOneWidget);
     expect(hapticGateway.recordSuccessCount, 0);
     expect(hapticGateway.recordFailureCount, 1);
     final failureFlash = tester.widget<ColoredBox>(

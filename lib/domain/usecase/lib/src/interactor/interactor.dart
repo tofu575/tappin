@@ -7,7 +7,6 @@ import '../gateway/geocoding_service.dart';
 import '../gateway/haptic_gateway.dart';
 import '../gateway/location_service.dart';
 import '../gateway/onboarding_gateway.dart';
-import '../gateway/overlay_service.dart';
 import '../gateway/repository.dart';
 
 part 'complete_onboarding.part.dart';
@@ -16,11 +15,9 @@ part 'fetch_address.part.dart';
 part 'fetch_current_location.part.dart';
 part 'fetch_pins.part.dart';
 part 'has_completed_onboarding.part.dart';
-part 'hide_overlay.part.dart';
 part 'open_external_map.part.dart';
 part 'open_location_settings.part.dart';
 part 'record_current_location.part.dart';
-part 'show_overlay.part.dart';
 part 'update_memo.part.dart';
 part 'update_pin_review_status.part.dart';
 part 'warm_up_location.part.dart';
@@ -32,7 +29,6 @@ class Interactor {
     required Repository repository,
     required LocationService locationGateway,
     required GeocodingService geocodingGateway,
-    required OverlayService overlayGateway,
     required ClockGateway clockGateway,
     required HapticGateway hapticGateway,
     required ExternalMapGateway externalMapGateway,
@@ -40,7 +36,6 @@ class Interactor {
   }) : _repository = repository,
        _locationGateway = locationGateway,
        _geocodingGateway = geocodingGateway,
-       _overlayGateway = overlayGateway,
        _clockGateway = clockGateway,
        _hapticGateway = hapticGateway,
        _externalMapGateway = externalMapGateway,
@@ -49,7 +44,6 @@ class Interactor {
   final Repository _repository;
   final LocationService _locationGateway;
   final GeocodingService _geocodingGateway;
-  final OverlayService _overlayGateway;
   final ClockGateway _clockGateway;
   final HapticGateway _hapticGateway;
   final ExternalMapGateway _externalMapGateway;
@@ -88,12 +82,6 @@ class Interactor {
   /// [coordinate]の住所を取得する。
   Future<String> fetchAddress(Coordinate coordinate) =>
       _fetchAddress(this, coordinate);
-
-  /// ネイティブOverlayを表示する。
-  Future<void> showOverlay() => _showOverlay(this);
-
-  /// ネイティブOverlayを非表示にする。
-  Future<void> hideOverlay() => _hideOverlay(this);
 
   /// [coordinate]を外部地図の[destination]で開く。
   Future<void> openExternalMap(

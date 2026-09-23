@@ -8,7 +8,6 @@ PACKAGE_DIRS = \
 	lib/gateway/native_geocoding_service \
 	lib/gateway/geolocator_location_service \
 	lib/gateway/shared_preferences_onboarding_gateway \
-	lib/gateway/native_overlay_service \
 	lib/gateway/method_channel_storage
 
 TEST_PACKAGE_DIRS = \

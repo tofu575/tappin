@@ -13,7 +13,7 @@ dependencies:
     path: ../../domain/model
   usecase:
     path: ../../domain/usecase
-  url_launcher: ^6.2.0
+  url_launcher: 6.3.2
 
 dev_dependencies:
-  lints: ^6.0.0
+  lints: 6.1.0

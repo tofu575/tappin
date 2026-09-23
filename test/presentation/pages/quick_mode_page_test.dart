@@ -199,7 +199,7 @@ void main() {
     await tester.pump();
 
     expect(find.byType(QuickModeTransitionPage), findsOneWidget);
-    expect(find.text('ホームへ戻ります'), findsOneWidget);
+    expect(find.text('Quick Modeを終了します'), findsOneWidget);
     expect(repo.savedPins, isEmpty);
 
     await gesture.up();
