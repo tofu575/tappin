@@ -1,11 +1,11 @@
 # Visual Asset差し替えガイド
 
-現在の画鋲・案内用Icon・移動キャラクターは、独自素材が完成するまでのPlaceholderです。
+画鋲は`assets/images/pin.png`を使い、案内用Iconと移動キャラクターは現在のPlaceholderを維持します。
 画面Widgetは素材パスを持たず、`TapPinVisualAssets`を通して描画します。
 
 | 用途 | 推奨ファイル | 形式 | 主な利用箇所 |
 | --- | --- | --- | --- |
-| ブランド画鋲 | `brand_pin.svg` | SVG（透過） | Home、オンボーディング、記録中表示 |
+| ブランド画鋲 | `pin.png` | PNG（透過） | Home、オンボーディング、記録中表示 |
 | 紙テクスチャ | `paper_texture.png` | 小さく継ぎ目のないPNG | 共通`PaperBackground` |
 | 車 | `movement_car.svg` | SVG（透過） | Quick Mode |
 | バス | `movement_bus.svg` | SVG（透過） | Quick Mode |
