@@ -175,7 +175,7 @@ abstract class AppLocalizations {
   /// No description provided for @onboardingPrivacyDescription.
   ///
   /// In ja, this message translates to:
-  /// **'位置情報は場所の記録にのみ使用します。\n記録したデータは端末内に保存され、外部には送信されません。'**
+  /// **'位置情報は場所の記録にのみ使用します。\n記録したデータは端末内に保存され、運営者のサーバーには送信されません。住所の表示にはOSのジオコーディングサービスを利用します。'**
   String get onboardingPrivacyDescription;
 
   /// No description provided for @start.
@@ -604,59 +604,17 @@ abstract class AppLocalizations {
   /// **'約1.5秒長押しで終了'**
   String get quickModeExitGuide;
 
-  /// No description provided for @recordListTitle.
+  /// No description provided for @quickModeSafetyNotice.
   ///
   /// In ja, this message translates to:
-  /// **'記録一覧'**
-  String get recordListTitle;
+  /// **'運転者は操作しないでください'**
+  String get quickModeSafetyNotice;
 
-  /// No description provided for @deleteRecordTitle.
+  /// No description provided for @quickModePassengerLabel.
   ///
   /// In ja, this message translates to:
-  /// **'この記録を削除しますか？'**
-  String get deleteRecordTitle;
-
-  /// No description provided for @deleteRecordDescription.
-  ///
-  /// In ja, this message translates to:
-  /// **'削除した記録は元に戻せません。'**
-  String get deleteRecordDescription;
-
-  /// No description provided for @deleteSwipeGuide.
-  ///
-  /// In ja, this message translates to:
-  /// **'左にスワイプして削除'**
-  String get deleteSwipeGuide;
-
-  /// No description provided for @emptyRecordListDescription.
-  ///
-  /// In ja, this message translates to:
-  /// **'ホームから気になった場所を記録してみましょう。'**
-  String get emptyRecordListDescription;
-
-  /// No description provided for @mapTitle.
-  ///
-  /// In ja, this message translates to:
-  /// **'マップ'**
-  String get mapTitle;
-
-  /// No description provided for @loading.
-  ///
-  /// In ja, this message translates to:
-  /// **'読み込み中...'**
-  String get loading;
-
-  /// No description provided for @memoEmptyParenthesized.
-  ///
-  /// In ja, this message translates to:
-  /// **'(メモなし)'**
-  String get memoEmptyParenthesized;
-
-  /// No description provided for @editMemoTooltip.
-  ///
-  /// In ja, this message translates to:
-  /// **'メモを編集'**
-  String get editMemoTooltip;
+  /// **'同乗中'**
+  String get quickModePassengerLabel;
 }
 
 class _AppLocalizationsDelegate

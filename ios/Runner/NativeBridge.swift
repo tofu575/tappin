@@ -1,7 +1,7 @@
 import Flutter
 import Foundation
 
-private let channelName = "com.example.tappin/native"
+private let channelName = "com.tofu575.tappin/native"
 private let invalidArgumentsError = "INVALID_ARGUMENTS"
 private let storageError = "STORAGE_ERROR"
 

@@ -57,7 +57,11 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/images/
+    - assets/images/app_icon.png
+    - assets/images/movement_bus.png
+    - assets/images/movement_car.png
+    - assets/images/movement_walking.png
+    - assets/images/pin.png
 
 flutter_launcher_icons:
   android: true

@@ -54,7 +54,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get onboardingPrivacyDescription =>
-      '位置情報は場所の記録にのみ使用します。\n記録したデータは端末内に保存され、外部には送信されません。';
+      '位置情報は場所の記録にのみ使用します。\n記録したデータは端末内に保存され、運営者のサーバーには送信されません。住所の表示にはOSのジオコーディングサービスを利用します。';
 
   @override
   String get start => 'はじめる';
@@ -294,29 +294,8 @@ class AppLocalizationsJa extends AppLocalizations {
   String get quickModeExitGuide => '約1.5秒長押しで終了';
 
   @override
-  String get recordListTitle => '記録一覧';
+  String get quickModeSafetyNotice => '運転者は操作しないでください';
 
   @override
-  String get deleteRecordTitle => 'この記録を削除しますか？';
-
-  @override
-  String get deleteRecordDescription => '削除した記録は元に戻せません。';
-
-  @override
-  String get deleteSwipeGuide => '左にスワイプして削除';
-
-  @override
-  String get emptyRecordListDescription => 'ホームから気になった場所を記録してみましょう。';
-
-  @override
-  String get mapTitle => 'マップ';
-
-  @override
-  String get loading => '読み込み中...';
-
-  @override
-  String get memoEmptyParenthesized => '(メモなし)';
-
-  @override
-  String get editMemoTooltip => 'メモを編集';
+  String get quickModePassengerLabel => '同乗中';
 }

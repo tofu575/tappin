@@ -109,10 +109,6 @@ void main() {
       find.image(const AssetImage('assets/images/movement_car.png')),
       findsOneWidget,
     );
-    expect(
-      find.image(const AssetImage('assets/images/movement_bicycle.png')),
-      findsNothing,
-    );
     expect(find.text('Quick Modeをはじめる'), findsOneWidget);
     expect(find.text('キャンセル'), findsOneWidget);
   });

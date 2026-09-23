@@ -252,6 +252,14 @@ class _QuickModePageState extends ConsumerState<QuickModePage>
                                 ),
                               ),
                             ),
+                            const SizedBox(height: 8),
+                            Text(
+                              context.l10n.quickModeSafetyNotice,
+                              style: textTheme.labelLarge?.copyWith(
+                                color: colors.quickModeInk,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           ],
                         ),
                       const SizedBox(height: 18),

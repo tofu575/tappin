@@ -18,7 +18,7 @@
   "onboardingQuickModeDescription": "画面のどこをタップしても現在地を記録できます。\n運転中は操作せず、同乗中など安全な状況でお使いください。",
 
   "onboardingPrivacyTitle": "位置情報について",
-  "onboardingPrivacyDescription": "位置情報は場所の記録にのみ使用します。\n記録したデータは端末内に保存され、外部には送信されません。",
+  "onboardingPrivacyDescription": "位置情報は場所の記録にのみ使用します。\n記録したデータは端末内に保存され、運営者のサーバーには送信されません。住所の表示にはOSのジオコーディングサービスを利用します。",
 
   "start": "はじめる",
   "next": "次へ",
@@ -124,16 +124,6 @@
   "quickModeHoldToFinish": "そのまま長押しで終了",
   "quickModeTapAnywhere": "画面のどこでもタップで記録",
   "quickModeExitGuide": "約1.5秒長押しで終了",
-
-  "recordListTitle": "記録一覧",
-  "deleteRecordTitle": "この記録を削除しますか？",
-  "deleteRecordDescription": "削除した記録は元に戻せません。",
-  "deleteSwipeGuide": "左にスワイプして削除",
-
-  "emptyRecordListDescription": "ホームから気になった場所を記録してみましょう。",
-
-  "mapTitle": "マップ",
-  "loading": "読み込み中...",
-  "memoEmptyParenthesized": "(メモなし)",
-  "editMemoTooltip": "メモを編集"
+  "quickModeSafetyNotice": "運転者は操作しないでください",
+  "quickModePassengerLabel": "同乗中"
 }

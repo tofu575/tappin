@@ -22,6 +22,7 @@ Widget _buildQuickModePage(
   MockRipository repo, {
   MockHapticGateway? hapticGateway,
   MockScreenAwakeGateway? screenAwakeGateway,
+  QuickModeCharacter character = QuickModeCharacter.walking,
 }) {
   return ProviderScope(
     overrides: [
@@ -32,8 +33,8 @@ Widget _buildQuickModePage(
         screenAwakeGateway ?? MockScreenAwakeGateway(),
       ),
     ],
-    child: const MaterialApp(
-      home: QuickModePage(character: QuickModeCharacter.walking),
+    child: MaterialApp(
+      home: QuickModePage(character: character),
     ),
   );
 }
@@ -98,6 +99,7 @@ void main() {
       find.image(const AssetImage('assets/images/movement_walking.png')),
       findsOneWidget,
     );
+    expect(find.text('運転者は操作しないでください'), findsOneWidget);
 
     await tester.tapAt(const Offset(400, 300));
     await tester.pump();
@@ -115,6 +117,19 @@ void main() {
     await tester.pump(const Duration(milliseconds: 100));
     await tester.pump();
     expect(indicator.progress.value, 0);
+  });
+
+  testWidgets('車のキャラクターは同乗中であることを画面内に明示する', (tester) async {
+    await tester.pumpWidget(
+      _buildQuickModePage(
+        MockRipository(),
+        character: QuickModeCharacter.car,
+      ),
+    );
+    await tester.pump();
+
+    expect(find.byKey(const Key('quick-mode-passenger-label')), findsOneWidget);
+    expect(find.text('同乗中'), findsOneWidget);
   });
 
   testWidgets('表示中だけScreen Awakeを有効にし、バックグラウンドと破棄時に解除する', (tester) async {
