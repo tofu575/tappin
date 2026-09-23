@@ -196,6 +196,60 @@ abstract class AppLocalizations {
   /// **'気になった場所を記録しよう。'**
   String get homeTagline;
 
+  /// No description provided for @aboutTappin.
+  ///
+  /// In ja, this message translates to:
+  /// **'Tappinについて'**
+  String get aboutTappin;
+
+  /// No description provided for @aboutDescription.
+  ///
+  /// In ja, this message translates to:
+  /// **'Tappinの使い方や大切なお知らせをご覧いただけます。'**
+  String get aboutDescription;
+
+  /// No description provided for @officialWebsite.
+  ///
+  /// In ja, this message translates to:
+  /// **'公式サイト'**
+  String get officialWebsite;
+
+  /// No description provided for @officialWebsiteDescription.
+  ///
+  /// In ja, this message translates to:
+  /// **'Tappinの紹介を見る'**
+  String get officialWebsiteDescription;
+
+  /// No description provided for @legalInformation.
+  ///
+  /// In ja, this message translates to:
+  /// **'ポリシーと規約'**
+  String get legalInformation;
+
+  /// No description provided for @privacyPolicy.
+  ///
+  /// In ja, this message translates to:
+  /// **'プライバシーポリシー'**
+  String get privacyPolicy;
+
+  /// No description provided for @termsOfService.
+  ///
+  /// In ja, this message translates to:
+  /// **'利用規約'**
+  String get termsOfService;
+
+  /// No description provided for @opensInBrowser.
+  ///
+  /// In ja, this message translates to:
+  /// **'ブラウザで開きます'**
+  String get opensInBrowser;
+
+  /// No description provided for @webPageOpenError.
+  ///
+  /// In ja, this message translates to:
+  /// **'ページを開けませんでした'**
+  String get webPageOpenError;
+
   /// No description provided for @record.
   ///
   /// In ja, this message translates to:

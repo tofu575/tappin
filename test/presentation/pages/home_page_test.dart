@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:usecase/usecase.dart';
 import 'package:model/model.dart';
+import 'package:tappin/presentation/pages/about/about_page.dart';
 import 'package:tappin/presentation/pages/quick_mode/quick_mode_page.dart';
 import 'package:tappin/presentation/pages/quick_mode/quick_mode_transition_page.dart';
 import 'package:tappin/presentation/pages/home_page.dart';
@@ -53,6 +54,22 @@ void main() {
     await tester.pump();
 
     expect(find.text('記録'), findsOneWidget);
+  });
+
+  testWidgets('Tappinについて画面からWebページへの導線を確認できる', (tester) async {
+    await tester.pumpWidget(_buildPage());
+    await tester.pump();
+
+    await tester.tap(find.byKey(const Key('about-tappin-button')));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(AboutPage), findsOneWidget);
+    expect(find.text('公式サイト'), findsOneWidget);
+    expect(find.text('プライバシーポリシー'), findsOneWidget);
+    expect(find.text('利用規約'), findsOneWidget);
+    expect(find.byKey(const Key('official-website-link')), findsOneWidget);
+    expect(find.byKey(const Key('privacy-policy-link')), findsOneWidget);
+    expect(find.byKey(const Key('terms-of-service-link')), findsOneWidget);
   });
 
   testWidgets('未確認が0件なら右端のインデックスを履歴と表示する', (tester) async {

@@ -6,6 +6,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:model/model.dart';
 import 'package:tappin/presentation/assets/tap_pin_visual_assets.dart';
+import 'package:tappin/presentation/pages/about/about_page.dart';
 import 'package:tappin/presentation/pages/history/history_page.dart';
 import 'package:tappin/presentation/localization/app_localizations_context.dart';
 import 'package:tappin/presentation/pages/home/components/history_index_tab.dart';
@@ -195,6 +196,20 @@ class HomePage extends HookConsumerWidget {
                       );
                       ref.invalidate(pinsProvider);
                     },
+                  ),
+                ),
+                Positioned(
+                  right: 12,
+                  top: 6,
+                  child: IconButton(
+                    key: const Key('about-tappin-button'),
+                    tooltip: l10n.aboutTappin,
+                    icon: const Icon(Icons.info_outline_rounded),
+                    onPressed: () => Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (_) => const AboutPage(),
+                      ),
+                    ),
                   ),
                 ),
               ],

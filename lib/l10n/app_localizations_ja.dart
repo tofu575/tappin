@@ -66,6 +66,33 @@ class AppLocalizationsJa extends AppLocalizations {
   String get homeTagline => '気になった場所を記録しよう。';
 
   @override
+  String get aboutTappin => 'Tappinについて';
+
+  @override
+  String get aboutDescription => 'Tappinの使い方や大切なお知らせをご覧いただけます。';
+
+  @override
+  String get officialWebsite => '公式サイト';
+
+  @override
+  String get officialWebsiteDescription => 'Tappinの紹介を見る';
+
+  @override
+  String get legalInformation => 'ポリシーと規約';
+
+  @override
+  String get privacyPolicy => 'プライバシーポリシー';
+
+  @override
+  String get termsOfService => '利用規約';
+
+  @override
+  String get opensInBrowser => 'ブラウザで開きます';
+
+  @override
+  String get webPageOpenError => 'ページを開けませんでした';
+
+  @override
   String get record => '記録';
 
   @override
