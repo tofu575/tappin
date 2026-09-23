@@ -44,8 +44,6 @@ class TapPinVisualAssets {
         return 'assets/images/movement_car.png';
       case QuickModeCharacter.bus:
         return 'assets/images/movement_bus.png';
-      case QuickModeCharacter.bicycle:
-        return 'assets/images/movement_bicycle.png';
       case QuickModeCharacter.walking:
         return 'assets/images/movement_walking.png';
     }

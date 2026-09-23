@@ -157,13 +157,13 @@ abstract class AppLocalizations {
   /// No description provided for @onboardingQuickModeTitle.
   ///
   /// In ja, this message translates to:
-  /// **'移動中は Quick Mode'**
+  /// **'すばやく記録する Quick Mode'**
   String get onboardingQuickModeTitle;
 
   /// No description provided for @onboardingQuickModeDescription.
   ///
   /// In ja, this message translates to:
-  /// **'画面のどこをタップしても場所を記録できます。\n車や電車、徒歩での移動中に使えます。'**
+  /// **'画面のどこをタップしても現在地を記録できます。\n運転中は操作せず、同乗中など安全な状況でお使いください。'**
   String get onboardingQuickModeDescription;
 
   /// No description provided for @onboardingPrivacyTitle.
@@ -229,7 +229,7 @@ abstract class AppLocalizations {
   /// No description provided for @quickModeGuide.
   ///
   /// In ja, this message translates to:
-  /// **'画面のどこをタップしても、\n現在地をすぐに記録できます。'**
+  /// **'画面全体をタップして、\nすばやく現在地を記録できます。\n運転者は操作しないでください。'**
   String get quickModeGuide;
 
   /// No description provided for @startQuickMode.

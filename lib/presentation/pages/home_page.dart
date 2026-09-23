@@ -63,12 +63,12 @@ class HomePage extends HookConsumerWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       TapPinVisualAssets.movementCharacter(
-                        QuickModeCharacter.bicycle,
+                        QuickModeCharacter.walking,
                         size: 32,
                       ),
                       const SizedBox(width: 16),
                       TapPinVisualAssets.movementCharacter(
-                        QuickModeCharacter.walking,
+                        QuickModeCharacter.car,
                         size: 32,
                       ),
                       const SizedBox(width: 16),

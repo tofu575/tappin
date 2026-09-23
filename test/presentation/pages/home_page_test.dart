@@ -86,7 +86,16 @@ void main() {
     await tester.tap(find.byKey(const Key('quick-mode-entry')));
     await tester.pumpAndSettle();
 
-    expect(find.textContaining('画面のどこをタップしても'), findsOneWidget);
+    expect(find.textContaining('画面全体をタップして'), findsOneWidget);
+    expect(find.textContaining('運転者は操作しない'), findsOneWidget);
+    expect(
+      find.image(const AssetImage('assets/images/movement_car.png')),
+      findsOneWidget,
+    );
+    expect(
+      find.image(const AssetImage('assets/images/movement_bicycle.png')),
+      findsNothing,
+    );
     expect(find.text('Quick Modeをはじめる'), findsOneWidget);
     expect(find.text('キャンセル'), findsOneWidget);
   });

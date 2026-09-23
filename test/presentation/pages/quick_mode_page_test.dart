@@ -33,7 +33,7 @@ Widget _buildQuickModePage(
       ),
     ],
     child: const MaterialApp(
-      home: QuickModePage(character: QuickModeCharacter.bicycle),
+      home: QuickModePage(character: QuickModeCharacter.walking),
     ),
   );
 }
@@ -87,7 +87,7 @@ void main() {
     }
   });
 
-  testWidgets('記録中はピンが下から満たされ、車の常時アニメーションが存在する', (tester) async {
+  testWidgets('記録中はピンが下から満たされ、移動キャラクターが常時動く', (tester) async {
     final repo = MockRipository();
     await tester.pumpWidget(_buildQuickModePage(repo));
     await tester.pump();
@@ -95,7 +95,7 @@ void main() {
     expect(find.byType(RecordingPinIndicator), findsOneWidget);
     expect(find.byType(QuickModeCharacterLane), findsOneWidget);
     expect(
-      find.image(const AssetImage('assets/images/movement_bicycle.png')),
+      find.image(const AssetImage('assets/images/movement_walking.png')),
       findsOneWidget,
     );
 
@@ -143,12 +143,12 @@ void main() {
     expect(screenAwakeGateway.disableCount, 2);
   });
 
-  testWidgets('開始・終了で共通の車トランジションWidgetを表示する', (tester) async {
+  testWidgets('開始・終了で共通の移動キャラクターを表示する', (tester) async {
     await tester.pumpWidget(
       MaterialApp(
         home: QuickModeTransitionPage(
           direction: QuickModeTransitionDirection.entering,
-          character: QuickModeCharacter.bicycle,
+          character: QuickModeCharacter.walking,
           onCompleted: (_) {},
         ),
       ),
@@ -169,13 +169,13 @@ void main() {
 
     final gesture = await tester.startGesture(const Offset(400, 300));
     await tester.pump(const Duration(milliseconds: 900));
-    expect(find.byKey(const Key('drive-exit-progress')), findsOneWidget);
+    expect(find.byKey(const Key('quick-mode-exit-progress')), findsOneWidget);
 
     await gesture.up();
     await tester.pump();
 
     expect(find.byType(QuickModePage), findsOneWidget);
-    expect(find.byKey(const Key('drive-exit-progress')), findsNothing);
+    expect(find.byKey(const Key('quick-mode-exit-progress')), findsNothing);
     expect(repo.savedPins, isEmpty);
   });
 

@@ -215,7 +215,7 @@ class _QuickModePageState extends ConsumerState<QuickModePage>
                                 width: 52,
                                 height: 52,
                                 child: CircularProgressIndicator(
-                                  key: const Key('drive-exit-progress'),
+                                  key: const Key('quick-mode-exit-progress'),
                                   value: _exitProgressController.value,
                                   strokeWidth: 5,
                                   color: colors.pinRed,

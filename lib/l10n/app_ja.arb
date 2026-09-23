@@ -14,8 +14,8 @@
   "onboardingReviewTitle": "あとから場所を確認",
   "onboardingReviewDescription": "記録した場所は、あとから地図で確認できます。\n分かったことはメモに残せます。",
 
-  "onboardingQuickModeTitle": "移動中は Quick Mode",
-  "onboardingQuickModeDescription": "画面のどこをタップしても場所を記録できます。\n車や電車、徒歩での移動中に使えます。",
+  "onboardingQuickModeTitle": "すばやく記録する Quick Mode",
+  "onboardingQuickModeDescription": "画面のどこをタップしても現在地を記録できます。\n運転中は操作せず、同乗中など安全な状況でお使いください。",
 
   "onboardingPrivacyTitle": "位置情報について",
   "onboardingPrivacyDescription": "位置情報は場所の記録にのみ使用します。\n記録したデータは端末内に保存され、外部には送信されません。",
@@ -32,7 +32,7 @@
   "@unreviewedCountCompact": {"placeholders": {"count": {"type": "int"}}},
 
   "quickMode": "Quick Mode",
-  "quickModeGuide": "画面のどこをタップしても、\n現在地をすぐに記録できます。",
+  "quickModeGuide": "画面全体をタップして、\nすばやく現在地を記録できます。\n運転者は操作しないでください。",
   "startQuickMode": "Quick Modeをはじめる",
 
   "checkingPlace": "場所を確認中…",

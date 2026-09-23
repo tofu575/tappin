@@ -43,11 +43,11 @@ class AppLocalizationsJa extends AppLocalizations {
       '記録した場所は、あとから地図で確認できます。\n分かったことはメモに残せます。';
 
   @override
-  String get onboardingQuickModeTitle => '移動中は Quick Mode';
+  String get onboardingQuickModeTitle => 'すばやく記録する Quick Mode';
 
   @override
   String get onboardingQuickModeDescription =>
-      '画面のどこをタップしても場所を記録できます。\n車や電車、徒歩での移動中に使えます。';
+      '画面のどこをタップしても現在地を記録できます。\n運転中は操作せず、同乗中など安全な状況でお使いください。';
 
   @override
   String get onboardingPrivacyTitle => '位置情報について';
@@ -83,7 +83,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get quickMode => 'Quick Mode';
 
   @override
-  String get quickModeGuide => '画面のどこをタップしても、\n現在地をすぐに記録できます。';
+  String get quickModeGuide => '画面全体をタップして、\nすばやく現在地を記録できます。\n運転者は操作しないでください。';
 
   @override
   String get startQuickMode => 'Quick Modeをはじめる';
