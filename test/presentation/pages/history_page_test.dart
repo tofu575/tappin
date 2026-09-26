@@ -40,7 +40,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('あとで見る'), findsOneWidget);
+    expect(find.text('あとで確認'), findsOneWidget);
     expect(find.text('1/15 10:30'), findsOneWidget);
     expect(find.text('東京都渋谷区道玄坂'), findsOneWidget);
     expect(find.text('赤い看板の店'), findsOneWidget);
@@ -82,11 +82,11 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(PinDetailPage), findsOneWidget);
-    expect(find.text('Google Mapsで場所を確認'), findsOneWidget);
-    expect(find.text('確認できた'), findsOneWidget);
+    expect(find.text('Google Mapsで確認'), findsOneWidget);
+    expect(find.text('確認済みにする'), findsOneWidget);
   });
 
-  testWidgets('詳細で確認できたを押すと明示的な確認状態を保存する', (tester) async {
+  testWidgets('詳細で確認済みにするを押すと明示的な確認状態を保存する', (tester) async {
     final repository = MockRipository(stubbedPins: [buildTestPin(id: 42)]);
     await tester.pumpWidget(_buildPage(repository: repository));
     await tester.pumpAndSettle();

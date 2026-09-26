@@ -47,7 +47,6 @@ Interactor _buildInteractor(TestGateway gateway) => Interactor(
   repository: gateway,
   locationGateway: gateway,
   geocodingGateway: gateway,
-  overlayGateway: gateway,
   clockGateway: gateway,
   hapticGateway: gateway,
   externalMapGateway: gateway,

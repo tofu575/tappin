@@ -22,6 +22,7 @@ Widget _buildQuickModePage(
   MockRipository repo, {
   MockHapticGateway? hapticGateway,
   MockScreenAwakeGateway? screenAwakeGateway,
+  QuickModeCharacter character = QuickModeCharacter.walking,
 }) {
   return ProviderScope(
     overrides: [
@@ -32,8 +33,8 @@ Widget _buildQuickModePage(
         screenAwakeGateway ?? MockScreenAwakeGateway(),
       ),
     ],
-    child: const MaterialApp(
-      home: QuickModePage(character: QuickModeCharacter.bicycle),
+    child: MaterialApp(
+      home: QuickModePage(character: character),
     ),
   );
 }
@@ -87,14 +88,18 @@ void main() {
     }
   });
 
-  testWidgets('記録中はピンが下から満たされ、車の常時アニメーションが存在する', (tester) async {
+  testWidgets('記録中はピンが下から満たされ、移動キャラクターが常時動く', (tester) async {
     final repo = MockRipository();
     await tester.pumpWidget(_buildQuickModePage(repo));
     await tester.pump();
 
     expect(find.byType(RecordingPinIndicator), findsOneWidget);
     expect(find.byType(QuickModeCharacterLane), findsOneWidget);
-    expect(find.text('🚲'), findsOneWidget);
+    expect(
+      find.image(const AssetImage('assets/images/movement_walking.png')),
+      findsOneWidget,
+    );
+    expect(find.text('運転者は操作しないでください'), findsOneWidget);
 
     await tester.tapAt(const Offset(400, 300));
     await tester.pump();
@@ -112,6 +117,19 @@ void main() {
     await tester.pump(const Duration(milliseconds: 100));
     await tester.pump();
     expect(indicator.progress.value, 0);
+  });
+
+  testWidgets('車のキャラクターは同乗中であることを画面内に明示する', (tester) async {
+    await tester.pumpWidget(
+      _buildQuickModePage(
+        MockRipository(),
+        character: QuickModeCharacter.car,
+      ),
+    );
+    await tester.pump();
+
+    expect(find.byKey(const Key('quick-mode-passenger-label')), findsOneWidget);
+    expect(find.text('同乗中'), findsOneWidget);
   });
 
   testWidgets('表示中だけScreen Awakeを有効にし、バックグラウンドと破棄時に解除する', (tester) async {
@@ -140,12 +158,12 @@ void main() {
     expect(screenAwakeGateway.disableCount, 2);
   });
 
-  testWidgets('開始・終了で共通の車トランジションWidgetを表示する', (tester) async {
+  testWidgets('開始・終了で共通の移動キャラクターを表示する', (tester) async {
     await tester.pumpWidget(
       MaterialApp(
         home: QuickModeTransitionPage(
           direction: QuickModeTransitionDirection.entering,
-          character: QuickModeCharacter.bicycle,
+          character: QuickModeCharacter.walking,
           onCompleted: (_) {},
         ),
       ),
@@ -166,13 +184,13 @@ void main() {
 
     final gesture = await tester.startGesture(const Offset(400, 300));
     await tester.pump(const Duration(milliseconds: 900));
-    expect(find.byKey(const Key('drive-exit-progress')), findsOneWidget);
+    expect(find.byKey(const Key('quick-mode-exit-progress')), findsOneWidget);
 
     await gesture.up();
     await tester.pump();
 
     expect(find.byType(QuickModePage), findsOneWidget);
-    expect(find.byKey(const Key('drive-exit-progress')), findsNothing);
+    expect(find.byKey(const Key('quick-mode-exit-progress')), findsNothing);
     expect(repo.savedPins, isEmpty);
   });
 
@@ -199,7 +217,7 @@ void main() {
     await tester.pump();
 
     expect(find.byType(QuickModeTransitionPage), findsOneWidget);
-    expect(find.text('ホームへ戻ります'), findsOneWidget);
+    expect(find.text('Quick Modeを終了します'), findsOneWidget);
     expect(repo.savedPins, isEmpty);
 
     await gesture.up();

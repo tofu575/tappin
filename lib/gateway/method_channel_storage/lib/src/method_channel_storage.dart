@@ -4,7 +4,7 @@ import 'package:model/model.dart';
 import 'package:usecase/usecase.dart';
 
 class MethodChannelStorage implements Repository {
-  static const _channel = MethodChannel('com.example.tappin/native');
+  static const _channel = MethodChannel('com.tofu575.tappin/native');
 
   @override
   Future<List<Pin>> getPins() async {

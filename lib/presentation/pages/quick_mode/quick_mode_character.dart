@@ -4,8 +4,6 @@ import 'dart:math';
 enum QuickModeCharacter {
   car,
   bus,
-  train,
-  bicycle,
   walking;
 
   /// セッション開始時にキャラクターを1種類だけ選ぶ。

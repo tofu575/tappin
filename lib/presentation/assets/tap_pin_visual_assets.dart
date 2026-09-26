@@ -3,26 +3,30 @@ import 'package:flutter/material.dart';
 import 'package:tappin/presentation/assets/onboarding_visual.dart';
 import 'package:tappin/presentation/pages/quick_mode/quick_mode_character.dart';
 import 'package:tappin/presentation/theme/tap_pin_colors_context.dart';
-import 'package:tappin/presentation/widgets/tap_pin_mark.dart';
 
-/// 未完成のブランド素材をPlaceholderから本番Assetへ交換する唯一の窓口。
+/// ブランド表示で使う画像Assetを統一的に返す。
 class TapPinVisualAssets {
   const TapPinVisualAssets._();
 
-  /// ブランド画鋲の現在のPlaceholderを返す。
-  static Widget brandPin({double size = 72}) => TapPinMark(size: size);
+  static const _pinAssetPath = 'assets/images/pin.png';
 
-  /// 移動キャラクター識別子を現在のEmoji Placeholderへ変換する。
+  /// ブランド画鋲の画像を返す。
+  static Widget brandPin({double size = 72}) => _pinImage(size: size);
+
+  /// 移動キャラクター識別子に対応する画像を返す。
   static Widget movementCharacter(
     QuickModeCharacter character, {
     double size = 30,
     Key? key,
-  }) {
-    final emoji = _movementEmoji(character);
-    return Text(emoji, key: key, style: TextStyle(fontSize: size));
-  }
+  }) => Image.asset(
+    _movementAssetPath(character),
+    key: key,
+    width: size,
+    height: size,
+    fit: BoxFit.contain,
+  );
 
-  /// オンボーディング識別子を統一されたIconまたはブランド画鋲へ変換する。
+  /// オンボーディング識別子を案内Iconまたは画鋲画像へ変換する。
   static Widget onboarding(
     BuildContext context,
     OnboardingVisual visual, {
@@ -33,23 +37,19 @@ class TapPinVisualAssets {
     return Icon(icon, size: size, color: context.tapPinColors.ink);
   }
 
-  /// 移動識別子へ対応する暫定EmojiだけをAsset境界内で返す。
-  static String _movementEmoji(QuickModeCharacter character) {
+  /// 移動識別子へ対応するAssetパスを返す。
+  static String _movementAssetPath(QuickModeCharacter character) {
     switch (character) {
       case QuickModeCharacter.car:
-        return '🚗';
+        return 'assets/images/movement_car.png';
       case QuickModeCharacter.bus:
-        return '🚌';
-      case QuickModeCharacter.train:
-        return '🚃';
-      case QuickModeCharacter.bicycle:
-        return '🚲';
+        return 'assets/images/movement_bus.png';
       case QuickModeCharacter.walking:
-        return '🚶';
+        return 'assets/images/movement_walking.png';
     }
   }
 
-  /// 案内識別子へ対応する暫定Material IconをAsset境界内で返す。
+  /// 案内識別子へ対応するMaterial Iconを返す。
   static IconData _onboardingIcon(OnboardingVisual visual) {
     switch (visual) {
       case OnboardingVisual.pin:
@@ -62,4 +62,13 @@ class TapPinVisualAssets {
         return Icons.lock_outline_rounded;
     }
   }
+
+  /// 指定サイズで共通の画鋲Assetを読み込む。
+  static Widget _pinImage({required double size, Key? key}) => Image.asset(
+    _pinAssetPath,
+    key: key,
+    width: size,
+    height: size,
+    fit: BoxFit.contain,
+  );
 }

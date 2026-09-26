@@ -9,11 +9,11 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  geocoding: ^3.0.0
+  geocoding: 5.0.0
   model:
     path: ../../domain/model
   usecase:
     path: ../../domain/usecase
 
 dev_dependencies:
-  lints: ^6.0.0
+  lints: 6.1.0

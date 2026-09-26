@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:tappin/presentation/assets/tap_pin_visual_assets.dart';
+import 'package:tappin/presentation/localization/app_localizations_context.dart';
 import 'package:tappin/presentation/pages/quick_mode/quick_mode_character.dart';
 
 const _lapDuration = Duration(seconds: 6);
@@ -57,10 +58,25 @@ class _QuickModeCharacterLaneState extends State<QuickModeCharacterLane>
               ),
             );
           },
-          child: TapPinVisualAssets.movementCharacter(
-            widget.character,
-            key: const Key('quick-mode-character'),
-            size: 30,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TapPinVisualAssets.movementCharacter(
+                widget.character,
+                key: const Key('quick-mode-character'),
+                size: 30,
+              ),
+              if (widget.character == QuickModeCharacter.car) ...[
+                const SizedBox(width: 6),
+                Text(
+                  context.l10n.quickModePassengerLabel,
+                  key: const Key('quick-mode-passenger-label'),
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                ),
+              ],
+            ],
           ),
         ),
       ),

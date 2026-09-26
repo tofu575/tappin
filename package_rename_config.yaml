@@ -1,0 +1,11 @@
+package_rename_config:
+  android:
+    app_name: "Tappin"
+    package_name: "com.tofu575.tappin"
+    override_old_package: "com.example.tappin"
+    lang: "kotlin"
+
+  ios:
+    app_name: "Tappin"
+    bundle_name: "Tappin"
+    package_name: "com.tofu575.tappin"

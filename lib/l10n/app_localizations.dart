@@ -97,7 +97,7 @@ abstract class AppLocalizations {
   /// No description provided for @appTitle.
   ///
   /// In ja, this message translates to:
-  /// **'TapPin'**
+  /// **'Tappin'**
   String get appTitle;
 
   /// No description provided for @cancel.
@@ -133,7 +133,7 @@ abstract class AppLocalizations {
   /// No description provided for @onboardingWelcomeTitle.
   ///
   /// In ja, this message translates to:
-  /// **'TapPin へようこそ'**
+  /// **'Tappin へようこそ'**
   String get onboardingWelcomeTitle;
 
   /// No description provided for @onboardingWelcomeDescription.
@@ -157,13 +157,13 @@ abstract class AppLocalizations {
   /// No description provided for @onboardingQuickModeTitle.
   ///
   /// In ja, this message translates to:
-  /// **'移動中は Quick Mode'**
+  /// **'すばやく記録する Quick Mode'**
   String get onboardingQuickModeTitle;
 
   /// No description provided for @onboardingQuickModeDescription.
   ///
   /// In ja, this message translates to:
-  /// **'画面のどこをタップしても場所を記録できます。\n車や電車、徒歩での移動中に使えます。'**
+  /// **'画面のどこをタップしても現在地を記録できます。\n運転中は操作せず、同乗中など安全な状況でお使いください。'**
   String get onboardingQuickModeDescription;
 
   /// No description provided for @onboardingPrivacyTitle.
@@ -175,7 +175,7 @@ abstract class AppLocalizations {
   /// No description provided for @onboardingPrivacyDescription.
   ///
   /// In ja, this message translates to:
-  /// **'位置情報は場所の記録にのみ使用します。\n記録したデータは端末内に保存され、外部には送信されません。'**
+  /// **'位置情報は場所の記録にのみ使用します。\n記録したデータは端末内に保存され、運営者のサーバーには送信されません。住所の表示にはOSのジオコーディングサービスを利用します。'**
   String get onboardingPrivacyDescription;
 
   /// No description provided for @start.
@@ -195,6 +195,60 @@ abstract class AppLocalizations {
   /// In ja, this message translates to:
   /// **'気になった場所を記録しよう。'**
   String get homeTagline;
+
+  /// No description provided for @aboutTappin.
+  ///
+  /// In ja, this message translates to:
+  /// **'Tappinについて'**
+  String get aboutTappin;
+
+  /// No description provided for @aboutDescription.
+  ///
+  /// In ja, this message translates to:
+  /// **'Tappinの使い方や大切なお知らせをご覧いただけます。'**
+  String get aboutDescription;
+
+  /// No description provided for @officialWebsite.
+  ///
+  /// In ja, this message translates to:
+  /// **'公式サイト'**
+  String get officialWebsite;
+
+  /// No description provided for @officialWebsiteDescription.
+  ///
+  /// In ja, this message translates to:
+  /// **'Tappinの紹介を見る'**
+  String get officialWebsiteDescription;
+
+  /// No description provided for @legalInformation.
+  ///
+  /// In ja, this message translates to:
+  /// **'ポリシーと規約'**
+  String get legalInformation;
+
+  /// No description provided for @privacyPolicy.
+  ///
+  /// In ja, this message translates to:
+  /// **'プライバシーポリシー'**
+  String get privacyPolicy;
+
+  /// No description provided for @termsOfService.
+  ///
+  /// In ja, this message translates to:
+  /// **'利用規約'**
+  String get termsOfService;
+
+  /// No description provided for @opensInBrowser.
+  ///
+  /// In ja, this message translates to:
+  /// **'ブラウザで開きます'**
+  String get opensInBrowser;
+
+  /// No description provided for @webPageOpenError.
+  ///
+  /// In ja, this message translates to:
+  /// **'ページを開けませんでした'**
+  String get webPageOpenError;
 
   /// No description provided for @record.
   ///
@@ -229,7 +283,7 @@ abstract class AppLocalizations {
   /// No description provided for @quickModeGuide.
   ///
   /// In ja, this message translates to:
-  /// **'画面のどこをタップしても、\n現在地をすぐに記録できます。'**
+  /// **'画面全体をタップして、\nすばやく現在地を記録できます。\n運転者は操作しないでください。'**
   String get quickModeGuide;
 
   /// No description provided for @startQuickMode.
@@ -550,59 +604,17 @@ abstract class AppLocalizations {
   /// **'約1.5秒長押しで終了'**
   String get quickModeExitGuide;
 
-  /// No description provided for @recordListTitle.
+  /// No description provided for @quickModeSafetyNotice.
   ///
   /// In ja, this message translates to:
-  /// **'記録一覧'**
-  String get recordListTitle;
+  /// **'運転者は操作しないでください'**
+  String get quickModeSafetyNotice;
 
-  /// No description provided for @deleteRecordTitle.
+  /// No description provided for @quickModePassengerLabel.
   ///
   /// In ja, this message translates to:
-  /// **'この記録を削除しますか？'**
-  String get deleteRecordTitle;
-
-  /// No description provided for @deleteRecordDescription.
-  ///
-  /// In ja, this message translates to:
-  /// **'削除した記録は元に戻せません。'**
-  String get deleteRecordDescription;
-
-  /// No description provided for @deleteSwipeGuide.
-  ///
-  /// In ja, this message translates to:
-  /// **'左にスワイプして削除'**
-  String get deleteSwipeGuide;
-
-  /// No description provided for @emptyRecordListDescription.
-  ///
-  /// In ja, this message translates to:
-  /// **'ホームから気になった場所を記録してみましょう。'**
-  String get emptyRecordListDescription;
-
-  /// No description provided for @mapTitle.
-  ///
-  /// In ja, this message translates to:
-  /// **'マップ'**
-  String get mapTitle;
-
-  /// No description provided for @loading.
-  ///
-  /// In ja, this message translates to:
-  /// **'読み込み中...'**
-  String get loading;
-
-  /// No description provided for @memoEmptyParenthesized.
-  ///
-  /// In ja, this message translates to:
-  /// **'(メモなし)'**
-  String get memoEmptyParenthesized;
-
-  /// No description provided for @editMemoTooltip.
-  ///
-  /// In ja, this message translates to:
-  /// **'メモを編集'**
-  String get editMemoTooltip;
+  /// **'同乗中'**
+  String get quickModePassengerLabel;
 }
 
 class _AppLocalizationsDelegate

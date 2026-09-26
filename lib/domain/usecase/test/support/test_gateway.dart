@@ -7,7 +7,6 @@ final class TestGateway
         Repository,
         LocationService,
         GeocodingService,
-        OverlayService,
         ClockGateway,
         HapticGateway,
         ExternalMapGateway,
@@ -43,9 +42,6 @@ final class TestGateway
   bool hasCompleted() => completed;
 
   @override
-  Future<void> hideOverlay() async {}
-
-  @override
   MyDatetime now() => MyDatetime(currentTime);
 
   @override
@@ -71,9 +67,6 @@ final class TestGateway
     savedPins.add(pin);
     return savedPins.length;
   }
-
-  @override
-  Future<void> showOverlay() async {}
 
   @override
   Future<void> updateMemo(int id, Memo memo) async {}

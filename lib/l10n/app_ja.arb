@@ -1,6 +1,6 @@
 {
   "@@locale": "ja",
-  "appTitle": "TapPin",
+  "appTitle": "Tappin",
   "cancel": "キャンセル",
   "delete": "削除",
   "save": "保存",
@@ -8,22 +8,31 @@
   "errorWithDetail": "エラー: {error}",
   "@errorWithDetail": {"placeholders": {"error": {"type": "String"}}},
 
-  "onboardingWelcomeTitle": "TapPin へようこそ",
+  "onboardingWelcomeTitle": "Tappin へようこそ",
   "onboardingWelcomeDescription": "気になった場所を見つけたら、その場でワンタップ。\n場所と時間をすぐに記録できます。",
 
   "onboardingReviewTitle": "あとから場所を確認",
   "onboardingReviewDescription": "記録した場所は、あとから地図で確認できます。\n分かったことはメモに残せます。",
 
-  "onboardingQuickModeTitle": "移動中は Quick Mode",
-  "onboardingQuickModeDescription": "画面のどこをタップしても場所を記録できます。\n車や電車、徒歩での移動中に使えます。",
+  "onboardingQuickModeTitle": "すばやく記録する Quick Mode",
+  "onboardingQuickModeDescription": "画面のどこをタップしても現在地を記録できます。\n運転中は操作せず、同乗中など安全な状況でお使いください。",
 
   "onboardingPrivacyTitle": "位置情報について",
-  "onboardingPrivacyDescription": "位置情報は場所の記録にのみ使用します。\n記録したデータは端末内に保存され、外部には送信されません。",
+  "onboardingPrivacyDescription": "位置情報は場所の記録にのみ使用します。\n記録したデータは端末内に保存され、運営者のサーバーには送信されません。住所の表示にはOSのジオコーディングサービスを利用します。",
 
   "start": "はじめる",
   "next": "次へ",
 
   "homeTagline": "気になった場所を記録しよう。",
+  "aboutTappin": "Tappinについて",
+  "aboutDescription": "Tappinの使い方や大切なお知らせをご覧いただけます。",
+  "officialWebsite": "公式サイト",
+  "officialWebsiteDescription": "Tappinの紹介を見る",
+  "legalInformation": "ポリシーと規約",
+  "privacyPolicy": "プライバシーポリシー",
+  "termsOfService": "利用規約",
+  "opensInBrowser": "ブラウザで開きます",
+  "webPageOpenError": "ページを開けませんでした",
   "record": "記録",
   "pinHere": "場所を記録",
   "history": "履歴",
@@ -32,7 +41,7 @@
   "@unreviewedCountCompact": {"placeholders": {"count": {"type": "int"}}},
 
   "quickMode": "Quick Mode",
-  "quickModeGuide": "画面のどこをタップしても、\n現在地をすぐに記録できます。",
+  "quickModeGuide": "画面全体をタップして、\nすばやく現在地を記録できます。\n運転者は操作しないでください。",
   "startQuickMode": "Quick Modeをはじめる",
 
   "checkingPlace": "場所を確認中…",
@@ -115,16 +124,6 @@
   "quickModeHoldToFinish": "そのまま長押しで終了",
   "quickModeTapAnywhere": "画面のどこでもタップで記録",
   "quickModeExitGuide": "約1.5秒長押しで終了",
-
-  "recordListTitle": "記録一覧",
-  "deleteRecordTitle": "この記録を削除しますか？",
-  "deleteRecordDescription": "削除した記録は元に戻せません。",
-  "deleteSwipeGuide": "左にスワイプして削除",
-
-  "emptyRecordListDescription": "ホームから気になった場所を記録してみましょう。",
-
-  "mapTitle": "マップ",
-  "loading": "読み込み中...",
-  "memoEmptyParenthesized": "(メモなし)",
-  "editMemoTooltip": "メモを編集"
+  "quickModeSafetyNotice": "運転者は操作しないでください",
+  "quickModePassengerLabel": "同乗中"
 }

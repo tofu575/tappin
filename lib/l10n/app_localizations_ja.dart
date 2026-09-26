@@ -9,7 +9,7 @@ class AppLocalizationsJa extends AppLocalizations {
   AppLocalizationsJa([String locale = 'ja']) : super(locale);
 
   @override
-  String get appTitle => 'TapPin';
+  String get appTitle => 'Tappin';
 
   @override
   String get cancel => 'キャンセル';
@@ -29,7 +29,7 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get onboardingWelcomeTitle => 'TapPin へようこそ';
+  String get onboardingWelcomeTitle => 'Tappin へようこそ';
 
   @override
   String get onboardingWelcomeDescription =>
@@ -43,18 +43,18 @@ class AppLocalizationsJa extends AppLocalizations {
       '記録した場所は、あとから地図で確認できます。\n分かったことはメモに残せます。';
 
   @override
-  String get onboardingQuickModeTitle => '移動中は Quick Mode';
+  String get onboardingQuickModeTitle => 'すばやく記録する Quick Mode';
 
   @override
   String get onboardingQuickModeDescription =>
-      '画面のどこをタップしても場所を記録できます。\n車や電車、徒歩での移動中に使えます。';
+      '画面のどこをタップしても現在地を記録できます。\n運転中は操作せず、同乗中など安全な状況でお使いください。';
 
   @override
   String get onboardingPrivacyTitle => '位置情報について';
 
   @override
   String get onboardingPrivacyDescription =>
-      '位置情報は場所の記録にのみ使用します。\n記録したデータは端末内に保存され、外部には送信されません。';
+      '位置情報は場所の記録にのみ使用します。\n記録したデータは端末内に保存され、運営者のサーバーには送信されません。住所の表示にはOSのジオコーディングサービスを利用します。';
 
   @override
   String get start => 'はじめる';
@@ -64,6 +64,33 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get homeTagline => '気になった場所を記録しよう。';
+
+  @override
+  String get aboutTappin => 'Tappinについて';
+
+  @override
+  String get aboutDescription => 'Tappinの使い方や大切なお知らせをご覧いただけます。';
+
+  @override
+  String get officialWebsite => '公式サイト';
+
+  @override
+  String get officialWebsiteDescription => 'Tappinの紹介を見る';
+
+  @override
+  String get legalInformation => 'ポリシーと規約';
+
+  @override
+  String get privacyPolicy => 'プライバシーポリシー';
+
+  @override
+  String get termsOfService => '利用規約';
+
+  @override
+  String get opensInBrowser => 'ブラウザで開きます';
+
+  @override
+  String get webPageOpenError => 'ページを開けませんでした';
 
   @override
   String get record => '記録';
@@ -83,7 +110,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get quickMode => 'Quick Mode';
 
   @override
-  String get quickModeGuide => '画面のどこをタップしても、\n現在地をすぐに記録できます。';
+  String get quickModeGuide => '画面全体をタップして、\nすばやく現在地を記録できます。\n運転者は操作しないでください。';
 
   @override
   String get startQuickMode => 'Quick Modeをはじめる';
@@ -267,29 +294,8 @@ class AppLocalizationsJa extends AppLocalizations {
   String get quickModeExitGuide => '約1.5秒長押しで終了';
 
   @override
-  String get recordListTitle => '記録一覧';
+  String get quickModeSafetyNotice => '運転者は操作しないでください';
 
   @override
-  String get deleteRecordTitle => 'この記録を削除しますか？';
-
-  @override
-  String get deleteRecordDescription => '削除した記録は元に戻せません。';
-
-  @override
-  String get deleteSwipeGuide => '左にスワイプして削除';
-
-  @override
-  String get emptyRecordListDescription => 'ホームから気になった場所を記録してみましょう。';
-
-  @override
-  String get mapTitle => 'マップ';
-
-  @override
-  String get loading => '読み込み中...';
-
-  @override
-  String get memoEmptyParenthesized => '(メモなし)';
-
-  @override
-  String get editMemoTooltip => 'メモを編集';
+  String get quickModePassengerLabel => '同乗中';
 }

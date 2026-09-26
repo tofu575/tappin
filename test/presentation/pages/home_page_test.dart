@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:usecase/usecase.dart';
 import 'package:model/model.dart';
+import 'package:tappin/presentation/pages/about/about_page.dart';
 import 'package:tappin/presentation/pages/quick_mode/quick_mode_page.dart';
 import 'package:tappin/presentation/pages/quick_mode/quick_mode_transition_page.dart';
 import 'package:tappin/presentation/pages/home_page.dart';
@@ -14,14 +15,12 @@ import '../../helpers/build_test_interactor.dart';
 import '../../helpers/mock_geocoding_service.dart';
 import '../../helpers/mock_haptic_gateway.dart';
 import '../../helpers/mock_location_service.dart';
-import '../../helpers/mock_overlay_service.dart';
 import '../../helpers/mock_repository.dart';
 import '../../helpers/mock_screen_awake_gateway.dart';
 
 Widget _buildPage({
   MockRipository? repo,
   LocationService? locationService,
-  MockOverlayService? overlayService,
   MockHapticGateway? hapticGateway,
 }) {
   return ProviderScope(
@@ -31,7 +30,6 @@ Widget _buildPage({
           repository: repo,
           locationGateway: locationService,
           geocodingGateway: MockGeocodingService(),
-          overlayGateway: overlayService,
           hapticGateway: hapticGateway,
         ),
       ),
@@ -56,6 +54,22 @@ void main() {
     await tester.pump();
 
     expect(find.text('記録'), findsOneWidget);
+  });
+
+  testWidgets('Tappinについて画面からWebページへの導線を確認できる', (tester) async {
+    await tester.pumpWidget(_buildPage());
+    await tester.pump();
+
+    await tester.tap(find.byKey(const Key('about-tappin-button')));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(AboutPage), findsOneWidget);
+    expect(find.text('公式サイト'), findsOneWidget);
+    expect(find.text('プライバシーポリシー'), findsOneWidget);
+    expect(find.text('利用規約'), findsOneWidget);
+    expect(find.byKey(const Key('official-website-link')), findsOneWidget);
+    expect(find.byKey(const Key('privacy-policy-link')), findsOneWidget);
+    expect(find.byKey(const Key('terms-of-service-link')), findsOneWidget);
   });
 
   testWidgets('未確認が0件なら右端のインデックスを履歴と表示する', (tester) async {
@@ -89,7 +103,12 @@ void main() {
     await tester.tap(find.byKey(const Key('quick-mode-entry')));
     await tester.pumpAndSettle();
 
-    expect(find.textContaining('画面のどこをタップしても'), findsOneWidget);
+    expect(find.textContaining('画面全体をタップして'), findsOneWidget);
+    expect(find.textContaining('運転者は操作しない'), findsOneWidget);
+    expect(
+      find.image(const AssetImage('assets/images/movement_car.png')),
+      findsOneWidget,
+    );
     expect(find.text('Quick Modeをはじめる'), findsOneWidget);
     expect(find.text('キャンセル'), findsOneWidget);
   });
@@ -203,7 +222,7 @@ void main() {
     await tester.tap(find.text('記録'));
     await tester.pumpAndSettle();
 
-    expect(find.text('いま預けました'), findsOneWidget);
+    expect(find.text('記録しました'), findsOneWidget);
   });
 
   testWidgets('位置情報の権限が一時的に拒否された場合、スナックバーが表示される', (tester) async {
@@ -215,7 +234,7 @@ void main() {
     await tester.tap(find.text('記録'));
     await tester.pumpAndSettle();
 
-    expect(find.text('位置情報が許可されませんでした'), findsOneWidget);
+    expect(find.text('位置情報が許可されていません'), findsOneWidget);
   });
 
   testWidgets('位置情報の権限が永久に拒否された場合、設定ダイアログが表示される', (tester) async {
@@ -228,7 +247,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('位置情報の許可が必要です'), findsOneWidget);
-    expect(find.text('設定から位置情報へのアクセスを許可してください'), findsOneWidget);
+    expect(find.text('設定から位置情報へのアクセスを許可してください。'), findsOneWidget);
   });
 
   testWidgets('予期しないエラーが発生した場合、エラーメッセージが表示される', (tester) async {
@@ -244,7 +263,7 @@ void main() {
     await tester.tap(find.text('記録'));
     await tester.pump(const Duration(milliseconds: 100));
 
-    expect(find.textContaining('エラーが発生しました'), findsOneWidget);
+    expect(find.textContaining('記録できませんでした'), findsOneWidget);
     expect(hapticGateway.recordSuccessCount, 0);
     expect(hapticGateway.recordFailureCount, 1);
     final failureFlash = tester.widget<ColoredBox>(
