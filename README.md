@@ -1,64 +1,150 @@
-# claude-example
+# Tappin
 
-## 動かし方
+移動中に見つけた気になる場所を、ワンタップで記録して、あとから地図で確認するためのFlutterアプリです。
 
-- エミュレータ起動
-  - fvm flutter emulators --launch Pixel_5_API_33
-- 実行
-  - fvm flutter run
-- test
-  - fvm flutter test
+「気になったけど、今は立ち止まって調べられない」という場面で、できるだけ少ない操作で場所だけ残せるようにしています。
 
-## UIレビュー用スクリーンショット
+🍎 **App Store**\
+[https://apps.apple.com/jp/app/tappin/id6814894333](https://apps.apple.com/jp/app/tappin/id6814894333)
 
-Pixel 5 API 33を代表端末として、Androidエミュレータを起動する。
+📝 **開発・公開までの記事**\
+[https://zenn.dev/tofu575/articles/12c863e7a19c59](https://zenn.dev/tofu575/articles/12c863e7a19c59)
+
+<p align="center">
+  <img src="docs/images/readme/home.png" width="23%" alt="ホーム画面">
+  <img src="docs/images/readme/history.png" width="23%" alt="履歴画面">
+  <img src="docs/images/readme/detail.png" width="23%" alt="記録詳細画面">
+  <img src="docs/images/readme/quick-mode.png" width="23%" alt="Quick Mode画面">
+</p>
+
+## Tappinとは
+
+散歩や旅行、公共交通機関での移動中には、あとで詳しく調べたい店や場所を見つけても、その場で検索して保存する余裕がないことがあります。Tappinは、そうした場所を現在地としてすばやく記録し、落ち着いたあとに振り返るためのアプリです。
+
+記録した場所は「未確認」と「確認済み」に分けて管理できます。詳細画面では住所の確認、メモの追加、Google Mapsやストリートビューへの移動ができます。
+
+> [!IMPORTANT]
+> 自動車や自転車の運転中など、端末操作が危険な状況での利用は想定していません。必ず安全な状況で操作してください。
+
+## 主な機能
+
+- ホーム画面からワンタップで現在地を記録
+- 画面全体をタップして連続で記録できるQuick Mode
+- 記録を「未確認」「確認済み」に分けて管理
+- 記録した日時・座標・住所・メモを詳細画面で確認
+- Google Mapsやストリートビューで記録地点を表示
+
+## 技術構成
+
+| 分類 | 技術・パッケージ |
+| --- | --- |
+| UI | Flutter / Material |
+| 状態管理・DI | Riverpod / Hooks Riverpod |
+| UIライフサイクル | Flutter Hooks |
+| 位置情報 | Geolocator |
+| 端末内保存 | MethodChannel / SQLite / SharedPreferences |
+| 外部地図連携 | URL Launcher |
+| 表示文言管理 | Flutter gen-l10n / ARB |
+| 開発環境管理 | FVM |
+
+依存パッケージは再現性を保つため、検証済みのバージョンに固定しています。
+
+## アーキテクチャ
+
+Clean Architectureを採用し、外部機能の詳細がDomainへ入り込まないようにしています。依存方向は次のとおりです。
+
+```text
+Presentation → interactorProvider → Interactor → Gateway interface ← Gateway実装
+```
+
+`Presentation`と`Gateway`はどちらも`Domain`に依存し、互いには依存しません。Presentationは構築済みの`Interactor`だけを`interactorProvider`から受け取り、位置情報、永続化、住所検索、ハプティクス、外部地図などはGateway interfaceを介して利用します。
+
+```text
+lib/
+├── domain/
+│   ├── model/          # Entity・Value Object
+│   └── usecase/        # Interactor・Gateway interface
+├── gateway/            # 端末機能や外部機能へ接続するGateway実装
+├── presentation/
+│   ├── pages/          # 各画面と画面固有のComponent
+│   ├── providers/      # Riverpod Provider / 非同期状態
+│   ├── theme/          # テーマとカラー
+│   └── widgets/        # 画面間で共有するWidget
+├── l10n/               # ARBと生成されたローカライズコード
+├── app.dart
+└── main.dart           # Gatewayの構築と依存注入
+```
+
+依存注入はアプリ起動時に`main.dart`で行い、構築済みのInteractorを`interactorProvider.overrideWithValue()`で渡します。
+
+## UIレビュー
+
+主要画面を継続して確認できるように、`integration_test`とMock Gatewayを使ったスクリーンショット生成テストを用意しています。
+
+テストデータには固定値を使用するため、位置情報、住所検索、端末内DB、ネットワークの状態に依存せず、次の画面を同じ条件で再現できます。
+
+- オンボーディング
+- 未確認の記録が0件／存在する場合のホーム
+- 未確認／確認済みの履歴
+- 記録詳細
+- Quick Modeの案内・記録中・記録成功後
+
+Android Emulatorを起動し、表示されたdevice IDを指定して実行します。
 
 ```bash
 fvm flutter emulators --launch Pixel_5_API_33
-```
 
-起動後、表示されたdevice IDを指定して次のコマンドを実行する。
-
-```bash
 fvm flutter drive \
   --driver=test_driver/ui_review_test_driver.dart \
   --target=integration_test/ui_review_test.dart \
   -d <device-id>
 ```
 
-オンボーディング、未確認0件/ありのHome、未確認/確認済みの履歴、記録詳細、
-Quick Mode案内、Quick Mode、記録成功後のPNGが`screenshots/ui_review/`へ生成される。
-テストデータにはMock Gatewayの固定値を使うため、
-位置情報、住所検索、端末内DB、ネットワークには依存しない。
+生成されたPNGは`screenshots/ui_review/`に保存されます。同じテストはiOS Simulatorでも実行できます。
 
-同じコマンドはiOS Simulatorでも実行できる。`takeScreenshot()`はAndroidとiOSに対応するが、
-ホストへPNGを保存するため`flutter test`ではなく上記のextended driverを使用する。
+## 開発環境
 
-## アーキテクチャ
+### セットアップ
 
-クリーンアーキテクチャを採用。依存の向きは `presentation → domain ← gateway` で、`gateway` と `presentation` はどちらも `domain` に依存するが、互いには依存しない。
+[FVM](https://fvm.app/)を利用します。このリポジトリで指定しているFlutter SDKは`.fvm/fvm_config.json`で確認できます。
 
-Presentationは構築済みの`Interactor`だけを`interactorProvider`から取得する。Interactorはアプリケーションの操作順序を担当し、永続化、位置情報、ハプティクス、外部アプリ起動などの外部機能は注入されたGateway interfaceを通じて利用する。
-
-```text
-Presentation → interactorProvider → Interactor → Gateway interface ← Gateway実装
+```bash
+fvm install
+make pub-get
 ```
 
-```
-lib/
-├── domain/                     # ビジネスロジック層（外部への依存なし）
-│   ├── models/                 # 値オブジェクト・エンティティ
-│   ├── repositories/           # 永続化Gatewayのインターフェース定義
-│   ├── services/               # 端末・外部機能のGatewayインターフェース定義
-│   └── interactor/             # アプリケーションの操作単位
-│
-├── gateway/                    # インフラ層（domainインターフェースの実装）
-│                               # gateway配下は責務分離のため、概念上近くても分けること
-│
-└── presentation/               # UI層
-    ├── pages/                  # 画面（HomePage, HistoryPage, PinDetailPage）
-    ├── providers/              # 状態管理（Riverpod providers / Notifier）
-    └── widgets/                # 再利用可能なUIコンポーネント
+### アプリの起動
+
+接続済みの実機または起動済みのSimulator / Emulatorで実行します。
+
+```bash
+make flutter-run-device
 ```
 
-依存注入は `main.dart` でアプリ起動時に1度だけ行い、構築済みInteractorを`interactorProvider.overrideWithValue()`で渡す。
+Pixel 5 API 33のAndroid Emulatorを使う場合は、起動とアプリ実行をまとめて行えます。
+
+```bash
+make flutter-run-emulator
+```
+
+### 静的解析とテスト
+
+```bash
+make analyze
+make test
+```
+
+コードを整形する場合は次を実行します。
+
+```bash
+make format
+```
+
+## 関連リンク
+
+- [App Store](https://apps.apple.com/jp/app/tappin/id6814894333)
+- [開発・公開までの記事（Zenn）](https://zenn.dev/tofu575/articles/12c863e7a19c59)
+- [プライバシーポリシー](https://tofu575.com/tappin/privacy/)
+- [利用規約](https://tofu575.com/tappin/terms/)
+
+Copyright © 2026 tofu575. All rights reserved.
