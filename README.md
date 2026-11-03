@@ -148,3 +148,11 @@ make format
 - [利用規約](https://tofu575.com/tappin/terms/)
 
 Copyright © 2026 tofu575. All rights reserved.
+
+## Android内部テスト配信
+
+[初回設定・署名・GitHub Secrets・配信手順](docs/android-internal-testing.md)
+
+## iOS TestFlight配信
+
+[Apple側の初回設定・署名・GitHub Secrets・配布手順](docs/ios-testflight.md)
