@@ -1,11 +1,11 @@
 name: Android checks
 
 on:
-  pull_request:
-    branches: [main, enhance/mvp]
+  # pull_request:
+  #   branches: [main, enhance/mvp]
   push:
     # Manual releases may select any branch; build its exact commit before CD.
-    branches: ['**']
+    branches: ["**"]
   workflow_dispatch:
 
 permissions:
@@ -30,7 +30,7 @@ jobs:
         if: github.event_name != 'pull_request'
         with:
           distribution: temurin
-          java-version: '17'
+          java-version: "17"
       - name: Allocate bundle version
         if: github.event_name != 'pull_request'
         id: bundle
