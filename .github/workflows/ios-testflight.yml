@@ -11,7 +11,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: testflight-com-tofu575-glarea
+  group: testflight-com-tofu575-tappin
   cancel-in-progress: false
 
 jobs:

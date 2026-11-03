@@ -67,7 +67,7 @@ def upload(session, package, bundle, expected_version):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--credentials", required=True)
-    parser.add_argument("--package", required=True, choices=["com.tofu575.glarea"])
+    parser.add_argument("--package", required=True, choices=["com.tofu575.tappin"])
     parser.add_argument("--bundle", type=Path, required=True)
     parser.add_argument("--version-code", type=int, required=True)
     args = parser.parse_args()

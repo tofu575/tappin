@@ -26,16 +26,16 @@ class BundleArtifactTest(unittest.TestCase):
         self.git = patch("bundle_artifact.subprocess.check_output", return_value=self.sha + "\n")
         self.git.start()
         self.addCleanup(self.git.stop)
-        Path("pubspec.yaml").write_text('name: glarea\nversion: 0.1.0+1\n')
+        Path("pubspec.yaml").write_text('name: tappin\nversion: 0.1.0+1\n')
         Path(".flutter-version").write_text("3.44.9\n")
         self.env = dict(TARGET_SHA=self.sha, BASE_VERSION_CODE="1000", GITHUB_RUN_NUMBER="4",
-                        GITHUB_RUN_ATTEMPT="2", GITHUB_RUN_ID="99", GITHUB_REPOSITORY="tofu575/glarea",
+                        GITHUB_RUN_ATTEMPT="2", GITHUB_RUN_ID="99", GITHUB_REPOSITORY="tofu575/tappin",
                         RUNNER_TEMP=self.temp.name, GITHUB_OUTPUT=f"{self.temp.name}/output",
                         BUNDLE_VERSION_CODE="1402")
         self.bundle = BundleArtifact(self.env)
         self.run = dict(id=99, run_number=4, run_attempt=2, head_sha=self.sha,
                         path=BundleArtifact.WORKFLOW, event="push", conclusion="success",
-                        head_repository=dict(full_name="tofu575/glarea"))
+                        head_repository=dict(full_name="tofu575/tappin"))
 
     def archive(self, metadata_updates=None, extra=None):
         """Package a minimal unsigned bundle using the production metadata writer."""
@@ -64,10 +64,18 @@ class BundleArtifactTest(unittest.TestCase):
 
     def test_version_is_fixed_before_build_and_metadata_round_trips(self):
         self.bundle.configure()
-        self.assertIn(f"artifact_name=glarea-aab-0.1.0-1402-{self.sha}", Path(self.env["GITHUB_OUTPUT"]).read_text())
+        self.assertIn(f"artifact_name=tappin-aab-0.1.0-1402-{self.sha}", Path(self.env["GITHUB_OUTPUT"]).read_text())
         blob = self.archive()
         self.assertEqual(self.bundle.unpack(blob, self.artifact, self.run), 1402)
         self.assertEqual((self.bundle.folder / "app-release.aab").read_bytes(), self.aab)
+
+    def test_release_package_matches_the_android_and_ios_apps(self):
+        """Prevent release scripts from targeting an app other than this checkout."""
+        root = Path(__file__).resolve().parents[1]
+        android = (root / "android/app/build.gradle.kts").read_text()
+        ios = (root / "ios/Runner.xcodeproj/project.pbxproj").read_text()
+        self.assertIn(f'applicationId = "{BundleArtifact.PACKAGE}"', android)
+        self.assertEqual(ios.count(f"PRODUCT_BUNDLE_IDENTIFIER = {BundleArtifact.PACKAGE};"), 3)
 
     def test_wrong_checkout_and_invalid_or_overflowed_version_are_rejected(self):
         for changes in ({"TARGET_SHA": "b" * 40}, {"BASE_VERSION_CODE": "-1"}):
@@ -175,7 +183,7 @@ class BundleArtifactTest(unittest.TestCase):
     def test_wrong_commit_fork_failed_and_pr_runs_are_not_trusted(self):
         for changes in ({"head_sha": "b" * 40}, {"event": "pull_request"},
                         {"conclusion": "failure"}, {"path": "another.yml"},
-                        {"head_repository": {"full_name": "fork/glarea"}}):
+                        {"head_repository": {"full_name": "fork/tappin"}}):
             with self.subTest(changes=changes):
                 with patch.object(BundleArtifact, "api", return_value={"workflow_runs": [dict(self.run, **changes)]}):
                     self.assertEqual(self.bundle.runs(), [])
@@ -184,7 +192,7 @@ class BundleArtifactTest(unittest.TestCase):
         self.bundle.env = dict(self.env, CI_RUN_ID="99")
         with patch.object(BundleArtifact, "api", return_value=self.run) as api:
             self.assertEqual(self.bundle.runs(), [self.run])
-            api.assert_called_once_with("repos/tofu575/glarea/actions/runs/99")
+            api.assert_called_once_with("repos/tofu575/tappin/actions/runs/99")
 
     def test_artifact_listing_is_paginated(self):
         blob = self.archive()
@@ -197,12 +205,12 @@ class BundleArtifactTest(unittest.TestCase):
     def test_authentication_errors_are_not_treated_as_cache_misses(self):
         result = type("Result", (), dict(returncode=1, stderr=b"gh: forbidden (HTTP 403)"))()
         with patch("bundle_artifact.subprocess.run", return_value=result), self.assertRaises(RuntimeError):
-            self.bundle.api("repos/tofu575/glarea/actions/artifacts/7/zip", binary=True, missing=True)
+            self.bundle.api("repos/tofu575/tappin/actions/artifacts/7/zip", binary=True, missing=True)
 
     def test_expired_download_can_fall_back(self):
         result = type("Result", (), dict(returncode=1, stderr=b"gh: gone (HTTP 410)"))()
         with patch("bundle_artifact.subprocess.run", return_value=result):
-            self.assertIsNone(self.bundle.api("repos/tofu575/glarea/actions/artifacts/7/zip", binary=True, missing=True))
+            self.assertIsNone(self.bundle.api("repos/tofu575/tappin/actions/artifacts/7/zip", binary=True, missing=True))
 
 
 if __name__ == "__main__":

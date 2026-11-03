@@ -42,8 +42,8 @@ def prepare(env):
         raise ValueError("Empty certificate or provisioning profile")
     root = Path(env["GITHUB_WORKSPACE"])
     project = (root / "ios/Runner.xcodeproj/project.pbxproj").read_text()
-    if re.findall(r"PRODUCT_BUNDLE_IDENTIFIER = ([^;]+);", project).count("com.tofu575.glarea") != 3:
-        raise ValueError("Confirm the Runner bundle identifier is com.tofu575.glarea")
+    if re.findall(r"PRODUCT_BUNDLE_IDENTIFIER = ([^;]+);", project).count("com.tofu575.tappin") != 3:
+        raise ValueError("Confirm the Runner bundle identifier is com.tofu575.tappin")
     folder = Path(env["RUNNER_TEMP"]) / "testflight-release"
     folder.mkdir(mode=0o700, exist_ok=False)
 
@@ -69,7 +69,7 @@ def prepare(env):
     if (
         not re.fullmatch(r"[a-fA-F0-9-]{36}", uuid)
         or provision.get("TeamIdentifier") != [team]
-        or entitlements.get("application-identifier") != f"{team}.com.tofu575.glarea"
+        or entitlements.get("application-identifier") != f"{team}.com.tofu575.tappin"
         or entitlements.get("get-task-allow") is not False
         or "ProvisionedDevices" in provision
         or provision.get("ProvisionsAllDevices", False)
@@ -84,7 +84,7 @@ def prepare(env):
         "method": "app-store-connect", "destination": "export",
         "teamID": team, "signingStyle": "manual",
         "signingCertificate": "Apple Distribution", "manageAppVersionAndBuildNumber": False,
-        "provisioningProfiles": {"com.tofu575.glarea": uuid},
+        "provisioningProfiles": {"com.tofu575.tappin": uuid},
         "uploadSymbols": True,
     }))
     # Only this ephemeral checkout receives the signing configuration.

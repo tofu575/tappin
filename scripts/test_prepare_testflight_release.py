@@ -24,7 +24,7 @@ class TestFlightSetupTest(unittest.TestCase):
         (self.root / "ios/Flutter/Release.xcconfig").write_text('#include "Generated.xcconfig"\n')
         (self.root / "ios/Runner.xcodeproj").mkdir()
         (self.root / "ios/Runner.xcodeproj/project.pbxproj").write_text(
-            "PRODUCT_BUNDLE_IDENTIFIER = com.tofu575.glarea;\n" * 3,
+            "PRODUCT_BUNDLE_IDENTIFIER = com.tofu575.tappin;\n" * 3,
         )
         self.env = dict(
             APPLE_TEAM_ID="ABCDEFGHIJ", APP_STORE_CONNECT_KEY_ID="0123456789",
@@ -40,7 +40,7 @@ class TestFlightSetupTest(unittest.TestCase):
         self.profile = {
             "UUID": "12345678-1234-1234-1234-123456789abc", "TeamIdentifier": ["ABCDEFGHIJ"],
             "ExpirationDate": datetime.now() + timedelta(days=10),
-            "Entitlements": {"application-identifier": "ABCDEFGHIJ.com.tofu575.glarea", "get-task-allow": False},
+            "Entitlements": {"application-identifier": "ABCDEFGHIJ.com.tofu575.tappin", "get-task-allow": False},
             "DeveloperCertificates": [b"certificate"],
         }
 
@@ -61,7 +61,7 @@ class TestFlightSetupTest(unittest.TestCase):
         options = plistlib.loads((folder / "ExportOptions.plist").read_bytes())
         self.assertEqual(options["method"], "app-store-connect")
         self.assertFalse(options["manageAppVersionAndBuildNumber"])
-        self.assertEqual(options["provisioningProfiles"], {"com.tofu575.glarea": self.profile["UUID"]})
+        self.assertEqual(options["provisioningProfiles"], {"com.tofu575.tappin": self.profile["UUID"]})
         self.assertIn("build_number=112.1.0\n", (self.root / "output").read_text())
         config = (self.root / "ios/Flutter/Release.xcconfig").read_text()
         self.assertIn("CODE_SIGN_STYLE = Manual", config)
@@ -96,7 +96,7 @@ class TestFlightSetupTest(unittest.TestCase):
         invalid = (
             dict(self.profile, TeamIdentifier=["OTHERTEAM1"]),
             dict(self.profile, Entitlements={"application-identifier": "ABCDEFGHIJ.other.app", "get-task-allow": False}),
-            dict(self.profile, Entitlements={"application-identifier": "ABCDEFGHIJ.com.tofu575.glarea", "get-task-allow": True}),
+            dict(self.profile, Entitlements={"application-identifier": "ABCDEFGHIJ.com.tofu575.tappin", "get-task-allow": True}),
             dict(self.profile, ProvisionedDevices=["device"]),
             dict(self.profile, ProvisionsAllDevices=True),
             dict(self.profile, ExpirationDate=datetime.now() - timedelta(days=1)),

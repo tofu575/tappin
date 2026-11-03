@@ -28,7 +28,7 @@ class UploadTest(unittest.TestCase):
         self.session.put.side_effect = [response({'versionCode': 101}), response()]
 
     def test_success_only_releases_internal_track(self):
-        upload(self.session, 'com.tofu575.glarea', self.bundle, 101)
+        upload(self.session, 'com.tofu575.tappin', self.bundle, 101)
         calls = self.session.put.call_args_list
         self.assertTrue(calls[1].args[0].endswith('/tracks/internal'))
         self.assertEqual(calls[1].kwargs['json']['releases'][0]['versionCodes'], ['101'])
@@ -37,28 +37,28 @@ class UploadTest(unittest.TestCase):
 
     def test_existing_version_rejected_before_upload(self):
         with self.assertRaises(PlayError):
-            upload(self.session, 'com.tofu575.glarea', self.bundle, 100)
+            upload(self.session, 'com.tofu575.tappin', self.bundle, 100)
         self.session.put.assert_not_called()
         self.session.delete.assert_called_once()
 
     def test_bad_upload_location_rejected(self):
         self.session.post.side_effect = [response({'id': 'edit-1'}), response(headers={'Location': 'https://evil.example/upload'})]
         with self.assertRaises(PlayError):
-            upload(self.session, 'com.tofu575.glarea', self.bundle, 101)
+            upload(self.session, 'com.tofu575.tappin', self.bundle, 101)
         self.session.put.assert_not_called()
         self.session.delete.assert_called_once()
 
     def test_upload_error_never_commits_or_logs_response(self):
         self.session.put.side_effect = [response({'secret': 'never-print'}, status=403)]
         with self.assertRaisesRegex(PlayError, 'Upload bundle: Google Play API returned HTTP 403'):
-            upload(self.session, 'com.tofu575.glarea', self.bundle, 101)
+            upload(self.session, 'com.tofu575.tappin', self.bundle, 101)
         self.assertEqual(self.session.post.call_count, 2)
         self.session.delete.assert_called_once()
 
     def test_unexpected_version_never_releases(self):
         self.session.put.side_effect = [response({'versionCode': 999})]
         with self.assertRaises(PlayError):
-            upload(self.session, 'com.tofu575.glarea', self.bundle, 101)
+            upload(self.session, 'com.tofu575.tappin', self.bundle, 101)
         self.assertEqual(self.session.put.call_count, 1)
         self.session.delete.assert_called_once()
 

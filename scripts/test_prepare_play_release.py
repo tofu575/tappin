@@ -12,7 +12,7 @@ class ReleaseSetupTest(unittest.TestCase):
         self.addCleanup(self.temp.cleanup)
         self.env = dict(
             BASE_VERSION_CODE="1000", PLAY_MAX_VERSION_CODE="1000",
-            PLAY_PACKAGE_NAME="com.tofu575.glarea", GITHUB_RUN_NUMBER="2",
+            PLAY_PACKAGE_NAME="com.tofu575.tappin", GITHUB_RUN_NUMBER="2",
             GITHUB_RUN_ATTEMPT="1", RUNNER_TEMP=self.temp.name,
             GITHUB_ENV=f"{self.temp.name}/env", GITHUB_OUTPUT=f"{self.temp.name}/output",
             ANDROID_KEYSTORE_BASE64=base64.b64encode(b"dummy-keystore").decode(),

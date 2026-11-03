@@ -13,7 +13,7 @@ import zipfile
 class BundleArtifact:
     """Bind an unsigned bundle to its source commit, version, and successful CI run."""
 
-    PACKAGE = "com.tofu575.glarea"
+    PACKAGE = "com.tofu575.tappin"
     WORKFLOW = ".github/workflows/android-check.yml"
     LIMIT = 2_100_000_000
 
@@ -68,7 +68,7 @@ class BundleArtifact:
 
     def name(self, version):
         """Include both the release version and exact source commit in the artifact name."""
-        return f"glarea-aab-{self.version_name}-{version}-{self.sha}"
+        return f"tappin-aab-{self.version_name}-{version}-{self.sha}"
 
     def configure(self):
         """Choose the immutable version before CI builds the bundle."""
@@ -187,7 +187,7 @@ class BundleArtifact:
     def find(self, minimum, requested=None):
         """Find a deployable CI artifact; only absence/expiry/stale versions cause a rebuild."""
         repository = self.env["GITHUB_REPOSITORY"]
-        prefix = f"glarea-aab-{self.version_name}-"
+        prefix = f"tappin-aab-{self.version_name}-"
         suffix = f"-{self.sha}"
         print(f"Search CI bundles: source={self.sha}, versionName={self.version_name}, "
               f"minimumVersionCode={minimum}, requestedVersionCode={requested if requested is not None else 'any'}.")

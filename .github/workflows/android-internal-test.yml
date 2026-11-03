@@ -17,7 +17,7 @@ permissions:
   actions: read
 
 concurrency:
-  group: google-play-internal-com-tofu575-glarea
+  group: google-play-internal-com-tofu575-tappin
   cancel-in-progress: false
 
 jobs:
@@ -125,7 +125,7 @@ jobs:
         run: >-
           python3 scripts/upload_play.py
           --credentials "$PLAY_CREDENTIALS"
-          --package com.tofu575.glarea
+          --package com.tofu575.tappin
           --bundle "$RUNNER_TEMP/play-release/app-release.aab"
           --version-code "$PLAY_VERSION_CODE"
       - name: Remove credentials and downloaded bundles

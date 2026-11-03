@@ -24,9 +24,9 @@ class SelectBundleTest(unittest.TestCase):
         Path("pubspec.yaml").write_text("version: 0.1.0+1\n")
         Path(".flutter-version").write_text("3.44.9\n")
         self.env = dict(TARGET_SHA=self.sha, BASE_VERSION_CODE="0", GITHUB_RUN_NUMBER="2",
-                        GITHUB_RUN_ATTEMPT="1", GITHUB_REPOSITORY="tofu575/glarea",
+                        GITHUB_RUN_ATTEMPT="1", GITHUB_REPOSITORY="tofu575/tappin",
                         RUNNER_TEMP=self.temp.name, GITHUB_OUTPUT=f"{self.temp.name}/output",
-                        PLAY_PACKAGE_NAME="com.tofu575.glarea", PLAY_MAX_VERSION_CODE="1000",
+                        PLAY_PACKAGE_NAME="com.tofu575.tappin", PLAY_MAX_VERSION_CODE="1000",
                         PLAY_SERVICE_ACCOUNT_JSON=json.dumps({"type": "service_account"}))
         for target in ("bundle_artifact.subprocess.check_output",
                        "google.oauth2.service_account.Credentials.from_service_account_info",
@@ -118,7 +118,7 @@ class SelectBundleTest(unittest.TestCase):
             {"releases": [{"versionCodes": ["400"]}]},
         ]})
         session.delete.return_value = self.response({})
-        self.assertEqual(play_max_version(session, "com.tofu575.glarea"), 400)
+        self.assertEqual(play_max_version(session, "com.tofu575.tappin"), 400)
         self.assertTrue(session.delete.call_args.args[0].endswith("/edits/probe"))
         self.assertEqual(session.post.call_count, 1)
 
@@ -128,7 +128,7 @@ class SelectBundleTest(unittest.TestCase):
         session.get.return_value = self.response({}, status=403)
         session.delete.return_value = self.response({})
         with self.assertRaises(PlayError):
-            play_max_version(session, "com.tofu575.glarea")
+            play_max_version(session, "com.tofu575.tappin")
         session.delete.assert_called_once()
 
     @staticmethod

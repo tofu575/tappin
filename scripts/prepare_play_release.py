@@ -14,8 +14,8 @@ def prepare(env):
     for name in required:
         if not env.get(name):
             raise ValueError(f"Missing GitHub Secret/Variable: {name}")
-    if env["PLAY_PACKAGE_NAME"] != "com.tofu575.glarea":
-        raise ValueError("Confirm Play Console package matches com.tofu575.glarea")
+    if env["PLAY_PACKAGE_NAME"] != "com.tofu575.tappin":
+        raise ValueError("Confirm Play Console package matches com.tofu575.tappin")
     numbers = [env[key] for key in (
         "BASE_VERSION_CODE", "PLAY_MAX_VERSION_CODE", "GITHUB_RUN_NUMBER", "GITHUB_RUN_ATTEMPT"
     )]

@@ -2,16 +2,16 @@
 
 ## 現在の構成
 
-- applicationId / namespace: `com.tofu575.glarea`。Play Console登録名との一致は所有者が確認する。
-- versionName: `pubspec.yaml` の `0.1.0`。versionCodeのみビルド引数で上書きする。
+- applicationId / namespace: `com.tofu575.tappin`。Play Console登録名との一致は所有者が確認する。
+- versionName: `pubspec.yaml` の `1.0.0`。versionCodeのみビルド引数で上書きする。
 - Flutter: `.flutter-version` とFVM設定の3.44.9に固定。Java 17、AGP 8.11.1、Kotlin 2.2.20、Gradle 8.14。
-- compile / min / target SDKは使用するFlutter SDKの既定値。flavorはなく、DB用packageではbuild_runnerを使用する。
+- compile / min / target SDKは使用するFlutter SDKの既定値。flavorはない。
 - CI（`android-check.yml`）は秘密情報なしで未署名のrelease AABを生成し、バージョン・ソースSHA・SHA-256を添えて7日間保存する。
 - CD（`android-internal-test.yml`）は対象コミットの利用可能なCI成果物を再利用し、アップロード鍵で署名する。成果物がない・期限切れ・配信済みの番号しかない場合だけ、同じソースからビルドする。
 
 ## 初回設定（所有者の作業）
 
-1. Google Play開発者アカウントを作成し、本人確認・登録要件を完了する。対象アプリを作成する。既存アプリがある場合、パッケージ名が `com.tofu575.glarea` であることを確認し、アプリIDや既存の鍵を変更しない。違う場合は配信を止め、実装側のIDを含めて方針を確認する。
+1. Google Play開発者アカウントを作成し、本人確認・登録要件を完了する。対象アプリを作成する。既存アプリがある場合、パッケージ名が `com.tofu575.tappin` であることを確認し、アプリIDや既存の鍵を変更しない。違う場合は配信を止め、実装側のIDを含めて方針を確認する。
 2. Play App Signingを設定する。Playが保持する「アプリ署名鍵」とCIで使う「アップロード鍵」は別。既存アップロード鍵があれば再利用する。なければローカルの安全な場所で生成する（値をチャット・コミット・Actionsログに貼らない）。
 
    ```sh
@@ -45,7 +45,7 @@
 | 名前 | 保存場所・内容 |
 | --- | --- |
 | `BASE_VERSION_CODE` | **Repository variable**。CIとCDで共有する非負の初期オフセット。environmentに同名の上書きを置かない |
-| `PLAY_PACKAGE_NAME` | `play-internal` environment。Consoleで確認済みの `com.tofu575.glarea` |
+| `PLAY_PACKAGE_NAME` | `play-internal` environment。Consoleで確認済みの `com.tofu575.tappin` |
 | `PLAY_MAX_VERSION_CODE` | `play-internal` environment。全トラック・過去のアップロードを含む使用済み最大値。未使用なら0 |
 
 CIはビルド前に `BASE_VERSION_CODE + CIのrun_number * 100 + run_attempt` をversionCodeとして確定する。
@@ -69,7 +69,7 @@ APIだけでは過去に消費した全コードを列挙できないため、`P
 - CIはすべてのブランチへのpushと手動実行で、その実コミットの検証・releaseビルドを行う。
   PRイベントはマージ検証用コミットのテストだけを行い、Java / Gradle / AAB生成・保存は省略する。
   ブランチpush側で作るAABを手動CDに再利用するため、同じ更新でreleaseビルドを二重に行わない。
-- 成果物名は `glarea-aab-<versionName>-<versionCode>-<commit SHA>`。
+- 成果物名は `tappin-aab-<versionName>-<versionCode>-<commit SHA>`。
   中身は未署名の `app-release.aab` と `release.json` の2ファイルだけ。
 - `release.json` にはversionName、versionCode、package、ソースSHA、Flutter版、BASE、CI run ID / number / attempt、AABのSHA-256を含む。
 - CDの自動実行は **mainのpush CI成功後**。発火元CI runから取得するため、CI完了前にCDが別ビルドを始めることはない。対象SHAがすでにmainの最新でなくなっている古い自動配信は、ビルド・署名・アップロードをスキップする。
@@ -141,7 +141,7 @@ APIだけでは過去に消費した全コードを列挙できないため、`P
 
 ## パッケージ名の変更とActionの安全性確認
 
-Android applicationId / namespaceとiOS bundle IDは `com.tofu575.glarea`、Dartパッケージ名は `glarea`。起動時は `StoneApp` と本番のStone・Wish・写真用Interactorを使用する。配信更新でも同じアプリIDと署名設定を維持する。iOSの署名・Provisioning Profileもこのbundle IDに対応した設定が必要。
+Android applicationId / namespaceとiOS bundle IDは `com.tofu575.tappin`、Dartパッケージ名は `tappin`。起動時は `App` と現在地記録用の `Interactor` を使用する。配信更新でも同じアプリIDと署名設定を維持する。iOSの署名・Provisioning Profileもこのbundle IDに対応した設定が必要。
 
 checkout・setup-java・upload-artifactはGitHub公式、Flutter SDK設定はsubosito/flutter-action、Gradleキャッシュはgradle/actions/setup-gradleを使用し、すべてSHA固定。Flutter Actionの既定キーとGradle Actionのbasic providerでキャッシュを保存・復元する。Play配信に検討したr0adkll/upload-google-playは、v1.1.3とv1.1.5の依存監査で既知脆弱性が検出されたため採用しない。依存監査の検出は、この用途での悪用可能性を断定するものではない。SHA固定は上流タグ差替えへの対策であり、無欠陥の保証ではない。
 

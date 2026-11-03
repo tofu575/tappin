@@ -16,7 +16,7 @@ workflowファイルは既定ブランチ（現在 `enhance/mvp`）にも必要�
 ## 初回設定
 
 1. Apple Developer Programへ登録し、契約の同意など未完了項目を済ませる。
-2. Certificates, Identifiers & Profilesに、明示的なBundle ID **`com.tofu575.glarea`** を登録する。
+2. Certificates, Identifiers & Profilesに、明示的なBundle ID **`com.tofu575.tappin`** を登録する。
    App Store Connectにも同じBundle IDのiOSアプリを作成する。既存アプリがある場合はIDと署名資産を確認する。
 3. 秘密鍵付きの **Apple Distribution** 証明書を用意し、Macのキーチェーンアクセスから
    パスワード付き `.p12` として書き出す。開発用証明書では配信できない。
