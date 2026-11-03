@@ -1,0 +1,90 @@
+name: Android checks
+
+on:
+  pull_request:
+    branches: [main, enhance/mvp]
+  push:
+    # Manual releases may select any branch; build its exact commit before CD.
+    branches: ['**']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# PRs test the merge commit; branch pushes produce deployable AABs.
+concurrency:
+  group: android-checks-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - run: python3 -m pip install --require-hashes -r scripts/play-requirements.txt
+      - run: python3 -m unittest discover -s scripts -p 'test_*.py'
+      - uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00 # v4.7.1
+        if: github.event_name != 'pull_request'
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Allocate bundle version
+        if: github.event_name != 'pull_request'
+        id: bundle
+        env:
+          TARGET_SHA: ${{ github.sha }}
+          BASE_VERSION_CODE: ${{ vars.BASE_VERSION_CODE }}
+        run: python3 scripts/bundle_artifact.py configure
+      - id: flutter
+        run: echo "version=$(cat .flutter-version)" >> "$GITHUB_OUTPUT"
+      - uses: subosito/flutter-action@e938fdf56512cc96ef2f93601a5a40bde3801046 # v2.19.0
+        with:
+          flutter-version: ${{ steps.flutter.outputs.version }}
+          channel: stable
+          cache: true
+      - name: Restore Gradle dependencies and task outputs
+        if: github.event_name != 'pull_request'
+        uses: gradle/actions/setup-gradle@8da46b539cd8fe6ab27ca75128919a18d757604c # v6.4.1
+        with:
+          cache-provider: basic
+          cache-read-only: false
+      - run: flutter pub get --enforce-lockfile
+      - run: flutter test --no-pub test lib/presentation/test lib/gateway/media_collection/media_collection_gateway/test
+      - name: Test persisted database compatibility
+        working-directory: lib/gateway/local_database_gateway
+        run: |
+          flutter pub get
+          flutter test --no-pub
+      - name: Test Stone operations
+        working-directory: lib/domain/usecase
+        run: |
+          dart pub get
+          dart test
+      # Release builds must regenerate the registrant without dev-only plugins.
+      - name: Build unsigned release AAB
+        if: github.event_name != 'pull_request'
+        env:
+          PLAY_VERSION_CODE: ${{ steps.bundle.outputs.version_code }}
+          GRADLE_OPTS: -Dorg.gradle.caching=true
+        run: env -u ANDROID_KEY_PROPERTIES flutter build appbundle --release --build-number="$PLAY_VERSION_CODE"
+      - name: Attach source, version, and digest metadata
+        if: github.event_name != 'pull_request'
+        id: artifact
+        env:
+          TARGET_SHA: ${{ github.sha }}
+          BASE_VERSION_CODE: ${{ vars.BASE_VERSION_CODE }}
+          BUNDLE_VERSION_CODE: ${{ steps.bundle.outputs.version_code }}
+        run: python3 scripts/bundle_artifact.py pack
+      - name: Store release bundle
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: ${{ steps.bundle.outputs.artifact_name }}
+          path: ${{ steps.artifact.outputs.artifact_directory }}
+          if-no-files-found: error
+          retention-days: 7
+          compression-level: 0
+          archive: true

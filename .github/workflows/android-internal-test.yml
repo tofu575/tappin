@@ -1,0 +1,133 @@
+name: Android internal test
+
+on:
+  workflow_run:
+    workflows: [Android checks]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      version_code:
+        description: 'Optional versionCode to deploy for the selected commit (blank: newest usable CI bundle)'
+        required: false
+        type: string
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: google-play-internal-com-tofu575-glarea
+  cancel-in-progress: false
+
+jobs:
+  release:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.event == 'push' &&
+       github.event.workflow_run.head_repository.full_name == github.repository)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    environment: play-internal
+    env:
+      TARGET_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          persist-credentials: false
+      - name: Install pinned Google authentication dependencies
+        run: python3 -m pip install --require-hashes -r scripts/play-requirements.txt
+      - name: Find the matching CI bundle and select a deployable version
+        id: bundle
+        env:
+          GH_TOKEN: ${{ github.token }}
+          AUTO_DEPLOY: ${{ github.event_name == 'workflow_run' }}
+          CI_RUN_ID: ${{ github.event.workflow_run.id }}
+          REQUESTED_VERSION_CODE: ${{ inputs.version_code }}
+          BASE_VERSION_CODE: ${{ vars.BASE_VERSION_CODE }}
+          PLAY_MAX_VERSION_CODE: ${{ vars.PLAY_MAX_VERSION_CODE }}
+          PLAY_PACKAGE_NAME: ${{ vars.PLAY_PACKAGE_NAME }}
+          PLAY_SERVICE_ACCOUNT_JSON: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+        run: python3 scripts/select_play_bundle.py
+      - name: Install Java for signing and optional build
+        if: steps.bundle.outputs.deploy == 'true'
+        uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00 # v4.7.1
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Read pinned Flutter version for a cache miss
+        if: steps.bundle.outputs.found == 'false'
+        id: flutter
+        run: echo "version=$(cat .flutter-version)" >> "$GITHUB_OUTPUT"
+      - name: Install Flutter only when rebuilding
+        if: steps.bundle.outputs.found == 'false'
+        uses: subosito/flutter-action@e938fdf56512cc96ef2f93601a5a40bde3801046 # v2.19.0
+        with:
+          flutter-version: ${{ steps.flutter.outputs.version }}
+          channel: stable
+          cache: true
+      - name: Restore Gradle caches only when rebuilding
+        if: steps.bundle.outputs.found == 'false'
+        uses: gradle/actions/setup-gradle@8da46b539cd8fe6ab27ca75128919a18d757604c # v6.4.1
+        with:
+          cache-provider: basic
+          cache-read-only: false
+      - if: steps.bundle.outputs.found == 'false'
+        run: flutter pub get --enforce-lockfile
+      # Release builds must regenerate the registrant without dev-only plugins.
+      - name: Build an unsigned release AAB only when no usable artifact exists
+        if: steps.bundle.outputs.found == 'false'
+        env:
+          PLAY_VERSION_CODE: ${{ steps.bundle.outputs.version_code }}
+          GRADLE_OPTS: -Dorg.gradle.caching=true
+          PLAY_VERSION_NAME: ${{ steps.bundle.outputs.version_name }}
+        run: >-
+          env -u ANDROID_KEY_PROPERTIES flutter build appbundle --release
+          --build-number="$PLAY_VERSION_CODE" --build-name="$PLAY_VERSION_NAME"
+      - name: Validate selected version and restore upload credentials
+        if: steps.bundle.outputs.deploy == 'true'
+        id: release
+        env:
+          BASE_VERSION_CODE: ${{ vars.BASE_VERSION_CODE }}
+          PLAY_MAX_VERSION_CODE: ${{ vars.PLAY_MAX_VERSION_CODE }}
+          PLAY_PACKAGE_NAME: ${{ vars.PLAY_PACKAGE_NAME }}
+          PLAY_VERSION_CODE: ${{ steps.bundle.outputs.version_code }}
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          ANDROID_STORE_PASSWORD: ${{ secrets.ANDROID_STORE_PASSWORD }}
+          PLAY_SERVICE_ACCOUNT_JSON: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+        run: python3 scripts/prepare_play_release.py
+      - name: Sign the selected AAB without rebuilding
+        if: steps.bundle.outputs.deploy == 'true'
+        env:
+          PLAY_KEYSTORE: ${{ steps.release.outputs.keystore }}
+          UNSIGNED_BUNDLE: ${{ steps.bundle.outputs.bundle }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          ANDROID_STORE_PASSWORD: ${{ secrets.ANDROID_STORE_PASSWORD }}
+        run: |
+          jarsigner -keystore "$PLAY_KEYSTORE" \
+            -storepass:env ANDROID_STORE_PASSWORD -keypass:env ANDROID_KEY_PASSWORD \
+            -sigalg SHA256withRSA -digestalg SHA-256 \
+            -signedjar "$RUNNER_TEMP/play-release/app-release.aab" \
+            "$UNSIGNED_BUNDLE" "$ANDROID_KEY_ALIAS"
+          jarsigner -verify -strict -keystore "$PLAY_KEYSTORE" \
+            -storepass:env ANDROID_STORE_PASSWORD \
+            "$RUNNER_TEMP/play-release/app-release.aab" "$ANDROID_KEY_ALIAS"
+      - name: Upload to Google Play internal testing
+        if: steps.bundle.outputs.deploy == 'true'
+        env:
+          PLAY_CREDENTIALS: ${{ steps.release.outputs.service_account }}
+          PLAY_VERSION_CODE: ${{ steps.release.outputs.version_code }}
+        run: >-
+          python3 scripts/upload_play.py
+          --credentials "$PLAY_CREDENTIALS"
+          --package com.tofu575.glarea
+          --bundle "$RUNNER_TEMP/play-release/app-release.aab"
+          --version-code "$PLAY_VERSION_CODE"
+      - name: Remove credentials and downloaded bundles
+        if: always()
+        run: rm -rf -- "$RUNNER_TEMP/play-release" "$RUNNER_TEMP/android-bundle"

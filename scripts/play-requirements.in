@@ -1,0 +1,3 @@
+# Google official service-account authentication and HTTP transport.
+google-auth==2.62.0
+requests==2.34.2
