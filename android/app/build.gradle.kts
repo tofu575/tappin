@@ -32,9 +32,8 @@ android {
 
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            // CD signs the validated CI bundle with the Play upload key.
+            signingConfig = null
         }
     }
 }

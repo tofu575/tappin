@@ -1,3 +1,6 @@
+FLUTTER ?= fvm flutter
+DART ?= fvm dart
+
 PACKAGE_DIRS = \
 	lib/domain/model \
 	lib/domain/usecase \
@@ -59,9 +62,9 @@ analyze:
 
 test:
 	@for package_dir in $(TEST_PACKAGE_DIRS); do \
-		(cd $$package_dir && fvm dart test) || exit 1; \
+		(cd $$package_dir && $(DART) test) || exit 1; \
 	done
 	@for package_dir in $(FLUTTER_TEST_PACKAGE_DIRS); do \
-		(cd $$package_dir && fvm flutter test) || exit 1; \
+		(cd $$package_dir && $(FLUTTER) test) || exit 1; \
 	done
-	fvm flutter test
+	$(FLUTTER) test
