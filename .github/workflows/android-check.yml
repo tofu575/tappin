@@ -52,17 +52,8 @@ jobs:
           cache-provider: basic
           cache-read-only: false
       - run: flutter pub get --enforce-lockfile
-      - run: flutter test --no-pub test lib/presentation/test lib/gateway/media_collection/media_collection_gateway/test
-      - name: Test persisted database compatibility
-        working-directory: lib/gateway/local_database_gateway
-        run: |
-          flutter pub get
-          flutter test --no-pub
-      - name: Test Stone operations
-        working-directory: lib/domain/usecase
-        run: |
-          dart pub get
-          dart test
+      - name: Test all packages and the app
+        run: make test FLUTTER=flutter DART=dart
       # Release builds must regenerate the registrant without dev-only plugins.
       - name: Build unsigned release AAB
         if: github.event_name != 'pull_request'
