@@ -76,6 +76,6 @@ jobs:
           name: ${{ steps.bundle.outputs.artifact_name }}
           path: ${{ steps.artifact.outputs.artifact_directory }}
           if-no-files-found: error
-          retention-days: 7
+          retention-days: 1
           compression-level: 0
           archive: true
